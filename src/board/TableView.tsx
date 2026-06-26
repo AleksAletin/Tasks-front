@@ -1,6 +1,6 @@
 // Board table view (brief §5.4) — grouped rows with solid status/priority cells,
 // colored left border, mini-gantt timeline, summary "battery" rows, inline-edit popups.
-import { useMemo } from 'react';
+import { useLayoutEffect, useMemo, useRef } from 'react';
 import { useBoard } from './store';
 import {
   type CustomCol,
@@ -29,6 +29,9 @@ const GRID = '56px 264px 100px 138px 118px 138px 184px 172px 132px 128px 116px 1
 // Each custom column appends a 160px slot to the grid (brief §5.10).
 const CUSTOM_COL_W = '160px';
 const ROW_H = 40;
+// FLIP settle for reordered rows (brief §5.8) — matches the prototype's easing/duration.
+const FLIP_EASE = 'cubic-bezier(.22,.85,.25,1)';
+const FLIP_MS = 360;
 
 const COL_LABELS: [string, string][] = [
   ['task', 'Задача'],
@@ -61,6 +64,43 @@ export function TableView() {
   const toggleSelect = useBoard((s) => s.toggleSelect);
   const openHeaderMenu = useBoard((s) => s.openHeaderMenu);
   const openAddColMenu = useBoard((s) => s.openAddColMenu);
+
+  // FLIP settle: after the persisted `groups` change (a row/group reorder or
+  // cross-group move), glide every [data-row-id] from its previous top to its new
+  // one. We keep the last measured tops in a ref and diff against the post-update
+  // layout, matching the prototype's getSnapshotBeforeUpdate/componentDidUpdate.
+  const flipTops = useRef<Record<string, number>>({});
+  const flipReady = useRef(false);
+  useLayoutEffect(() => {
+    const prev = flipTops.current;
+    const next: Record<string, number> = {};
+    const nodes = document.querySelectorAll<HTMLElement>('[data-row-id]');
+    nodes.forEach((el) => {
+      const id = el.getAttribute('data-row-id');
+      if (!id) return;
+      const top = el.getBoundingClientRect().top;
+      next[id] = top;
+      if (!flipReady.current) return;
+      const pt = prev[id];
+      if (pt == null) return;
+      const dy = pt - top;
+      if (Math.abs(dy) <= 1) return;
+      el.style.transition = 'none';
+      el.style.transform = `translateY(${dy}px)`;
+      el.style.zIndex = '2';
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          el.style.transition = `transform ${FLIP_MS}ms ${FLIP_EASE}`;
+          el.style.transform = '';
+          window.setTimeout(() => {
+            el.style.zIndex = '';
+          }, FLIP_MS + 20);
+        }),
+      );
+    });
+    flipTops.current = next;
+    flipReady.current = true;
+  }, [groups]);
 
   const { groups: viewGroups, tableEmptyAll } = useMemo(
     () => buildView({ groups, query, filterStatus, filterOwner, sortBy, sortDir, groupBy }),
@@ -194,10 +234,12 @@ export function TableView() {
 
       {tableEmptyAll && <NoResults query={query} />}
 
-      {viewGroups.map((g) => (
+      {viewGroups.map((g, gi) => (
         <GroupBlock
           key={g.id}
           g={g}
+          gi={gi}
+          total={viewGroups.length}
           gridCols={gridCols}
           customCols={customCols}
           collapsed={!!collapsed[g.id]}
@@ -238,6 +280,8 @@ export function TableView() {
 
 function GroupBlock({
   g,
+  gi,
+  total,
   gridCols,
   customCols,
   collapsed,
@@ -247,6 +291,8 @@ function GroupBlock({
   onSelect,
 }: {
   g: ViewGroup;
+  gi: number;
+  total: number;
   gridCols: string;
   customCols: CustomCol[];
   collapsed: boolean;
@@ -255,9 +301,49 @@ function GroupBlock({
   viewer: boolean;
   onSelect: (id: string) => void;
 }) {
+  const groupDragStart = useBoard((s) => s.groupDragStart);
+  const groupDragOver = useBoard((s) => s.groupDragOver);
+  const groupDrop = useBoard((s) => s.groupDrop);
+  const groupDragEnd = useBoard((s) => s.groupDragEnd);
+  const moveGroup = useBoard((s) => s.moveGroup);
+  const dragging = useBoard((s) => s.groupDrag?.id === g.id);
+  const dropActive = useBoard((s) => !!s.groupDrag && s.groupDrag.id !== g.id && s.groupDropId === g.id);
+
+  // Row/group DnD only applies when grouping by role and not in viewer mode (brief §5.8).
+  const canDrag = g.isRole && !viewer;
+  const canMoveUp = g.isRole && !viewer && gi > 0;
+  const canMoveDown = g.isRole && !viewer && gi < total - 1;
+
   return (
-    <div style={{ marginTop: 14, position: 'relative' }}>
+    <div
+      className="grouprow"
+      draggable={canDrag}
+      onDragStart={canDrag ? () => groupDragStart(g.id) : undefined}
+      onDragOver={canDrag ? (e) => { e.preventDefault(); groupDragOver(g.id); } : undefined}
+      onDrop={canDrag ? (e) => { e.preventDefault(); groupDrop(g.id); } : undefined}
+      onDragEnd={canDrag ? () => groupDragEnd() : undefined}
+      style={{ marginTop: 14, position: 'relative', opacity: dragging ? 0.45 : 1 }}
+    >
+      {dropActive && (
+        <div style={{ position: 'absolute', top: 7, left: 8, right: 8, height: 2.5, borderRadius: 2, background: ACCENT, zIndex: 4 }} />
+      )}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 0 6px 6px', height: 34 }}>
+        {canDrag && (
+          <span
+            className="ghandle"
+            title="Перетащите, чтобы переместить группу"
+            style={{ display: 'flex', alignItems: 'center', cursor: 'grab', color: '#c4c4bf', opacity: 0, transition: 'opacity .12s' }}
+          >
+            <svg width="14" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="9" cy="6" r="1.6" />
+              <circle cx="15" cy="6" r="1.6" />
+              <circle cx="9" cy="12" r="1.6" />
+              <circle cx="15" cy="12" r="1.6" />
+              <circle cx="9" cy="18" r="1.6" />
+              <circle cx="15" cy="18" r="1.6" />
+            </svg>
+          </span>
+        )}
         <div
           onClick={onToggle}
           style={{
@@ -288,6 +374,30 @@ function GroupBlock({
         >
           {g.count}
         </span>
+        {canMoveUp && (
+          <div
+            onClick={() => moveGroup(g.id, -1)}
+            className="gmove"
+            title="Выше"
+            style={{ width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6, cursor: 'pointer', color: '#a6a8ab', opacity: 0, transition: 'opacity .12s, background .12s' }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
+              <path d="M18 15l-6-6-6 6" />
+            </svg>
+          </div>
+        )}
+        {canMoveDown && (
+          <div
+            onClick={() => moveGroup(g.id, 1)}
+            className="gmove"
+            title="Ниже"
+            style={{ width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6, cursor: 'pointer', color: '#a6a8ab', opacity: 0, transition: 'opacity .12s, background .12s' }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
+        )}
         {collapsed && (
           <div style={{ display: 'flex', height: 9, width: 120, borderRadius: 5, overflow: 'hidden', marginLeft: 6 }}>
             {g.summary.statusSegs.map((s, i) => (
@@ -416,6 +526,17 @@ function Row({
   const openCtx = useBoard((s) => s.openCtx);
   const expanded = useBoard((s) => !!s.expanded[t.id]);
   const toggleExpand = useBoard((s) => s.toggleExpand);
+  const dragStart = useBoard((s) => s.dragStart);
+  const dragOver = useBoard((s) => s.dragOver);
+  const dropRow = useBoard((s) => s.dropRow);
+  const dragEnd = useBoard((s) => s.dragEnd);
+  const dragging = useBoard((s) => s.drag?.id === t.id);
+  const dropBefore = useBoard((s) => s.dropTarget?.taskId === t.id && s.dropTarget.before === true);
+  const dropAfter = useBoard((s) => s.dropTarget?.taskId === t.id && s.dropTarget.before === false);
+
+  // Row drag only when grouping by role and not viewing (brief §5.8); it must not
+  // interfere with the cell click/popover/context-menu handlers (those stopPropagation).
+  const canDrag = g.isRole && !viewer;
   const st = STATUS[t.status];
   const pr = t.priority ? PRIO[t.priority] : null;
   const ty = TYPE[t.type];
@@ -465,18 +586,72 @@ function Row({
   return (
     <>
     <div
+      data-row-id={t.id}
+      draggable={canDrag}
       onContextMenu={onContextMenu}
+      onDragStart={
+        canDrag
+          ? (e) => {
+              if (e.dataTransfer) {
+                e.dataTransfer.effectAllowed = 'move';
+                try {
+                  e.dataTransfer.setData('text/plain', t.id);
+                } catch {
+                  /* some browsers throw on setData during synthetic events */
+                }
+              }
+              dragStart(t.id);
+            }
+          : undefined
+      }
+      onDragOver={
+        canDrag
+          ? (e) => {
+              e.preventDefault();
+              const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+              dragOver(g.id, t.id, e.clientY - r.top < r.height / 2);
+            }
+          : undefined
+      }
+      onDrop={canDrag ? (e) => { e.preventDefault(); dropRow(); } : undefined}
+      onDragEnd={canDrag ? () => dragEnd() : undefined}
       style={{
         position: 'relative',
         display: 'grid',
         gridTemplateColumns: gridCols,
         height: ROW_H,
-        background: selected ? 'rgba(238,242,253,0.82)' : 'rgba(255,255,255,0.55)',
+        background: dragging ? 'rgba(255,255,255,0.97)' : selected ? 'rgba(238,242,253,0.82)' : 'rgba(255,255,255,0.55)',
         borderBottom: '1px solid #efefeb',
         borderLeft: `3px solid ${g.color}`,
+        boxShadow: dragging
+          ? '0 18px 40px rgba(30,40,80,0.22), 0 2px 10px rgba(30,40,80,0.12), inset 0 1px 0 rgba(255,255,255,0.7)'
+          : 'none',
+        transform: dragging ? 'scale(1.004)' : 'none',
+        opacity: dragging ? 0.96 : 1,
+        zIndex: dragging ? 5 : 0,
+        transition: 'box-shadow .16s ease, transform .16s ease, opacity .16s ease',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid #efefeb' }}>
+      {dropBefore && (
+        <div style={{ position: 'absolute', top: -1, left: 0, right: 0, height: 2, background: ACCENT, zIndex: 3 }} />
+      )}
+      {dropAfter && (
+        <div style={{ position: 'absolute', bottom: -1, left: 0, right: 0, height: 2, background: ACCENT, zIndex: 3 }} />
+      )}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3, borderRight: '1px solid #efefeb' }}>
+        {canDrag && (
+          <span
+            aria-hidden="true"
+            style={{ display: 'grid', gridTemplateColumns: '2px 2px', gridTemplateRows: '2px 2px 2px', gap: 2, cursor: 'grab', opacity: 0.45 }}
+          >
+            <i style={{ width: 2, height: 2, borderRadius: '50%', background: '#9a9da2' }} />
+            <i style={{ width: 2, height: 2, borderRadius: '50%', background: '#9a9da2' }} />
+            <i style={{ width: 2, height: 2, borderRadius: '50%', background: '#9a9da2' }} />
+            <i style={{ width: 2, height: 2, borderRadius: '50%', background: '#9a9da2' }} />
+            <i style={{ width: 2, height: 2, borderRadius: '50%', background: '#9a9da2' }} />
+            <i style={{ width: 2, height: 2, borderRadius: '50%', background: '#9a9da2' }} />
+          </span>
+        )}
         <div
           onClick={(e) => {
             e.stopPropagation();

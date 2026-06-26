@@ -206,6 +206,10 @@ textarea {
 .grouprow:hover .gmove {
   opacity: 1;
 }
+.gmove:hover {
+  background: #ececec;
+  color: #5b5f66;
+}
 .colhead:hover .colgrip {
   opacity: 1;
 }

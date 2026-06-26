@@ -73,6 +73,18 @@ export interface Toast {
   text: string;
   undo?: () => void;
 }
+// Ephemeral drag-and-drop state (brief §5.8) — never persisted.
+export interface RowDrag {
+  id: string;
+}
+export interface DropTarget {
+  groupId: string;
+  taskId: string;
+  before: boolean;
+}
+export interface GroupDrag {
+  id: string;
+}
 
 interface BoardState {
   // ---- persisted ----
@@ -129,6 +141,10 @@ interface BoardState {
   coachStep: number;
   toasts: Toast[];
   tlDrag: TlDrag | null;
+  drag: RowDrag | null;
+  dropTarget: DropTarget | null;
+  groupDrag: GroupDrag | null;
+  groupDropId: string | null;
   calMonth: CalMonth;
   importStep: number;
   importDone: boolean;
@@ -208,6 +224,16 @@ interface BoardState {
   addToast: (text: string, undo?: () => void) => void;
   dismissToast: (id: string) => void;
   setTlDrag: (d: TlDrag | null) => void;
+  dragStart: (id: string) => void;
+  dragOver: (groupId: string, taskId: string, before: boolean) => void;
+  dropRow: () => void;
+  dragEnd: () => void;
+  moveTask: (taskId: string, toGroupId: string, toIndex: number) => void;
+  groupDragStart: (id: string) => void;
+  groupDragOver: (id: string) => void;
+  groupDrop: (targetId: string) => void;
+  groupDragEnd: () => void;
+  moveGroup: (id: string, dir: number) => void;
   setCalMonth: (m: CalMonth) => void;
   shiftCalMonth: (delta: number) => void;
   importNext: () => void;
@@ -279,6 +305,10 @@ export const useBoard = create<BoardState>()(
       coachStep: 0,
       toasts: [],
       tlDrag: null,
+      drag: null,
+      dropTarget: null,
+      groupDrag: null,
+      groupDropId: null,
       calMonth: { y: 2026, m0: 5 },
       importStep: 1,
       importDone: false,
@@ -582,6 +612,96 @@ export const useBoard = create<BoardState>()(
         }),
       dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
       setTlDrag: (tlDrag) => set({ tlDrag }),
+      dragStart: (id) => set((s) => (s.viewer ? {} : { drag: { id } })),
+      dragOver: (groupId, taskId, before) =>
+        set((s) => {
+          if (!s.drag || s.drag.id === taskId) return {};
+          const cur = s.dropTarget;
+          if (cur && cur.taskId === taskId && cur.before === before && cur.groupId === groupId) return {};
+          return { dropTarget: { groupId, taskId, before } };
+        }),
+      dropRow: () => {
+        const { drag, dropTarget } = get();
+        if (!drag || !dropTarget) {
+          set({ drag: null, dropTarget: null });
+          return;
+        }
+        // Resolve the drop target (row + before/after) into an insertion index within
+        // the target group, computed on the list with the dragged row removed — then
+        // delegate the actual move to moveTask so the reorder lives in one place.
+        const stripped = get().groups.map((g) => ({ ...g, tasks: g.tasks.filter((t) => t.id !== drag.id) }));
+        const tg = stripped.find((g) => g.id === dropTarget.groupId);
+        if (!tg) {
+          set({ drag: null, dropTarget: null });
+          return;
+        }
+        const idx = tg.tasks.findIndex((t) => t.id === dropTarget.taskId);
+        const at = idx < 0 ? tg.tasks.length : dropTarget.before ? idx : idx + 1;
+        get().moveTask(drag.id, dropTarget.groupId, at);
+        set({ drag: null, dropTarget: null });
+      },
+      dragEnd: () => set({ drag: null, dropTarget: null }),
+      moveTask: (taskId, toGroupId, toIndex) =>
+        set((s) => {
+          if (s.viewer) return {};
+          let moved: Task | null = null;
+          const stripped = s.groups.map((g) => {
+            const tasks = g.tasks.filter((t) => {
+              if (t.id === taskId) {
+                moved = t;
+                return false;
+              }
+              return true;
+            });
+            return { ...g, tasks };
+          });
+          if (!moved) return {};
+          const groups = stripped.map((g) => {
+            if (g.id !== toGroupId) return g;
+            const tasks = g.tasks.slice();
+            const at = toIndex < 0 || toIndex > tasks.length ? tasks.length : toIndex;
+            tasks.splice(at, 0, moved as Task);
+            return { ...g, tasks };
+          });
+          return { groups };
+        }),
+      groupDragStart: (id) => set((s) => (s.viewer ? {} : { groupDrag: { id } })),
+      groupDragOver: (id) =>
+        set((s) => {
+          const d = s.groupDrag;
+          if (!d || d.id === id) return {};
+          if (s.groupDropId === id) return {};
+          return { groupDropId: id };
+        }),
+      groupDrop: (targetId) => {
+        const d = get().groupDrag;
+        if (!d) {
+          set({ groupDrag: null, groupDropId: null });
+          return;
+        }
+        set((s) => {
+          const gs = s.groups.slice();
+          const from = gs.findIndex((g) => g.id === d.id);
+          const to = gs.findIndex((g) => g.id === targetId);
+          if (from < 0 || to < 0 || from === to) return { groupDrag: null, groupDropId: null };
+          const m = gs.splice(from, 1)[0];
+          gs.splice(to, 0, m);
+          return { groups: gs, groupDrag: null, groupDropId: null };
+        });
+      },
+      groupDragEnd: () => set({ groupDrag: null, groupDropId: null }),
+      moveGroup: (id, dir) =>
+        set((s) => {
+          if (s.viewer) return {};
+          const gs = s.groups.slice();
+          const i = gs.findIndex((g) => g.id === id);
+          const j = i + dir;
+          if (i < 0 || j < 0 || j >= gs.length) return {};
+          const t = gs[i];
+          gs[i] = gs[j];
+          gs[j] = t;
+          return { groups: gs };
+        }),
       setCalMonth: (calMonth) => set({ calMonth }),
       shiftCalMonth: (delta) =>
         set((s) => {
