@@ -12,6 +12,7 @@ export function Topbar() {
   const dark = useBoard((s) => s.dark);
   const toggleDark = useBoard((s) => s.toggleDark);
   const openSettings = useBoard((s) => s.openSettings);
+  const openCmd = useBoard((s) => s.openCmd);
 
   return (
     <header
@@ -132,6 +133,7 @@ export function Topbar() {
         </Tip>
         <Tip
           text="Командная палитра"
+          onClick={openCmd}
           style={{
             height: 34,
             padding: '0 10px',

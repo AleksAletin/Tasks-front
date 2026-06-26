@@ -18,6 +18,9 @@ import { ToolMenu } from './ToolMenu';
 import { TaskPanel } from './TaskPanel';
 import { Toasts } from './Toasts';
 import { BulkBar } from './BulkBar';
+import { CommandPalette } from './CommandPalette';
+import { ContextMenu } from './ContextMenu';
+import { Coachmarks } from './Coachmarks';
 
 const ACCENT = '#4263d8';
 
@@ -42,20 +45,47 @@ export function BoardApp() {
   const popup = useBoard((s) => s.popup);
   const toolMenu = useBoard((s) => s.toolMenu);
   const panelId = useBoard((s) => s.panelId);
+  const startCoach = useBoard((s) => s.startCoach);
 
-  // D toggles dark theme (ignore while typing in an input/textarea) — brief §5.21.
+  // Global keyboard: ⌘K/Ctrl+K toggles the command palette (allowed over inputs), Esc
+  // closes the palette then coachmarks, "?" reopens hints, D toggles dark theme. The
+  // typing guard only suppresses the bare "?"/"D" hints — not ⌘K/Esc — brief §5.21.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        const s = useBoard.getState();
+        if (s.cmdOpen) s.closeCmd();
+        else s.openCmd();
+        return;
+      }
+      if (e.key === 'Escape') {
+        const s = useBoard.getState();
+        if (s.cmdOpen) s.closeCmd();
+        else if (s.coachOpen) s.coachSkip();
+        return;
+      }
       const el = document.activeElement;
       const typing = el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || (el as HTMLElement).isContentEditable);
-      if (typing) return;
-      if ((e.key === 'd' || e.key === 'D' || e.key === 'в' || e.key === 'В') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key === '?') {
+        startCoach();
+      } else if (e.key === 'd' || e.key === 'D' || e.key === 'в' || e.key === 'В') {
         toggleDark();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [toggleDark]);
+  }, [toggleDark, startCoach]);
+
+  // First authenticated load shows the onboarding coachmarks once per browser.
+  useEffect(() => {
+    if (!authed) return;
+    if (localStorage.getItem('work_coached')) return;
+    localStorage.setItem('work_coached', '1');
+    const t = setTimeout(() => startCoach(), 420);
+    return () => clearTimeout(t);
+  }, [authed, startCoach]);
 
   if (!authed) return <Login />;
 
@@ -94,7 +124,10 @@ export function BoardApp() {
       {panelId && <TaskPanel />}
       {popup && <Popup />}
       {toolMenu && <ToolMenu />}
+      <ContextMenu />
       <BulkBar />
+      <CommandPalette />
+      <Coachmarks />
       <Toasts />
     </div>
   );

@@ -314,6 +314,7 @@ function Row({
 }) {
   const openPopup = useBoard((s) => s.openPopup);
   const openPanel = useBoard((s) => s.openPanel);
+  const openCtx = useBoard((s) => s.openCtx);
   const st = STATUS[t.status];
   const pr = t.priority ? PRIO[t.priority] : null;
   const ty = TYPE[t.type];
@@ -333,6 +334,19 @@ function Row({
     openPopup({ kind, taskId: t.id, field, x, y });
   };
 
+  const onContextMenu = (e: React.MouseEvent) => {
+    if (viewer) return;
+    e.preventDefault();
+    e.stopPropagation();
+    let x = e.clientX;
+    let y = e.clientY;
+    const W = 230;
+    const H = 300;
+    if (x + W > window.innerWidth - 10) x = window.innerWidth - 10 - W;
+    if (y + H > window.innerHeight - 10) y = Math.max(10, window.innerHeight - 10 - H);
+    openCtx({ taskId: t.id, x, y });
+  };
+
   // timeline bar position within the window
   let tlLeft = '0%';
   let tlWidth = '0%';
@@ -349,6 +363,7 @@ function Row({
 
   return (
     <div
+      onContextMenu={onContextMenu}
       style={{
         position: 'relative',
         display: 'grid',

@@ -10,6 +10,7 @@ import {
   type ParityKey,
   type Person,
   type Task,
+  COACH,
   PARITY_ORDER,
   PEOPLE,
   ROLES,
@@ -39,6 +40,11 @@ export interface PopupState {
 }
 export interface ToolMenu {
   kind: 'filter' | 'sort' | 'group';
+  x: number;
+  y: number;
+}
+export interface CtxMenu {
+  taskId: string;
   x: number;
   y: number;
 }
@@ -99,6 +105,12 @@ interface BoardState {
   popup: PopupState | null;
   panelId: string | null;
   toolMenu: ToolMenu | null;
+  ctxMenu: CtxMenu | null;
+  cmdOpen: boolean;
+  cmdQuery: string;
+  cmdIdx: number;
+  coachOpen: boolean;
+  coachStep: number;
   toasts: Toast[];
   tlDrag: TlDrag | null;
   calMonth: CalMonth;
@@ -153,6 +165,17 @@ interface BoardState {
   closeTool: () => void;
   openPanel: (id: string) => void;
   closePanel: () => void;
+  openCtx: (m: CtxMenu) => void;
+  closeCtx: () => void;
+  createTaskBelow: (id: string) => void;
+  archiveTask: (id: string) => void;
+  openCmd: () => void;
+  closeCmd: () => void;
+  setCmdQuery: (v: string) => void;
+  setCmdIdx: (i: number) => void;
+  startCoach: () => void;
+  coachNext: () => void;
+  coachSkip: () => void;
   addToast: (text: string, undo?: () => void) => void;
   dismissToast: (id: string) => void;
   setTlDrag: (d: TlDrag | null) => void;
@@ -215,6 +238,12 @@ export const useBoard = create<BoardState>()(
       popup: null,
       panelId: null,
       toolMenu: null,
+      ctxMenu: null,
+      cmdOpen: false,
+      cmdQuery: '',
+      cmdIdx: 0,
+      coachOpen: false,
+      coachStep: 0,
       toasts: [],
       tlDrag: null,
       calMonth: { y: 2026, m0: 5 },
@@ -384,6 +413,56 @@ export const useBoard = create<BoardState>()(
       closeTool: () => set({ toolMenu: null }),
       openPanel: (panelId) => set({ panelId }),
       closePanel: () => set({ panelId: null, popup: null }),
+      openCtx: (ctxMenu) => set({ ctxMenu, popup: null, toolMenu: null }),
+      closeCtx: () => set({ ctxMenu: null }),
+      createTaskBelow: (id) =>
+        set((s) => {
+          const stamp = Date.now();
+          const groups = s.groups.map((g) => {
+            const i = g.tasks.findIndex((t) => t.id === id);
+            if (i < 0) return g;
+            const nt: Task = {
+              id: 't' + stamp + '_' + Math.floor(Math.random() * 99),
+              name: 'Новая задача',
+              owner: null,
+              status: 'plan',
+              due: null,
+              priority: null,
+              tl: null,
+              note: '',
+              lastBy: 'p1',
+              lastAgo: 'сейчас',
+              section: 'Обращения',
+              type: 'mig',
+              source: 'ours',
+            };
+            const tasks = g.tasks.slice();
+            tasks.splice(i + 1, 0, nt);
+            return { ...g, tasks };
+          });
+          return { groups, ctxMenu: null };
+        }),
+      archiveTask: (id) =>
+        set((s) => {
+          const task = s.groups.flatMap((g) => g.tasks).find((t) => t.id === id);
+          const prev = s.groups;
+          const groups = s.groups.map((g) => ({ ...g, tasks: g.tasks.filter((t) => t.id !== id) }));
+          const panelId = s.panelId === id ? null : s.panelId;
+          get().addToast('Задача «' + (task ? task.name : '') + '» в архиве', () => set({ groups: prev }));
+          return { groups, ctxMenu: null, panelId };
+        }),
+      openCmd: () => set({ cmdOpen: true, cmdQuery: '', cmdIdx: 0, ctxMenu: null }),
+      closeCmd: () => set({ cmdOpen: false }),
+      setCmdQuery: (cmdQuery) => set({ cmdQuery, cmdIdx: 0 }),
+      setCmdIdx: (cmdIdx) => set({ cmdIdx }),
+      startCoach: () => set({ coachOpen: true, coachStep: 0, cmdOpen: false }),
+      coachNext: () =>
+        set((s) => {
+          const n = s.coachStep + 1;
+          if (n >= COACH.length) return { coachOpen: false };
+          return { coachStep: n };
+        }),
+      coachSkip: () => set({ coachOpen: false }),
       addToast: (text, undo) =>
         set((s) => {
           const id = 'toast' + Date.now() + Math.floor(Math.random() * 1000);
