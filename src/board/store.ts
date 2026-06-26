@@ -3,12 +3,14 @@ import { persist } from 'zustand/middleware';
 import {
   type Board,
   type Cfg,
+  type ColType,
   type CustomCol,
   type Group,
   type MappingRule,
   type Parity,
   type ParityKey,
   type Person,
+  type Sub,
   type Task,
   COACH,
   PARITY_ORDER,
@@ -45,6 +47,16 @@ export interface ToolMenu {
 }
 export interface CtxMenu {
   taskId: string;
+  x: number;
+  y: number;
+}
+export interface HeaderMenu {
+  key: string;
+  x: number;
+  y: number;
+  custom: boolean;
+}
+export interface AddColMenu {
   x: number;
   y: number;
 }
@@ -106,6 +118,10 @@ interface BoardState {
   panelId: string | null;
   toolMenu: ToolMenu | null;
   ctxMenu: CtxMenu | null;
+  headerMenu: HeaderMenu | null;
+  addColMenu: AddColMenu | null;
+  addingSub: string | null;
+  subDraft: string;
   cmdOpen: boolean;
   cmdQuery: string;
   cmdIdx: number;
@@ -150,6 +166,19 @@ interface BoardState {
   setParity: (gid: string, col: string, value: ParityKey) => void;
   toggleCollapse: (gid: string) => void;
   toggleExpand: (taskId: string) => void;
+  addColumn: (type: ColType) => void;
+  setColValue: (taskId: string, colId: string, value: unknown) => void;
+  setColLabel: (id: string, label: string) => void;
+  deleteColumn: (id: string) => void;
+  openHeaderMenu: (key: string, custom: boolean, x: number, y: number) => void;
+  closeHeaderMenu: () => void;
+  openAddColMenu: (x: number, y: number) => void;
+  closeAddColMenu: () => void;
+  addSub: (taskId: string, name: string) => void;
+  updateSub: (taskId: string, subId: string, patch: Partial<Sub>) => void;
+  startAddSub: (taskId: string) => void;
+  setSubDraft: (v: string) => void;
+  cancelAddSub: () => void;
   toggleSelect: (taskId: string) => void;
   clearSelection: () => void;
   duplicateTasks: (ids: string[]) => void;
@@ -239,6 +268,10 @@ export const useBoard = create<BoardState>()(
       panelId: null,
       toolMenu: null,
       ctxMenu: null,
+      headerMenu: null,
+      addColMenu: null,
+      addingSub: null,
+      subDraft: '',
       cmdOpen: false,
       cmdQuery: '',
       cmdIdx: 0,
@@ -350,6 +383,84 @@ export const useBoard = create<BoardState>()(
         set((s) => ({ parity: { ...s.parity, [gid]: { ...s.parity[gid], [col]: value } } })),
       toggleCollapse: (gid) => set((s) => ({ collapsed: { ...s.collapsed, [gid]: !s.collapsed[gid] } })),
       toggleExpand: (taskId) => set((s) => ({ expanded: { ...s.expanded, [taskId]: !s.expanded[taskId] } })),
+      addColumn: (type) =>
+        set((s) => {
+          if (s.viewer) return {};
+          const id = 'cc' + Date.now();
+          const def: Record<ColType, string> = {
+            text: 'Текст',
+            number: 'Число',
+            status: 'Статус',
+            date: 'Дата',
+            people: 'Люди',
+            check: 'Готово',
+          };
+          const col: CustomCol = { id, label: def[type] || 'Новый столбец', type };
+          return {
+            customCols: [...s.customCols, col],
+            addColMenu: null,
+            headerMenu: { key: id, x: Math.max(10, window.innerWidth - 280), y: 120, custom: true },
+          };
+        }),
+      setColValue: (taskId, colId, value) =>
+        set((s) => {
+          if (s.viewer) return {};
+          return { colValues: { ...s.colValues, [taskId + '::' + colId]: value } };
+        }),
+      setColLabel: (id, label) =>
+        set((s) => {
+          if (s.viewer) return {};
+          if (id.indexOf('cc') === 0) {
+            return { customCols: s.customCols.map((c) => (c.id === id ? { ...c, label } : c)) };
+          }
+          return { colLabels: { ...s.colLabels, [id]: label } };
+        }),
+      deleteColumn: (id) =>
+        set((s) => {
+          if (s.viewer) return {};
+          const colValues: Record<string, unknown> = {};
+          for (const k of Object.keys(s.colValues)) {
+            if (k.split('::')[1] !== id) colValues[k] = s.colValues[k];
+          }
+          return { customCols: s.customCols.filter((c) => c.id !== id), colValues, headerMenu: null };
+        }),
+      openHeaderMenu: (key, custom, x, y) =>
+        set((s) => (s.viewer ? {} : { headerMenu: { key, custom, x, y }, addColMenu: null })),
+      closeHeaderMenu: () => set({ headerMenu: null }),
+      openAddColMenu: (x, y) => set((s) => (s.viewer ? {} : { addColMenu: { x, y }, headerMenu: null })),
+      closeAddColMenu: () => set({ addColMenu: null }),
+      addSub: (taskId, name) =>
+        set((s) => {
+          if (s.viewer) return {};
+          const trimmed = name.trim();
+          if (!trimmed) return {};
+          const sid = 's' + Date.now() + Math.floor(Math.random() * 99);
+          const ns: Sub = { id: sid, name: trimmed, owner: null, status: 'plan', due: null };
+          const groups = s.groups.map((g) => ({
+            ...g,
+            tasks: g.tasks.map((t) => (t.id === taskId ? { ...t, subs: [...(t.subs ?? []), ns] } : t)),
+          }));
+          return { groups };
+        }),
+      updateSub: (taskId, subId, patch) =>
+        set((s) => {
+          if (s.viewer) return {};
+          const groups = s.groups.map((g) => ({
+            ...g,
+            tasks: g.tasks.map((t) =>
+              t.id === taskId
+                ? { ...t, subs: (t.subs ?? []).map((x) => (x.id === subId ? { ...x, ...patch } : x)) }
+                : t,
+            ),
+          }));
+          return { groups };
+        }),
+      startAddSub: (taskId) =>
+        set((s) =>
+          s.viewer ? {} : { addingSub: taskId, subDraft: '', expanded: { ...s.expanded, [taskId]: true }, ctxMenu: null },
+        ),
+      setSubDraft: (subDraft) => set({ subDraft }),
+      cancelAddSub: () => set({ addingSub: null, subDraft: '' }),
       toggleSelect: (taskId) =>
         set((s) => {
           const selectedIds = { ...s.selectedIds };
@@ -407,13 +518,13 @@ export const useBoard = create<BoardState>()(
       setSort: (by) =>
         set((s) => (s.sortBy === by ? { sortDir: s.sortDir === 'asc' ? 'desc' : 'asc' } : { sortBy: by, sortDir: 'asc' })),
       setGroupBy: (groupBy) => set({ groupBy }),
-      openPopup: (popup) => set({ popup, toolMenu: null }),
+      openPopup: (popup) => set({ popup, toolMenu: null, headerMenu: null, addColMenu: null }),
       closePopup: () => set({ popup: null }),
-      openTool: (toolMenu) => set({ toolMenu, popup: null }),
+      openTool: (toolMenu) => set({ toolMenu, popup: null, headerMenu: null, addColMenu: null }),
       closeTool: () => set({ toolMenu: null }),
       openPanel: (panelId) => set({ panelId }),
       closePanel: () => set({ panelId: null, popup: null }),
-      openCtx: (ctxMenu) => set({ ctxMenu, popup: null, toolMenu: null }),
+      openCtx: (ctxMenu) => set({ ctxMenu, popup: null, toolMenu: null, headerMenu: null, addColMenu: null }),
       closeCtx: () => set({ ctxMenu: null }),
       createTaskBelow: (id) =>
         set((s) => {

@@ -14,6 +14,7 @@ export function ContextMenu() {
   const createTaskBelow = useBoard((s) => s.createTaskBelow);
   const archiveTask = useBoard((s) => s.archiveTask);
   const deleteTasks = useBoard((s) => s.deleteTasks);
+  const startAddSub = useBoard((s) => s.startAddSub);
 
   useEffect(() => {
     if (!ctxMenu) return;
@@ -117,7 +118,7 @@ export function ContextMenu() {
           'Добавить подэлемент',
           '#3a3d42',
           'rgba(0,0,0,0.05)',
-          () => openPanel(id),
+          () => startAddSub(id),
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#797d84" strokeWidth="2">
             <path d="M5 5v8a3 3 0 0 0 3 3h11" />
             <path d="M16 12l4 4-4 4" />

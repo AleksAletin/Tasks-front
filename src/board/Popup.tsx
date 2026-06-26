@@ -6,6 +6,7 @@ import {
   type PrioKey,
   type SourceKey,
   type StatusKey,
+  type Sub,
   type Task,
   type TypeKey,
   DOWS,
@@ -32,12 +33,16 @@ export function Popup() {
   const groups = useBoard((s) => s.groups);
   const closePopup = useBoard((s) => s.closePopup);
   const updateTask = useBoard((s) => s.updateTask);
+  const updateSub = useBoard((s) => s.updateSub);
 
   if (!popup) return null;
   const task: Task | undefined = groups.flatMap((g) => g.tasks).find((t) => t.id === popup.taskId);
+  const sub: Sub | undefined = popup.subId ? task?.subs?.find((x) => x.id === popup.subId) : undefined;
+  const dueSeed = (popup.subId ? sub?.due : task?.due) ?? null;
 
-  const apply = (patch: Partial<Task>) => {
-    if (popup.taskId) updateTask(popup.taskId, patch);
+  const apply = (patch: Partial<Task> & Partial<Sub>) => {
+    if (popup.taskId && popup.subId) updateSub(popup.taskId, popup.subId, patch);
+    else if (popup.taskId) updateTask(popup.taskId, patch);
     closePopup();
   };
 
@@ -151,7 +156,7 @@ export function Popup() {
         </div>
       )}
       {popup.kind === 'date' && task && (
-        <Calendar task={task} onPick={(d) => apply({ due: d })} onClear={() => apply({ due: null })} />
+        <Calendar due={dueSeed} onPick={(d) => apply({ due: d })} onClear={() => apply({ due: null })} />
       )}
     </GlassPopover>
   );
@@ -193,15 +198,15 @@ function Pills({
 }
 
 function Calendar({
-  task,
+  due,
   onPick,
   onClear,
 }: {
-  task: Task;
+  due: string | null;
   onPick: (d: string) => void;
   onClear: () => void;
 }) {
-  const seed = task.due || TODAY;
+  const seed = due || TODAY;
   const [m, setM] = useState({ y: parseInt(seed.slice(0, 4), 10), m0: parseInt(seed.slice(5, 7), 10) - 1 });
 
   const first = new Date(Date.UTC(m.y, m.m0, 1));
@@ -263,7 +268,7 @@ function Calendar({
           {w.map((d, di) => {
             if (!d) return <div key={di} />;
             const isoDate = iso(m.y, m.m0, d);
-            const sel = task.due === isoDate;
+            const sel = due === isoDate;
             const today = isoDate === TODAY;
             return (
               <div

@@ -14,6 +14,7 @@ import { DashboardScreen } from './DashboardScreen';
 import { SettingsScreen } from './SettingsScreen';
 import { UsersScreen } from './UsersScreen';
 import { Popup } from './Popup';
+import { HeaderMenus } from './HeaderMenus';
 import { ToolMenu } from './ToolMenu';
 import { TaskPanel } from './TaskPanel';
 import { Toasts } from './Toasts';
@@ -124,6 +125,7 @@ export function BoardApp() {
       {panelId && <TaskPanel />}
       {popup && <Popup />}
       {toolMenu && <ToolMenu />}
+      <HeaderMenus />
       <ContextMenu />
       <BulkBar />
       <CommandPalette />
