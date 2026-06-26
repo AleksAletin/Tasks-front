@@ -158,6 +158,7 @@ interface BoardState {
   importMap: Record<string, string>;
 
   // ---- actions ----
+  hydrateBoard: (payload: { boards: Board[]; groups: Group[]; parity: Parity }) => void;
   login: () => void;
   setLoginEmail: (v: string) => void;
   toggleNav: () => void;
@@ -327,6 +328,17 @@ export const useBoard = create<BoardState>()(
       importTemplate: false,
       importMap: {},
 
+      // Replace the board data with a payload from the backend (GET /board). Used only on
+      // the VITE_USE_BACKEND path; keeps activeBoardId valid against the incoming boards.
+      hydrateBoard: ({ boards, groups, parity }) =>
+        set((s) => ({
+          boards,
+          groups,
+          parity,
+          activeBoardId: boards.some((b) => b.id === s.activeBoardId)
+            ? s.activeBoardId
+            : (boards[0]?.id ?? s.activeBoardId),
+        })),
       login: () => set({ authed: true }),
       setLoginEmail: (v) => set({ loginEmail: v }),
       toggleNav: () => set((s) => ({ navOpen: !s.navOpen })),

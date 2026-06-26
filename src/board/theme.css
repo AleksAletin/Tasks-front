@@ -82,6 +82,11 @@ textarea {
     background-position: 460px 0;
   }
 }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 @keyframes blinkdot {
   0%,
   100% {

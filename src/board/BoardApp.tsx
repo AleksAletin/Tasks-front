@@ -1,5 +1,6 @@
 // Root container — login gate + app shell (sidebar/topbar/header/tabs/view) and overlays.
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { fetchBoard } from '../api/board';
 import { useBoard } from './store';
 import { Login } from './Login';
 import { Sidebar } from './Sidebar';
@@ -36,6 +37,10 @@ const TABS: { key: TabKey; label: string; d: string }[] = [
   { key: 'calendar', label: 'Календарь', d: 'M3 5h18v16H3zM3 9h18M8 3v4M16 3v4' },
 ];
 
+// Opt-in backend data source (brief): when set, the board hydrates from GET /board on
+// startup; otherwise the built-in localStorage demo board is used (default, unchanged).
+const USE_BACKEND = import.meta.env.VITE_USE_BACKEND === 'true';
+
 export function BoardApp() {
   const authed = useBoard((s) => s.authed);
   const dark = useBoard((s) => s.dark);
@@ -47,6 +52,28 @@ export function BoardApp() {
   const toolMenu = useBoard((s) => s.toolMenu);
   const panelId = useBoard((s) => s.panelId);
   const startCoach = useBoard((s) => s.startCoach);
+
+  // One-shot backend hydration. Only runs when VITE_USE_BACKEND === 'true'. On success the
+  // store's boards/groups/parity are replaced with the backend payload; on any error we keep
+  // the existing (demo/localStorage) data so the board still renders. Flag off → no-op.
+  const [loadingBoard, setLoadingBoard] = useState(USE_BACKEND);
+  useEffect(() => {
+    if (!USE_BACKEND) return;
+    let cancelled = false;
+    fetchBoard()
+      .then((payload) => {
+        if (!cancelled) useBoard.getState().hydrateBoard(payload);
+      })
+      .catch((err) => {
+        console.error('[board] backend load failed, using local data', err);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingBoard(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Global keyboard: ⌘K/Ctrl+K toggles the command palette (allowed over inputs), Esc
   // closes the palette then coachmarks, "?" reopens hints, D toggles dark theme. The
@@ -95,6 +122,8 @@ export function BoardApp() {
     return () => document.documentElement.classList.remove('appdark');
   }, [dark]);
 
+  if (loadingBoard) return <BoardLoading />;
+
   if (!authed) return <Login />;
 
   return (
@@ -137,6 +166,43 @@ export function BoardApp() {
       <CommandPalette />
       <Coachmarks />
       <Toasts />
+    </div>
+  );
+}
+
+// Brief loading splash shown only while the backend board is being fetched
+// (VITE_USE_BACKEND path). Mirrors the Login screen's ambient-gradient backdrop.
+function BoardLoading() {
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 200,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 14,
+        background: `radial-gradient(820px 580px at 12% 8%, rgba(91,141,239,0.18), transparent 58%),
+          radial-gradient(760px 560px at 88% 14%, rgba(139,111,214,0.16), transparent 55%),
+          #eceef2`,
+        color: '#797d84',
+        fontSize: 14,
+        fontWeight: 600,
+      }}
+    >
+      <div
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: '50%',
+          border: '3px solid rgba(66,99,216,0.2)',
+          borderTopColor: ACCENT,
+          animation: 'spin 0.8s linear infinite',
+        }}
+      />
+      Загрузка доски…
     </div>
   );
 }
