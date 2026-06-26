@@ -38,3 +38,6 @@ coverage
 
 # TS build info
 *.tsbuildinfo
+
+# Claude Code local tooling
+.claude/
