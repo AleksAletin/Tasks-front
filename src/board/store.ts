@@ -96,6 +96,10 @@ interface BoardState {
   toolMenu: ToolMenu | null;
   tlDrag: TlDrag | null;
   calMonth: CalMonth;
+  importStep: number;
+  importDone: boolean;
+  importTemplate: boolean;
+  importMap: Record<string, string>;
 
   // ---- actions ----
   login: () => void;
@@ -144,6 +148,12 @@ interface BoardState {
   setTlDrag: (d: TlDrag | null) => void;
   setCalMonth: (m: CalMonth) => void;
   shiftCalMonth: (delta: number) => void;
+  importNext: () => void;
+  importBack: () => void;
+  importRun: () => void;
+  importReset: () => void;
+  setImportField: (field: string, excel: string) => void;
+  toggleImportTemplate: () => void;
 }
 
 const patchTask = (groups: Group[], taskId: string, patch: Partial<Task>): Group[] =>
@@ -197,6 +207,10 @@ export const useBoard = create<BoardState>()(
       toolMenu: null,
       tlDrag: null,
       calMonth: { y: 2026, m0: 5 },
+      importStep: 1,
+      importDone: false,
+      importTemplate: false,
+      importMap: {},
 
       login: () => set({ authed: true }),
       setLoginEmail: (v) => set({ loginEmail: v }),
@@ -338,6 +352,13 @@ export const useBoard = create<BoardState>()(
           }
           return { calMonth: { y, m0 } };
         }),
+      importNext: () => set((s) => ({ importStep: Math.min(4, s.importStep + 1) })),
+      importBack: () => set((s) => ({ importStep: Math.max(1, s.importStep - 1) })),
+      importRun: () => set({ importDone: true }),
+      importReset: () =>
+        set({ screen: 'board', boardTab: 'table', settingsScreen: false, importStep: 1, importDone: false, importMap: {}, importTemplate: false }),
+      setImportField: (field, excel) => set((s) => ({ importMap: { ...s.importMap, [field]: excel } })),
+      toggleImportTemplate: () => set((s) => ({ importTemplate: !s.importTemplate })),
     }),
     {
       name: 'work_board_v1',

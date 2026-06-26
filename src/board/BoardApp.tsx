@@ -9,6 +9,7 @@ import { ParityView } from './ParityView';
 import { TimelineView } from './TimelineView';
 import { AlertsView } from './AlertsView';
 import { CalendarView } from './CalendarView';
+import { ImportWizard } from './ImportWizard';
 import { DashboardScreen } from './DashboardScreen';
 import { SettingsScreen } from './SettingsScreen';
 import { UsersScreen } from './UsersScreen';
@@ -27,10 +28,6 @@ const TABS: { key: TabKey; label: string; d: string }[] = [
   { key: 'import', label: 'Импорт', d: 'M12 3v12M8 11l4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2' },
   { key: 'calendar', label: 'Календарь', d: 'M3 5h18v16H3zM3 9h18M8 3v4M16 3v4' },
 ];
-
-const PLACEHOLDER_LABEL: Partial<Record<TabKey, string>> = {
-  import: 'Импорт',
-};
 
 export function BoardApp() {
   const authed = useBoard((s) => s.authed);
@@ -82,9 +79,7 @@ export function BoardApp() {
               {screen === 'board' && boardTab === 'timeline' && <TimelineView />}
               {screen === 'board' && boardTab === 'alerts' && <AlertsView />}
               {screen === 'board' && boardTab === 'calendar' && <CalendarView />}
-              {screen === 'board' && boardTab === 'import' && (
-                <Placeholder label={PLACEHOLDER_LABEL[boardTab] ?? 'Раздел'} />
-              )}
+              {screen === 'board' && boardTab === 'import' && <ImportWizard />}
               {screen === 'dashboard' && <DashboardScreen />}
               {screen === 'users' && <UsersScreen />}
             </>
@@ -331,29 +326,6 @@ function Toolbar() {
           {b.label}
         </button>
       ))}
-    </div>
-  );
-}
-
-function Placeholder({ label }: { label: string }) {
-  return (
-    <div style={{ padding: '40px 28px' }}>
-      <div
-        className="glass"
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 10,
-          padding: '60px 24px',
-          borderRadius: 18,
-          maxWidth: 720,
-        }}
-      >
-        <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: '-.3px' }}>{label}</div>
-        <div style={{ fontSize: 13.5, color: '#797d84' }}>Раздел скоро будет доступен.</div>
-      </div>
     </div>
   );
 }
