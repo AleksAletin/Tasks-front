@@ -32,6 +32,10 @@ export interface ToolMenu {
   x: number;
   y: number;
 }
+export interface TlDrag {
+  id: string;
+  dd: number;
+}
 
 interface BoardState {
   // ---- persisted ----
@@ -70,6 +74,7 @@ interface BoardState {
   popup: PopupState | null;
   panelId: string | null;
   toolMenu: ToolMenu | null;
+  tlDrag: TlDrag | null;
 
   // ---- actions ----
   login: () => void;
@@ -106,6 +111,7 @@ interface BoardState {
   closeTool: () => void;
   openPanel: (id: string) => void;
   closePanel: () => void;
+  setTlDrag: (d: TlDrag | null) => void;
 }
 
 const patchTask = (groups: Group[], taskId: string, patch: Partial<Task>): Group[] =>
@@ -151,6 +157,7 @@ export const useBoard = create<BoardState>()(
       popup: null,
       panelId: null,
       toolMenu: null,
+      tlDrag: null,
 
       login: () => set({ authed: true }),
       setLoginEmail: (v) => set({ loginEmail: v }),
@@ -211,6 +218,7 @@ export const useBoard = create<BoardState>()(
       closeTool: () => set({ toolMenu: null }),
       openPanel: (panelId) => set({ panelId }),
       closePanel: () => set({ panelId: null }),
+      setTlDrag: (tlDrag) => set({ tlDrag }),
     }),
     {
       name: 'work_board_v1',

@@ -6,6 +6,8 @@ import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { TableView } from './TableView';
 import { ParityView } from './ParityView';
+import { TimelineView } from './TimelineView';
+import { AlertsView } from './AlertsView';
 import { Popup } from './Popup';
 import { ToolMenu } from './ToolMenu';
 
@@ -71,7 +73,9 @@ export function BoardApp() {
             </>
           )}
           {screen === 'board' && boardTab === 'parity' && <ParityView />}
-          {screen === 'board' && boardTab !== 'table' && boardTab !== 'parity' && (
+          {screen === 'board' && boardTab === 'timeline' && <TimelineView />}
+          {screen === 'board' && boardTab === 'alerts' && <AlertsView />}
+          {screen === 'board' && (boardTab === 'import' || boardTab === 'calendar') && (
             <Placeholder label={PLACEHOLDER_LABEL[boardTab] ?? 'Раздел'} />
           )}
           {screen === 'dashboard' && <Placeholder label="Дашборд и отчётность" />}
