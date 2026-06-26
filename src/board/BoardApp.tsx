@@ -88,11 +88,17 @@ export function BoardApp() {
     return () => clearTimeout(t);
   }, [authed, startCoach]);
 
+  // Dark theme: apply the invert-based «liquid glass» filter at the document root.
+  // On a React wrapper the glass backdrop-filter escapes the ancestor invert; on <html> it works.
+  useEffect(() => {
+    document.documentElement.classList.toggle('appdark', dark);
+    return () => document.documentElement.classList.remove('appdark');
+  }, [dark]);
+
   if (!authed) return <Login />;
 
   return (
     <div
-      className={dark ? 'appdark' : ''}
       style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', fontSize: 14 }}
     >
       <Sidebar />
