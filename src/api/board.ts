@@ -17,3 +17,13 @@ export async function fetchBoard(): Promise<BoardPayload> {
   const { data } = await apiClient.get<BoardPayload>('/board');
   return data;
 }
+
+/**
+ * Full-replace the board on the backend (`PUT /board`) with the entire current state,
+ * in the same `{ boards, groups, parity }` contract shape `fetchBoard` returns. Mirrors
+ * the prototype's whole-board persistence: one call covers every mutation. Used only when
+ * `VITE_USE_BACKEND === 'true'` (the debounced sync in BoardApp); a no-op otherwise.
+ */
+export async function saveBoard(payload: BoardPayload): Promise<void> {
+  await apiClient.put('/board', payload);
+}

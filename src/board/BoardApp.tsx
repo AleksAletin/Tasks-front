@@ -1,6 +1,7 @@
 // Root container — login gate + app shell (sidebar/topbar/header/tabs/view) and overlays.
 import { useEffect, useState } from 'react';
 import { fetchBoard } from '../api/board';
+import { startBackendSync } from '../api/sync';
 import { useBoard } from './store';
 import { Login } from './Login';
 import { Sidebar } from './Sidebar';
@@ -56,10 +57,13 @@ export function BoardApp() {
   // One-shot backend hydration. Only runs when VITE_USE_BACKEND === 'true'. On success the
   // store's boards/groups/parity are replaced with the backend payload; on any error we keep
   // the existing (demo/localStorage) data so the board still renders. Flag off → no-op.
+  // After hydration settles we start the debounced write-back (PUT /board) — started here, post-
+  // hydration, so the sync never fires for the hydration commit itself, only for later edits.
   const [loadingBoard, setLoadingBoard] = useState(USE_BACKEND);
   useEffect(() => {
     if (!USE_BACKEND) return;
     let cancelled = false;
+    let disposeSync: (() => void) | null = null;
     fetchBoard()
       .then((payload) => {
         if (!cancelled) useBoard.getState().hydrateBoard(payload);
@@ -68,10 +72,14 @@ export function BoardApp() {
         console.error('[board] backend load failed, using local data', err);
       })
       .finally(() => {
-        if (!cancelled) setLoadingBoard(false);
+        if (!cancelled) {
+          disposeSync = startBackendSync();
+          setLoadingBoard(false);
+        }
       });
     return () => {
       cancelled = true;
+      disposeSync?.();
     };
   }, []);
 
