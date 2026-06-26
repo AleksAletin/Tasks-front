@@ -15,6 +15,9 @@ import { SettingsScreen } from './SettingsScreen';
 import { UsersScreen } from './UsersScreen';
 import { Popup } from './Popup';
 import { ToolMenu } from './ToolMenu';
+import { TaskPanel } from './TaskPanel';
+import { Toasts } from './Toasts';
+import { BulkBar } from './BulkBar';
 
 const ACCENT = '#4263d8';
 
@@ -38,6 +41,7 @@ export function BoardApp() {
   const settingsScreen = useBoard((s) => s.settingsScreen);
   const popup = useBoard((s) => s.popup);
   const toolMenu = useBoard((s) => s.toolMenu);
+  const panelId = useBoard((s) => s.panelId);
 
   // D toggles dark theme (ignore while typing in an input/textarea) — brief §5.21.
   useEffect(() => {
@@ -87,8 +91,11 @@ export function BoardApp() {
         </div>
       </main>
 
+      {panelId && <TaskPanel />}
       {popup && <Popup />}
       {toolMenu && <ToolMenu />}
+      <BulkBar />
+      <Toasts />
     </div>
   );
 }

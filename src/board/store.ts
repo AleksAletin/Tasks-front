@@ -50,6 +50,11 @@ export interface CalMonth {
   y: number;
   m0: number;
 }
+export interface Toast {
+  id: string;
+  text: string;
+  undo?: () => void;
+}
 
 interface BoardState {
   // ---- persisted ----
@@ -94,6 +99,7 @@ interface BoardState {
   popup: PopupState | null;
   panelId: string | null;
   toolMenu: ToolMenu | null;
+  toasts: Toast[];
   tlDrag: TlDrag | null;
   calMonth: CalMonth;
   importStep: number;
@@ -134,6 +140,8 @@ interface BoardState {
   toggleExpand: (taskId: string) => void;
   toggleSelect: (taskId: string) => void;
   clearSelection: () => void;
+  duplicateTasks: (ids: string[]) => void;
+  deleteTasks: (ids: string[]) => void;
   setFilterStatus: (key: string) => void;
   setFilterOwner: (id: string | null) => void;
   clearFilters: () => void;
@@ -145,6 +153,8 @@ interface BoardState {
   closeTool: () => void;
   openPanel: (id: string) => void;
   closePanel: () => void;
+  addToast: (text: string, undo?: () => void) => void;
+  dismissToast: (id: string) => void;
   setTlDrag: (d: TlDrag | null) => void;
   setCalMonth: (m: CalMonth) => void;
   shiftCalMonth: (delta: number) => void;
@@ -164,7 +174,7 @@ const patchTask = (groups: Group[], taskId: string, patch: Partial<Task>): Group
 
 export const useBoard = create<BoardState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       groups: initialGroups,
       collapsed: {},
       boards: initialBoards,
@@ -205,6 +215,7 @@ export const useBoard = create<BoardState>()(
       popup: null,
       panelId: null,
       toolMenu: null,
+      toasts: [],
       tlDrag: null,
       calMonth: { y: 2026, m0: 5 },
       importStep: 1,
@@ -318,6 +329,43 @@ export const useBoard = create<BoardState>()(
           return { selectedIds };
         }),
       clearSelection: () => set({ selectedIds: {} }),
+      duplicateTasks: (ids) =>
+        set((s) => {
+          const idSet = new Set(ids);
+          if (idSet.size === 0) return {};
+          const prev = s.groups;
+          const stamp = Date.now();
+          let n = 0;
+          const groups = s.groups.map((g) => {
+            if (!g.tasks.some((t) => idSet.has(t.id))) return g;
+            const tasks: Task[] = [];
+            for (const t of g.tasks) {
+              tasks.push(t);
+              if (idSet.has(t.id)) {
+                const k = n++;
+                tasks.push({
+                  ...t,
+                  id: 't' + stamp + '_' + k,
+                  name: t.name + ' (копия)',
+                  subs: t.subs ? t.subs.map((sub, j) => ({ ...sub, id: 's' + stamp + '_' + k + '_' + j })) : undefined,
+                });
+              }
+            }
+            return { ...g, tasks };
+          });
+          get().addToast('Дублировано задач: ' + idSet.size, () => set({ groups: prev }));
+          return { groups, selectedIds: {} };
+        }),
+      deleteTasks: (ids) =>
+        set((s) => {
+          const idSet = new Set(ids);
+          if (idSet.size === 0) return {};
+          const prev = s.groups;
+          const groups = s.groups.map((g) => ({ ...g, tasks: g.tasks.filter((t) => !idSet.has(t.id)) }));
+          const panelId = s.panelId && idSet.has(s.panelId) ? null : s.panelId;
+          get().addToast('Удалено задач: ' + idSet.size, () => set({ groups: prev }));
+          return { groups, selectedIds: {}, panelId };
+        }),
       setFilterStatus: (key) =>
         set((s) => {
           const filterStatus = { ...s.filterStatus };
@@ -335,7 +383,14 @@ export const useBoard = create<BoardState>()(
       openTool: (toolMenu) => set({ toolMenu, popup: null }),
       closeTool: () => set({ toolMenu: null }),
       openPanel: (panelId) => set({ panelId }),
-      closePanel: () => set({ panelId: null }),
+      closePanel: () => set({ panelId: null, popup: null }),
+      addToast: (text, undo) =>
+        set((s) => {
+          const id = 'toast' + Date.now() + Math.floor(Math.random() * 1000);
+          setTimeout(() => get().dismissToast(id), 4000);
+          return { toasts: [...s.toasts, { id, text, undo }] };
+        }),
+      dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
       setTlDrag: (tlDrag) => set({ tlDrag }),
       setCalMonth: (calMonth) => set({ calMonth }),
       shiftCalMonth: (delta) =>

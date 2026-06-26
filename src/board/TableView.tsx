@@ -313,6 +313,7 @@ function Row({
   onSelect: (id: string) => void;
 }) {
   const openPopup = useBoard((s) => s.openPopup);
+  const openPanel = useBoard((s) => s.openPanel);
   const st = STATUS[t.status];
   const pr = t.priority ? PRIO[t.priority] : null;
   const ty = TYPE[t.type];
@@ -395,6 +396,10 @@ function Row({
         }}
       >
         <span
+          onClick={(e) => {
+            e.stopPropagation();
+            openPanel(t.id);
+          }}
           style={{
             fontSize: 13.5,
             fontWeight: 600,
@@ -402,6 +407,7 @@ function Row({
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
+            cursor: 'pointer',
           }}
         >
           {t.name}
