@@ -8,6 +8,8 @@ import { TableView } from './TableView';
 import { ParityView } from './ParityView';
 import { TimelineView } from './TimelineView';
 import { AlertsView } from './AlertsView';
+import { CalendarView } from './CalendarView';
+import { DashboardScreen } from './DashboardScreen';
 import { SettingsScreen } from './SettingsScreen';
 import { UsersScreen } from './UsersScreen';
 import { Popup } from './Popup';
@@ -27,10 +29,7 @@ const TABS: { key: TabKey; label: string; d: string }[] = [
 ];
 
 const PLACEHOLDER_LABEL: Partial<Record<TabKey, string>> = {
-  timeline: 'Таймлайн',
-  alerts: 'Что горит',
   import: 'Импорт',
-  calendar: 'Календарь',
 };
 
 export function BoardApp() {
@@ -82,10 +81,11 @@ export function BoardApp() {
               {screen === 'board' && boardTab === 'parity' && <ParityView />}
               {screen === 'board' && boardTab === 'timeline' && <TimelineView />}
               {screen === 'board' && boardTab === 'alerts' && <AlertsView />}
-              {screen === 'board' && (boardTab === 'import' || boardTab === 'calendar') && (
+              {screen === 'board' && boardTab === 'calendar' && <CalendarView />}
+              {screen === 'board' && boardTab === 'import' && (
                 <Placeholder label={PLACEHOLDER_LABEL[boardTab] ?? 'Раздел'} />
               )}
-              {screen === 'dashboard' && <Placeholder label="Дашборд и отчётность" />}
+              {screen === 'dashboard' && <DashboardScreen />}
               {screen === 'users' && <UsersScreen />}
             </>
           )}

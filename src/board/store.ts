@@ -46,6 +46,10 @@ export interface TlDrag {
   id: string;
   dd: number;
 }
+export interface CalMonth {
+  y: number;
+  m0: number;
+}
 
 interface BoardState {
   // ---- persisted ----
@@ -91,6 +95,7 @@ interface BoardState {
   panelId: string | null;
   toolMenu: ToolMenu | null;
   tlDrag: TlDrag | null;
+  calMonth: CalMonth;
 
   // ---- actions ----
   login: () => void;
@@ -137,6 +142,8 @@ interface BoardState {
   openPanel: (id: string) => void;
   closePanel: () => void;
   setTlDrag: (d: TlDrag | null) => void;
+  setCalMonth: (m: CalMonth) => void;
+  shiftCalMonth: (delta: number) => void;
 }
 
 const patchTask = (groups: Group[], taskId: string, patch: Partial<Task>): Group[] =>
@@ -189,6 +196,7 @@ export const useBoard = create<BoardState>()(
       panelId: null,
       toolMenu: null,
       tlDrag: null,
+      calMonth: { y: 2026, m0: 5 },
 
       login: () => set({ authed: true }),
       setLoginEmail: (v) => set({ loginEmail: v }),
@@ -315,6 +323,21 @@ export const useBoard = create<BoardState>()(
       openPanel: (panelId) => set({ panelId }),
       closePanel: () => set({ panelId: null }),
       setTlDrag: (tlDrag) => set({ tlDrag }),
+      setCalMonth: (calMonth) => set({ calMonth }),
+      shiftCalMonth: (delta) =>
+        set((s) => {
+          let { y, m0 } = s.calMonth;
+          m0 += delta;
+          if (m0 < 0) {
+            m0 = 11;
+            y--;
+          }
+          if (m0 > 11) {
+            m0 = 0;
+            y++;
+          }
+          return { calMonth: { y, m0 } };
+        }),
     }),
     {
       name: 'work_board_v1',
