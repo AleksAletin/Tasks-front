@@ -12,6 +12,8 @@ import {
   DOWS,
   MONTHS_FULL,
   PEOPLE,
+  PHASE_ORDER,
+  PHASES,
   PRIO,
   PRIO_ORDER,
   SECTIONS,
@@ -22,8 +24,11 @@ import {
   TODAY,
   TYPE,
   TYPE_ORDER,
+  fmt,
   iso,
+  personById,
 } from './model';
+import { computePhases } from './phases';
 import { GlassPopover } from './ui';
 
 const ACCENT = '#4263d8';
@@ -46,10 +51,11 @@ export function Popup() {
     closePopup();
   };
 
-  const w = popup.kind === 'date' ? 280 : 200;
+  const w = popup.kind === 'date' ? 280 : popup.kind === 'phases' ? 340 : 200;
 
   return (
     <GlassPopover x={popup.x} y={popup.y} onClose={closePopup} minWidth={w}>
+      {popup.kind === 'phases' && task && task.phases && <PhaseEditor task={task} />}
       {popup.kind === 'status' && (
         <Pills
           items={STATUS_ORDER.map((k) => ({ label: STATUS[k].label, bg: STATUS[k].bg, key: k }))}
@@ -159,6 +165,190 @@ export function Popup() {
         <Calendar due={dueSeed} onPick={(d) => apply({ due: d })} onClear={() => apply({ due: null })} />
       )}
     </GlassPopover>
+  );
+}
+
+// Phase-dates editor (brief §5.6, prototype buildPhaseEditor ~1589 + template ~1274).
+// Per-phase duration steppers + resource avatar, a Старт/Дедлайн anchor toggle with a
+// date stepper, and an auto summary. Edits go through the store's phase* actions, which
+// recompute the timeline so the gantt bar updates live; the popover stays open.
+function PhaseEditor({ task }: { task: Task }) {
+  const phaseDays = useBoard((s) => s.phaseDays);
+  const phaseRes = useBoard((s) => s.phaseRes);
+  const phaseAnchorType = useBoard((s) => s.phaseAnchorType);
+  const phaseAnchorShift = useBoard((s) => s.phaseAnchorShift);
+  if (!task.phases) return null;
+  const phases = task.phases;
+  const cp = computePhases({ phases, anchor: task.anchor });
+  const a = task.anchor ?? { type: 'start' as const, date: cp.start };
+  const isStart = a.type === 'start';
+
+  const stepBtn = (label: string, onClick: () => void) => (
+    <div
+      onClick={onClick}
+      className="phstep"
+      style={{
+        width: 25,
+        height: 25,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 6,
+        cursor: 'pointer',
+        background: 'rgba(0,0,0,0.05)',
+        fontSize: 16,
+        fontWeight: 700,
+        color: '#5b5f66',
+      }}
+    >
+      {label}
+    </div>
+  );
+
+  return (
+    <div style={{ minWidth: 324, padding: '4px 4px 2px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: 800, padding: '2px 4px 12px' }}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2">
+          <path d="M4 7h16M4 12h16M4 17h10" />
+        </svg>
+        Даты по фазам
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <div style={{ display: 'flex', background: 'rgba(0,0,0,0.05)', borderRadius: 8, padding: 2 }}>
+          <div
+            onClick={() => phaseAnchorType(task.id, 'start')}
+            style={{
+              padding: '5px 11px',
+              borderRadius: 6,
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: 'pointer',
+              background: isStart ? ACCENT : 'transparent',
+              color: isStart ? '#fff' : '#797d84',
+            }}
+          >
+            Старт
+          </div>
+          <div
+            onClick={() => phaseAnchorType(task.id, 'end')}
+            style={{
+              padding: '5px 11px',
+              borderRadius: 6,
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: 'pointer',
+              background: isStart ? 'transparent' : ACCENT,
+              color: isStart ? '#797d84' : '#fff',
+            }}
+          >
+            Дедлайн
+          </div>
+        </div>
+        <div style={{ flex: 1 }} />
+        {stepBtn('−', () => phaseAnchorShift(task.id, -1))}
+        <div style={{ fontSize: 13, fontWeight: 700, minWidth: 58, textAlign: 'center' }}>{fmt(a.date)}</div>
+        {stepBtn('+', () => phaseAnchorShift(task.id, 1))}
+      </div>
+
+      {PHASE_ORDER.map((k) => {
+        const ph = phases[k];
+        const res = personById(ph.res);
+        return (
+          <div
+            key={k}
+            style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 4px', borderTop: '1px solid rgba(0,0,0,0.06)' }}
+          >
+            <span className="noinv" style={{ width: 9, height: 9, borderRadius: 3, background: PHASES[k].color, flexShrink: 0 }} />
+            <span style={{ fontSize: 12.5, fontWeight: 600, flex: 1 }}>{PHASES[k].label}</span>
+            <div
+              onClick={() => phaseRes(task.id, k)}
+              className="noinv phres"
+              style={{
+                width: 26,
+                height: 26,
+                borderRadius: '50%',
+                background: res ? res.color : '#c4c4bf',
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 10,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              {res ? res.initials : '—'}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <div
+                onClick={() => phaseDays(task.id, k, -1)}
+                className="phstep"
+                style={{
+                  width: 24,
+                  height: 24,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                  background: 'rgba(0,0,0,0.05)',
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: '#5b5f66',
+                }}
+              >
+                −
+              </div>
+              <div style={{ minWidth: 46, textAlign: 'center', fontSize: 12.5, fontWeight: 700 }}>{ph.days} дн</div>
+              <div
+                onClick={() => phaseDays(task.id, k, 1)}
+                className="phstep"
+                style={{
+                  width: 24,
+                  height: 24,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                  background: 'rgba(0,0,0,0.05)',
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: '#5b5f66',
+                }}
+              >
+                +
+              </div>
+            </div>
+          </div>
+        );
+      })}
+
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 7,
+          marginTop: 11,
+          padding: '10px 11px',
+          background: 'rgba(66,99,216,0.07)',
+          borderRadius: 10,
+          fontSize: 12.5,
+          fontWeight: 700,
+        }}
+      >
+        <span style={{ color: '#8a8d92' }}>Старт</span>
+        <span>{fmt(cp.start)}</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a6a8ab" strokeWidth="2.4">
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+        <span style={{ color: '#8a8d92' }}>Финал</span>
+        <span>{fmt(cp.end)}</span>
+        <div style={{ flex: 1 }} />
+        <span style={{ color: ACCENT }}>{cp.total} дн</span>
+      </div>
+    </div>
   );
 }
 

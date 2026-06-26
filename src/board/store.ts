@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import {
+  type Anchor,
   type Board,
   type Cfg,
   type ColType,
@@ -10,18 +11,23 @@ import {
   type Parity,
   type ParityKey,
   type Person,
+  type PhaseKey,
+  type Phases,
   type Sub,
   type Task,
   COACH,
   PARITY_ORDER,
   PEOPLE,
   ROLES,
+  TODAY,
   initialBoards,
   initialCfg,
   initialGroups,
   initialMappingRules,
   initialParity,
+  shiftIso,
 } from './model';
+import { computePhases } from './phases';
 
 export interface UserOverride {
   role?: string;
@@ -178,6 +184,12 @@ interface BoardState {
   sendInvite: (email: string, role: string) => void;
   setQuery: (v: string) => void;
   updateTask: (taskId: string, patch: Partial<Task>) => void;
+  initPhases: (taskId: string) => void;
+  phaseEdit: (taskId: string, mutator: (phases: Phases, anchor: Anchor) => void) => void;
+  phaseDays: (taskId: string, key: PhaseKey, delta: number) => void;
+  phaseRes: (taskId: string, key: PhaseKey) => void;
+  phaseAnchorType: (taskId: string, type: Anchor['type']) => void;
+  phaseAnchorShift: (taskId: string, delta: number) => void;
   cycleParity: (gid: string, col: string) => void;
   setParity: (gid: string, col: string, value: ParityKey) => void;
   toggleCollapse: (gid: string) => void;
@@ -403,6 +415,58 @@ export const useBoard = create<BoardState>()(
         }),
       setQuery: (query) => set({ query }),
       updateTask: (taskId, patch) => set((s) => ({ groups: patchTask(s.groups, taskId, patch) })),
+      // Phase-dates editor (brief §5.6, prototype openPopup 'phases' init ~1741): when a task
+      // has no phases yet, seed the prototype default and store the derived tl so the gantt bar
+      // (which segments by phases) renders immediately.
+      initPhases: (taskId) =>
+        set((s) => {
+          if (s.viewer) return {};
+          const t = s.groups.flatMap((g) => g.tasks).find((x) => x.id === taskId);
+          if (!t || t.phases) return {};
+          const base = t.tl ? t.tl.start : TODAY;
+          const phases: Phases = {
+            analysis: { days: 3, res: 'p3' },
+            dev: { days: 5, res: 'p4' },
+            test: { days: 2, res: 'p3' },
+          };
+          const anchor: Anchor = { type: 'start', date: base };
+          const cp = computePhases({ phases, anchor });
+          return { groups: patchTask(s.groups, taskId, { phases, anchor, tl: { start: cp.start, end: cp.end } }) };
+        }),
+      // Ported 1:1 from the prototype's phaseEdit: clone phases+anchor, run the mutator,
+      // recompute via computePhases, and persist phases/anchor/tl together so the bar stays live.
+      phaseEdit: (taskId, mutator) =>
+        set((s) => {
+          if (s.viewer) return {};
+          const t = s.groups.flatMap((g) => g.tasks).find((x) => x.id === taskId);
+          if (!t || !t.phases) return {};
+          const phases: Phases = JSON.parse(JSON.stringify(t.phases));
+          const anchor: Anchor = { ...(t.anchor ?? { type: 'start', date: t.tl ? t.tl.start : TODAY }) };
+          mutator(phases, anchor);
+          const cp = computePhases({ phases, anchor });
+          return { groups: patchTask(s.groups, taskId, { phases, anchor, tl: { start: cp.start, end: cp.end } }) };
+        }),
+      phaseDays: (taskId, key, delta) =>
+        get().phaseEdit(taskId, (p) => {
+          p[key].days = Math.max(0, (p[key].days || 0) + delta);
+        }),
+      phaseRes: (taskId, key) =>
+        get().phaseEdit(taskId, (p) => {
+          const idsList = PEOPLE.map((x) => x.id);
+          const i = idsList.indexOf(p[key].res ?? '');
+          p[key].res = idsList[(i + 1) % idsList.length];
+        }),
+      phaseAnchorType: (taskId, type) =>
+        get().phaseEdit(taskId, (p, a) => {
+          if (a.type === type) return;
+          const cp = computePhases({ phases: p, anchor: a });
+          a.type = type;
+          a.date = type === 'start' ? cp.start : cp.end;
+        }),
+      phaseAnchorShift: (taskId, delta) =>
+        get().phaseEdit(taskId, (_p, a) => {
+          a.date = shiftIso(a.date, delta);
+        }),
       cycleParity: (gid, col) =>
         set((s) => {
           const cur = (s.parity[gid] && s.parity[gid][col]) || 'none';

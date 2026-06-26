@@ -524,6 +524,7 @@ function Row({
   const openPopup = useBoard((s) => s.openPopup);
   const openPanel = useBoard((s) => s.openPanel);
   const openCtx = useBoard((s) => s.openCtx);
+  const initPhases = useBoard((s) => s.initPhases);
   const expanded = useBoard((s) => !!s.expanded[t.id]);
   const toggleExpand = useBoard((s) => s.toggleExpand);
   const dragStart = useBoard((s) => s.dragStart);
@@ -554,6 +555,15 @@ function Row({
     const w = kind === 'date' ? 280 : kind === 'phases' ? 340 : Math.max(r.width, 180);
     if (x + w > window.innerWidth - 10) x = window.innerWidth - 10 - w;
     openPopup({ kind, taskId: t.id, field, x, y });
+  };
+
+  // Timeline cell opens the phase-dates editor (brief §5.6, prototype onTlClick ~1808):
+  // seed default phases if the task has none, then open the editor anchored at the cell.
+  const onTlClick = (e: React.MouseEvent) => {
+    if (viewer) return;
+    e.stopPropagation();
+    initPhases(t.id);
+    cellPopup('phases', 'tl', e);
   };
 
   const onContextMenu = (e: React.MouseEvent) => {
@@ -849,7 +859,10 @@ function Row({
         )}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', padding: '0 12px', borderRight: '1px solid #efefeb' }}>
+      <div
+        onClick={onTlClick}
+        style={{ display: 'flex', alignItems: 'center', padding: '0 12px', borderRight: '1px solid #efefeb', cursor: viewer ? 'default' : 'pointer' }}
+      >
         {t.tl ? (
           <div style={{ position: 'relative', width: '100%', height: 20, background: '#eeeeea', borderRadius: 7 }}>
             {t.phases ? (
