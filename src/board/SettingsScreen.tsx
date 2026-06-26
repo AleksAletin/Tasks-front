@@ -1,0 +1,595 @@
+// Settings screen (brief §5.12, prototype ~862 + buildSettings ~1647) — admin full-page section.
+// Five sections switch on settingsTab; section nav lives in the main sidebar.
+import type { ReactNode } from 'react';
+import { useBoard } from './store';
+import { ROLES, ROLE_COLORS, type Cfg } from './model';
+
+const ACCENT = '#4263d8';
+
+const cardStyle = {
+  background: 'rgba(255,255,255,0.55)',
+  border: '1px solid rgba(255,255,255,0.6)',
+  borderRadius: 16,
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+  padding: 22,
+} as const;
+
+const inputStyle = {
+  width: '100%',
+  height: 40,
+  border: '1px solid rgba(0,0,0,0.12)',
+  borderRadius: 10,
+  padding: '0 12px',
+  fontSize: 13.5,
+  outline: 'none',
+  background: '#fff',
+  color: '#23262b',
+} as const;
+
+const monoInput = { ...inputStyle, fontFamily: "'JetBrains Mono', monospace" } as const;
+
+const fieldLabel = { fontSize: 12, fontWeight: 700, color: '#5b5f66', marginBottom: 6 } as const;
+
+function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        width: 42,
+        height: 24,
+        borderRadius: 12,
+        background: on ? '#4a9b7f' : 'rgba(0,0,0,0.15)',
+        cursor: 'pointer',
+        position: 'relative',
+        flexShrink: 0,
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          top: 2,
+          left: on ? 18 : 2,
+          width: 20,
+          height: 20,
+          borderRadius: '50%',
+          background: '#fff',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+          transition: 'left .16s ease',
+        }}
+      />
+    </div>
+  );
+}
+
+function ToggleRow({
+  title,
+  desc,
+  on,
+  onClick,
+  style,
+}: {
+  title: string;
+  desc: string;
+  on: boolean;
+  onClick: () => void;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 14,
+        padding: '16px 18px',
+        background: 'rgba(255,255,255,0.55)',
+        border: '1px solid rgba(255,255,255,0.6)',
+        borderRadius: 13,
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+        ...style,
+      }}
+    >
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 14, fontWeight: 700 }}>{title}</div>
+        <div style={{ fontSize: 12.5, color: '#9a9da2' }}>{desc}</div>
+      </div>
+      <Toggle on={on} onClick={onClick} />
+    </div>
+  );
+}
+
+function Field({
+  label,
+  cfgKey,
+  type,
+  placeholder,
+  mono,
+  flex,
+}: {
+  label: string;
+  cfgKey: keyof Cfg;
+  type?: string;
+  placeholder?: string;
+  mono?: boolean;
+  flex?: number;
+}) {
+  const value = useBoard((s) => s.cfg[cfgKey]);
+  const setCfg = useBoard((s) => s.setCfg);
+  return (
+    <div style={{ flex }}>
+      <div style={fieldLabel}>{label}</div>
+      <input
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => setCfg({ [cfgKey]: e.target.value })}
+        style={mono ? monoInput : inputStyle}
+      />
+    </div>
+  );
+}
+
+function SectionHead({ title, sub }: { title: string; sub: string }) {
+  return (
+    <>
+      <h2 style={{ margin: '0 0 5px', fontSize: 22, fontWeight: 800, letterSpacing: '-.4px' }}>{title}</h2>
+      <p style={{ margin: '0 0 24px', fontSize: 13.5, color: '#797d84' }}>{sub}</p>
+    </>
+  );
+}
+
+function Integrations() {
+  const ytrack = useBoard((s) => s.integrations.ytrack);
+  const email = useBoard((s) => s.integrations.email);
+  const setIntegration = useBoard((s) => s.setIntegration);
+  const interval = useBoard((s) => s.cfg.syncInterval);
+  const webhook = useBoard((s) => s.cfg.webhookUrl);
+  const setCfg = useBoard((s) => s.setCfg);
+
+  const badge = ytrack ? 'Подключено' : 'Отключено';
+  const badgeColor = ytrack ? '#3a7d63' : '#9a9da2';
+  const badgeBg = ytrack ? '#e8f3ee' : '#eeeeea';
+
+  return (
+    <>
+      <SectionHead
+        title="Интеграции"
+        sub="Подключение внешних систем. Источник правды один — статусы и проценты тянутся оттуда."
+      />
+
+      <div style={{ ...cardStyle, marginBottom: 18 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+          <div
+            className="noinv"
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 10,
+              background: '#1f8a5b',
+              color: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 800,
+              fontSize: 15,
+            }}
+          >
+            YT
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 16, fontWeight: 800 }}>YouTrack</div>
+            <span
+              style={{
+                fontSize: 11.5,
+                fontWeight: 700,
+                color: badgeColor,
+                background: badgeBg,
+                padding: '2px 9px',
+                borderRadius: 6,
+              }}
+            >
+              {badge}
+            </span>
+          </div>
+          <Toggle on={ytrack} onClick={() => setIntegration('ytrack', !ytrack)} />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
+          <Field label="Base URL инстанса" cfgKey="ytrackUrl" placeholder="https://youtrack.company.com" mono />
+          <div style={{ display: 'flex', gap: 12 }}>
+            <Field label="Permanent token (API)" cfgKey="ytrackToken" type="password" mono flex={2} />
+            <Field label="Проект" cfgKey="ytrackProject" flex={1} />
+          </div>
+          <div>
+            <div style={fieldLabel}>Webhook URL (входящий)</div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                value={webhook}
+                onChange={(e) => setCfg({ webhookUrl: e.target.value })}
+                style={{ ...monoInput, flex: 1, fontSize: 13 }}
+              />
+              <button
+                style={{
+                  height: 40,
+                  padding: '0 14px',
+                  border: '1px solid rgba(0,0,0,0.12)',
+                  background: 'rgba(255,255,255,0.7)',
+                  borderRadius: 10,
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  color: '#5b5f66',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Скопировать
+              </button>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+            <div>
+              <div style={fieldLabel}>Интервал синка</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <input
+                  value={interval}
+                  onChange={(e) => setCfg({ syncInterval: e.target.value })}
+                  inputMode="numeric"
+                  style={{ ...inputStyle, width: 70, textAlign: 'center' }}
+                />
+                <span style={{ fontSize: 13, color: '#797d84' }}>минут</span>
+              </div>
+            </div>
+            <button
+              style={{
+                height: 40,
+                padding: '0 16px',
+                border: 'none',
+                background: 'rgba(66,99,216,0.1)',
+                color: ACCENT,
+                borderRadius: 10,
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 7,
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+              Проверить соединение
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div style={cardStyle}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
+          <div
+            className="noinv"
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 10,
+              background: '#5b8def',
+              color: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="m3 7 9 6 9-6" />
+            </svg>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 16, fontWeight: 800 }}>Email-уведомления</div>
+            <div style={{ fontSize: 12, color: '#9a9da2' }}>SMTP для дайджестов и алертов</div>
+          </div>
+          <Toggle on={email} onClick={() => setIntegration('email', !email)} />
+        </div>
+        <div style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
+          <Field label="SMTP-хост" cfgKey="smtpHost" mono flex={2} />
+          <div style={{ flex: 1 }}>
+            <div style={fieldLabel}>Порт</div>
+            <PortInput />
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <Field label="Адрес отправителя" cfgKey="fromEmail" mono flex={2} />
+          <Field label="Время дайджеста" cfgKey="digestTime" type="time" flex={1} />
+        </div>
+      </div>
+    </>
+  );
+}
+
+function PortInput() {
+  const port = useBoard((s) => s.cfg.smtpPort);
+  const setCfg = useBoard((s) => s.setCfg);
+  return (
+    <input
+      value={port}
+      onChange={(e) => setCfg({ smtpPort: e.target.value })}
+      inputMode="numeric"
+      style={{ ...inputStyle, textAlign: 'center' }}
+    />
+  );
+}
+
+function Sync() {
+  const autoSync = useBoard((s) => s.autoSync);
+  const twoWay = useBoard((s) => s.twoWay);
+  const setFlag = useBoard((s) => s.setFlag);
+  return (
+    <>
+      <SectionHead title="Синхронизация" sub="Как данные движутся между доской и источником правды." />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <ToggleRow
+          title="Авто-синхронизация"
+          desc="Подтягивать обновления по расписанию"
+          on={autoSync}
+          onClick={() => setFlag('autoSync', !autoSync)}
+        />
+        <ToggleRow
+          title="Двусторонний поток"
+          desc="Правки на доске уходят обратно в YouTrack"
+          on={twoWay}
+          onClick={() => setFlag('twoWay', !twoWay)}
+        />
+        <div
+          style={{
+            marginTop: 8,
+            padding: '16px 18px',
+            background: 'rgba(66,99,216,0.06)',
+            border: '1px solid rgba(66,99,216,0.16)',
+            borderRadius: 13,
+            fontSize: 13,
+            color: '#5b5f66',
+            lineHeight: 1.5,
+          }}
+        >
+          <b style={{ color: '#3a3d42' }}>Текущий статус:</b> последняя успешная синхронизация — 2 минуты назад · 0
+          конфликтов · 1 247 тикетов в проекте.
+        </div>
+      </div>
+    </>
+  );
+}
+
+function Mapping() {
+  const mappingRules = useBoard((s) => s.mappingRules);
+  const addMappingRule = useBoard((s) => s.addMappingRule);
+  const removeMappingRule = useBoard((s) => s.removeMappingRule);
+  const grid = '1.1fr 1.3fr 1.6fr 1.2fr 40px';
+  return (
+    <>
+      <SectionHead title="Правила маппинга" sub="Условия: как значения из источника превращаются в поля доски." />
+      <div
+        style={{
+          background: 'rgba(255,255,255,0.55)',
+          border: '1px solid rgba(255,255,255,0.6)',
+          borderRadius: 14,
+          overflow: 'hidden',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+        }}
+      >
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: grid,
+            padding: '11px 16px',
+            borderBottom: '1px solid rgba(0,0,0,0.06)',
+            fontSize: 11.5,
+            fontWeight: 700,
+            color: '#8a8d92',
+          }}
+        >
+          <div>Поле доски</div>
+          <div>Источник</div>
+          <div>Условие</div>
+          <div>Значение</div>
+          <div />
+        </div>
+        {mappingRules.map((r) => (
+          <div
+            key={r.id}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: grid,
+              alignItems: 'center',
+              padding: '12px 16px',
+              borderBottom: '1px solid rgba(0,0,0,0.04)',
+              fontSize: 13,
+            }}
+          >
+            <div style={{ fontWeight: 700, color: '#2a2d32' }}>{r.field}</div>
+            <div style={{ color: '#797d84', fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}>{r.src}</div>
+            <div style={{ color: '#5b5f66' }}>
+              <span style={{ fontSize: 12, color: '#9a9da2' }}>если =</span>{' '}
+              <span style={{ fontWeight: 600 }}>{r.cond}</span>
+            </div>
+            <div>
+              <span
+                className="noinv"
+                style={{
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: '#fff',
+                  background: r.color,
+                  padding: '3px 10px',
+                  borderRadius: 6,
+                }}
+              >
+                {r.to}
+              </span>
+            </div>
+            <div
+              onClick={() => removeMappingRule(r.id)}
+              title="Удалить правило"
+              style={{ display: 'flex', justifyContent: 'center', color: '#c4c4bf', cursor: 'pointer' }}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+              </svg>
+            </div>
+          </div>
+        ))}
+        <div
+          onClick={addMappingRule}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '13px 16px',
+            color: ACCENT,
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: 'pointer',
+          }}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Добавить правило
+        </div>
+      </div>
+    </>
+  );
+}
+
+const RIGHTS = ['Просмотр', 'Редактирование', 'Настройки', 'По ссылке'];
+const ROLE_RIGHTS: Record<string, boolean[]> = {
+  Админ: [true, true, true, true],
+  Участник: [true, true, false, false],
+  Наблюдатель: [true, false, false, false],
+  Гость: [true, false, false, true],
+};
+
+function Access() {
+  const guestLinks = useBoard((s) => s.guestLinks);
+  const setFlag = useBoard((s) => s.setFlag);
+  const grid = '150px repeat(4, 1fr)';
+  return (
+    <>
+      <SectionHead title="Доступ" sub="Роли и правила публичного доступа." />
+      <ToggleRow
+        title="Гостевые шар-ссылки"
+        desc="Read-only ссылки для бизнеса без аккаунта"
+        on={guestLinks}
+        onClick={() => setFlag('guestLinks', !guestLinks)}
+        style={{ marginBottom: 18 }}
+      />
+      <div
+        style={{
+          background: 'rgba(255,255,255,0.55)',
+          border: '1px solid rgba(255,255,255,0.6)',
+          borderRadius: 14,
+          overflow: 'hidden',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+        }}
+      >
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: grid,
+            padding: '11px 16px',
+            borderBottom: '1px solid rgba(0,0,0,0.06)',
+            fontSize: 11.5,
+            fontWeight: 700,
+            color: '#8a8d92',
+          }}
+        >
+          <div>Роль</div>
+          {RIGHTS.map((r) => (
+            <div key={r} style={{ textAlign: 'center' }}>
+              {r}
+            </div>
+          ))}
+        </div>
+        {ROLES.map((role) => (
+          <div
+            key={role}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: grid,
+              alignItems: 'center',
+              padding: '13px 16px',
+              borderBottom: '1px solid rgba(0,0,0,0.04)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+              <span className="noinv" style={{ width: 10, height: 10, borderRadius: 3, background: ROLE_COLORS[role] }} />
+              <span style={{ fontSize: 13.5, fontWeight: 700 }}>{role}</span>
+            </div>
+            {ROLE_RIGHTS[role].map((ok, i) => (
+              <div key={RIGHTS[i]} style={{ display: 'flex', justifyContent: 'center' }}>
+                {ok ? (
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4a9b7f" strokeWidth="2.4">
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                ) : (
+                  <span style={{ width: 14, height: 2, borderRadius: 2, background: '#dcdcd7' }} />
+                )}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
+function Appearance() {
+  const dark = useBoard((s) => s.dark);
+  const toggleDark = useBoard((s) => s.toggleDark);
+  return (
+    <>
+      <SectionHead title="Внешний вид" sub="Тема интерфейса." />
+      <ToggleRow
+        title="Тёмная тема"
+        desc="Стеклянный интерфейс в тёмном — удобно для ТВ-панели"
+        on={dark}
+        onClick={toggleDark}
+      />
+    </>
+  );
+}
+
+export function SettingsScreen() {
+  const settingsTab = useBoard((s) => s.settingsTab);
+  const closeSettings = useBoard((s) => s.closeSettings);
+
+  let body: ReactNode = null;
+  if (settingsTab === 'integrations') body = <Integrations />;
+  else if (settingsTab === 'sync') body = <Sync />;
+  else if (settingsTab === 'mapping') body = <Mapping />;
+  else if (settingsTab === 'access') body = <Access />;
+  else if (settingsTab === 'appearance') body = <Appearance />;
+
+  return (
+    <div style={{ display: 'flex', height: '100%', boxSizing: 'border-box' }}>
+      <div style={{ flex: 1, minWidth: 0, overflowY: 'auto', padding: '24px 36px 60px' }}>
+        <div
+          onClick={closeSettings}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 7,
+            marginBottom: 18,
+            fontSize: 13,
+            fontWeight: 700,
+            color: '#797d84',
+            cursor: 'pointer',
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          Назад
+        </div>
+        <div style={{ maxWidth: 720 }}>{body}</div>
+      </div>
+    </div>
+  );
+}

@@ -1,7 +1,17 @@
 // Left sidebar — collapsible, boards section, dashboard/users nav (brief §5.2, prototype ~59).
+// In settings mode (settingsScreen), the boards nav is replaced by the settings section nav.
+import type { SettingsTab } from './store';
 import { useBoard } from './store';
 
 const ACCENT = '#4263d8';
+
+const SETTINGS_NAV: { key: SettingsTab; label: string; d: string }[] = [
+  { key: 'integrations', label: 'Интеграции', d: 'M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1' },
+  { key: 'sync', label: 'Синхронизация', d: 'M3 12a9 9 0 0 1 15-6.7L21 8M21 12a9 9 0 0 1-15 6.7L3 16' },
+  { key: 'mapping', label: 'Правила маппинга', d: 'M4 7h16M4 12h10M4 17h7' },
+  { key: 'access', label: 'Доступ', d: 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z' },
+  { key: 'appearance', label: 'Внешний вид', d: 'M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A4 4 0 0 1 14 7a4 4 0 0 1-2-7z' },
+];
 
 export function Sidebar() {
   const navOpen = useBoard((s) => s.navOpen);
@@ -9,14 +19,18 @@ export function Sidebar() {
   const boards = useBoard((s) => s.boards);
   const activeBoardId = useBoard((s) => s.activeBoardId);
   const screen = useBoard((s) => s.screen);
+  const settingsScreen = useBoard((s) => s.settingsScreen);
+  const settingsTab = useBoard((s) => s.settingsTab);
   const selectBoard = useBoard((s) => s.selectBoard);
   const addBoard = useBoard((s) => s.addBoard);
   const setScreen = useBoard((s) => s.setScreen);
+  const setSettingsTab = useBoard((s) => s.setSettingsTab);
+  const closeSettings = useBoard((s) => s.closeSettings);
 
   const navW = navOpen ? 232 : 66;
   const dashActive = screen === 'dashboard';
   const peopleActive = screen === 'users';
-  const boardActive = screen === 'board';
+  const boardActive = screen === 'board' && !settingsScreen;
 
   return (
     <aside
@@ -86,7 +100,112 @@ export function Sidebar() {
           {navOpen && <span style={{ fontSize: 13, fontWeight: 600 }}>Рабочее пространство</span>}
         </div>
 
-        {navOpen && (
+        {settingsScreen ? (
+          <>
+            <div
+              onClick={closeSettings}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                marginTop: 14,
+                padding: '8px 10px',
+                borderRadius: 8,
+                cursor: 'pointer',
+                fontSize: 13,
+                fontWeight: 600,
+                color: '#797d84',
+              }}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+              {navOpen && <span>К доске</span>}
+            </div>
+            {navOpen && (
+              <div
+                style={{
+                  marginTop: 10,
+                  padding: '0 10px 6px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: '.4px',
+                  textTransform: 'uppercase',
+                  color: '#a6a8ab',
+                }}
+              >
+                Настройки
+              </div>
+            )}
+            {SETTINGS_NAV.map((t) => {
+              const active = settingsTab === t.key;
+              return (
+                <div
+                  key={t.key}
+                  onClick={() => setSettingsTab(t.key)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '8px 10px',
+                    borderRadius: 8,
+                    cursor: 'pointer',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: active ? ACCENT : '#797d84',
+                    background: active ? '#eef0fb' : 'transparent',
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d={t.d} />
+                  </svg>
+                  {navOpen && <span style={{ whiteSpace: 'nowrap' }}>{t.label}</span>}
+                </div>
+              );
+            })}
+          </>
+        ) : (
+          <BoardsNav
+            navOpen={navOpen}
+            boards={boards}
+            activeBoardId={activeBoardId}
+            boardActive={boardActive}
+            dashActive={dashActive}
+            peopleActive={peopleActive}
+            addBoard={addBoard}
+            selectBoard={selectBoard}
+            setScreen={setScreen}
+          />
+        )}
+      </div>
+    </aside>
+  );
+}
+
+function BoardsNav({
+  navOpen,
+  boards,
+  activeBoardId,
+  boardActive,
+  dashActive,
+  peopleActive,
+  addBoard,
+  selectBoard,
+  setScreen,
+}: {
+  navOpen: boolean;
+  boards: { id: string; name: string; color: string }[];
+  activeBoardId: string;
+  boardActive: boolean;
+  dashActive: boolean;
+  peopleActive: boolean;
+  addBoard: () => void;
+  selectBoard: (id: string) => void;
+  setScreen: (s: 'board' | 'dashboard' | 'users') => void;
+}) {
+  return (
+    <>
+      {navOpen && (
           <div style={{ display: 'flex', alignItems: 'center', marginTop: 14, padding: '0 6px 6px 10px' }}>
             <span
               style={{
@@ -181,8 +300,7 @@ export function Sidebar() {
             </svg>
           }
         />
-      </div>
-    </aside>
+    </>
   );
 }
 

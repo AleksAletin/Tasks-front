@@ -5,15 +5,25 @@ import {
   type Cfg,
   type CustomCol,
   type Group,
+  type MappingRule,
   type Parity,
   type ParityKey,
+  type Person,
   type Task,
   PARITY_ORDER,
+  PEOPLE,
+  ROLES,
   initialBoards,
   initialCfg,
   initialGroups,
+  initialMappingRules,
   initialParity,
 } from './model';
+
+export interface UserOverride {
+  role?: string;
+  active?: boolean;
+}
 
 export type Screen = 'board' | 'dashboard' | 'users';
 export type BoardTab = 'table' | 'timeline' | 'parity' | 'alerts' | 'import' | 'calendar';
@@ -58,6 +68,9 @@ interface BoardState {
   sortDir: 'asc' | 'desc';
   groupBy: string;
   parity: Parity;
+  mappingRules: MappingRule[];
+  userOverrides: Record<string, UserOverride>;
+  invites: Person[];
 
   // ---- ephemeral ----
   authed: boolean;
@@ -68,6 +81,9 @@ interface BoardState {
   navOpen: boolean;
   settingsScreen: boolean;
   settingsTab: SettingsTab;
+  inviteOpen: boolean;
+  inviteEmail: string;
+  inviteRole: string;
   query: string;
   selectedIds: Record<string, boolean>;
   expanded: Record<string, boolean>;
@@ -92,6 +108,15 @@ interface BoardState {
   setCfg: (patch: Partial<Cfg>) => void;
   setIntegration: (k: 'ytrack' | 'email', v: boolean) => void;
   setFlag: (k: 'autoSync' | 'twoWay' | 'guestLinks', v: boolean) => void;
+  addMappingRule: () => void;
+  removeMappingRule: (id: string) => void;
+  cycleRole: (id: string) => void;
+  toggleUserActive: (id: string) => void;
+  openInvite: () => void;
+  closeInvite: () => void;
+  setInviteEmail: (v: string) => void;
+  setInviteRole: (r: string) => void;
+  sendInvite: (email: string, role: string) => void;
   setQuery: (v: string) => void;
   updateTask: (taskId: string, patch: Partial<Task>) => void;
   cycleParity: (gid: string, col: string) => void;
@@ -142,6 +167,9 @@ export const useBoard = create<BoardState>()(
       sortDir: 'asc',
       groupBy: 'role',
       parity: initialParity,
+      mappingRules: initialMappingRules,
+      userOverrides: {},
+      invites: [],
 
       authed: false,
       loginEmail: '',
@@ -151,6 +179,9 @@ export const useBoard = create<BoardState>()(
       navOpen: true,
       settingsScreen: false,
       settingsTab: 'integrations',
+      inviteOpen: false,
+      inviteEmail: '',
+      inviteRole: 'Участник',
       query: '',
       selectedIds: {},
       expanded: {},
@@ -180,6 +211,71 @@ export const useBoard = create<BoardState>()(
       setCfg: (patch) => set((s) => ({ cfg: { ...s.cfg, ...patch } })),
       setIntegration: (k, v) => set((s) => ({ integrations: { ...s.integrations, [k]: v } })),
       setFlag: (k, v) => set({ [k]: v } as Partial<BoardState>),
+      addMappingRule: () =>
+        set((s) => {
+          const rule: MappingRule = {
+            id: 'mr' + Date.now(),
+            field: 'Статус',
+            src: 'State (YouTrack)',
+            cond: 'In Progress',
+            to: 'В работе',
+            color: '#cf9248',
+          };
+          return { mappingRules: [...s.mappingRules, rule] };
+        }),
+      removeMappingRule: (id) => set((s) => ({ mappingRules: s.mappingRules.filter((r) => r.id !== id) })),
+      cycleRole: (id) =>
+        set((s) => {
+          const base = PEOPLE.find((p) => p.id === id);
+          if (base) {
+            const cur = s.userOverrides[id]?.role ?? base.role;
+            const next = ROLES[(ROLES.indexOf(cur) + 1) % ROLES.length];
+            return { userOverrides: { ...s.userOverrides, [id]: { ...s.userOverrides[id], role: next } } };
+          }
+          return {
+            invites: s.invites.map((u) =>
+              u.id === id ? { ...u, role: ROLES[(ROLES.indexOf(u.role) + 1) % ROLES.length] } : u,
+            ),
+          };
+        }),
+      toggleUserActive: (id) =>
+        set((s) => {
+          const base = PEOPLE.find((p) => p.id === id);
+          if (base) {
+            const cur = s.userOverrides[id]?.active ?? base.active;
+            return { userOverrides: { ...s.userOverrides, [id]: { ...s.userOverrides[id], active: !cur } } };
+          }
+          return { invites: s.invites.map((u) => (u.id === id ? { ...u, active: !u.active } : u)) };
+        }),
+      openInvite: () => set({ inviteOpen: true, inviteEmail: '', inviteRole: 'Участник' }),
+      closeInvite: () => set({ inviteOpen: false }),
+      setInviteEmail: (inviteEmail) => set({ inviteEmail }),
+      setInviteRole: (inviteRole) => set({ inviteRole }),
+      sendInvite: (email, role) =>
+        set((s) => {
+          const trimmed = email.trim();
+          if (!trimmed) return {};
+          const part = trimmed.split('@')[0].replace(/[._-]/g, ' ');
+          const name =
+            part
+              .split(' ')
+              .filter(Boolean)
+              .map((w) => w[0].toUpperCase() + w.slice(1))
+              .join(' ') || trimmed;
+          const initials = (name.split(' ').map((w) => w[0]).join('').slice(0, 2) || '??').toUpperCase();
+          const colors = ['#5b8def', '#8b6fd6', '#3fa8a0', '#d6953f', '#cf6b6b', '#6b9b4a'];
+          const u: Person = {
+            id: 'u' + Date.now(),
+            name,
+            initials,
+            color: colors[s.invites.length % colors.length],
+            email: trimmed,
+            role,
+            lastActive: 'приглашён',
+            active: true,
+          };
+          return { invites: [...s.invites, u], inviteOpen: false, inviteEmail: '' };
+        }),
       setQuery: (query) => set({ query }),
       updateTask: (taskId, patch) => set((s) => ({ groups: patchTask(s.groups, taskId, patch) })),
       cycleParity: (gid, col) =>
@@ -242,6 +338,9 @@ export const useBoard = create<BoardState>()(
         sortDir: s.sortDir,
         groupBy: s.groupBy,
         parity: s.parity,
+        mappingRules: s.mappingRules,
+        userOverrides: s.userOverrides,
+        invites: s.invites,
       }),
     },
   ),

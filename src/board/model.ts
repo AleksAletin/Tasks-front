@@ -88,6 +88,16 @@ export interface Cfg {
   digestTime: string;
 }
 
+// Mapping rule: how a source value maps to a board field value (settings §5.12).
+export interface MappingRule {
+  id: string;
+  field: string;
+  src: string;
+  cond: string;
+  to: string;
+  color: string;
+}
+
 // ---- calendar / window constants ----
 export const MONTHS = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
 export const MONTHS_FULL = [
@@ -232,6 +242,13 @@ export const initialBoards: Board[] = [
   { id: 'b1', name: 'Переезд на Work', color: '#4263d8' },
   { id: 'b2', name: 'Спринты Work', color: '#c9b46b' },
   { id: 'b3', name: 'Бэклог', color: '#9b8fd1' },
+];
+
+// Seed mapping rules — the three examples from the brief (§5.12).
+export const initialMappingRules: MappingRule[] = [
+  { id: 'mr1', field: 'Статус', src: 'State (YouTrack)', cond: 'Fixed, Verified', to: 'Готово', color: '#4a9b7f' },
+  { id: 'mr2', field: 'Приоритет', src: 'Priority', cond: 'Critical', to: 'Критичный', color: '#cf6b6b' },
+  { id: 'mr3', field: '% выполнения', src: 'Поле «Прогресс»', cond: '0–100', to: 'Прогресс-бар', color: '#4263d8' },
 ];
 
 export const initialCfg: Cfg = {

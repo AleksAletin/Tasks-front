@@ -8,6 +8,8 @@ import { TableView } from './TableView';
 import { ParityView } from './ParityView';
 import { TimelineView } from './TimelineView';
 import { AlertsView } from './AlertsView';
+import { SettingsScreen } from './SettingsScreen';
+import { UsersScreen } from './UsersScreen';
 import { Popup } from './Popup';
 import { ToolMenu } from './ToolMenu';
 
@@ -37,6 +39,7 @@ export function BoardApp() {
   const toggleDark = useBoard((s) => s.toggleDark);
   const screen = useBoard((s) => s.screen);
   const boardTab = useBoard((s) => s.boardTab);
+  const settingsScreen = useBoard((s) => s.settingsScreen);
   const popup = useBoard((s) => s.popup);
   const toolMenu = useBoard((s) => s.toolMenu);
 
@@ -64,22 +67,28 @@ export function BoardApp() {
       <Sidebar />
       <main style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
         <Topbar />
-        {screen === 'board' && <BoardHeader />}
+        {!settingsScreen && screen === 'board' && <BoardHeader />}
         <div style={{ flex: 1, overflow: 'auto', position: 'relative' }}>
-          {screen === 'board' && boardTab === 'table' && (
+          {settingsScreen ? (
+            <SettingsScreen />
+          ) : (
             <>
-              <Toolbar />
-              <TableView />
+              {screen === 'board' && boardTab === 'table' && (
+                <>
+                  <Toolbar />
+                  <TableView />
+                </>
+              )}
+              {screen === 'board' && boardTab === 'parity' && <ParityView />}
+              {screen === 'board' && boardTab === 'timeline' && <TimelineView />}
+              {screen === 'board' && boardTab === 'alerts' && <AlertsView />}
+              {screen === 'board' && (boardTab === 'import' || boardTab === 'calendar') && (
+                <Placeholder label={PLACEHOLDER_LABEL[boardTab] ?? 'Раздел'} />
+              )}
+              {screen === 'dashboard' && <Placeholder label="Дашборд и отчётность" />}
+              {screen === 'users' && <UsersScreen />}
             </>
           )}
-          {screen === 'board' && boardTab === 'parity' && <ParityView />}
-          {screen === 'board' && boardTab === 'timeline' && <TimelineView />}
-          {screen === 'board' && boardTab === 'alerts' && <AlertsView />}
-          {screen === 'board' && (boardTab === 'import' || boardTab === 'calendar') && (
-            <Placeholder label={PLACEHOLDER_LABEL[boardTab] ?? 'Раздел'} />
-          )}
-          {screen === 'dashboard' && <Placeholder label="Дашборд и отчётность" />}
-          {screen === 'users' && <Placeholder label="Пользователи" />}
         </div>
       </main>
 
