@@ -159,6 +159,19 @@ interface BoardState {
 
   // ---- actions ----
   hydrateBoard: (payload: { boards: Board[]; groups: Group[]; parity: Parity }) => void;
+  hydratePrefs: (payload: {
+    cfg: Cfg;
+    integrations: { ytrack: boolean; email: boolean };
+    autoSync: boolean;
+    twoWay: boolean;
+    guestLinks: boolean;
+    mappingRules: MappingRule[];
+    userOverrides: Record<string, UserOverride>;
+    invites: Person[];
+    customCols: CustomCol[];
+    colValues: Record<string, unknown>;
+    colLabels: Record<string, string>;
+  }) => void;
   login: () => void;
   setLoginEmail: (v: string) => void;
   toggleNav: () => void;
@@ -339,6 +352,23 @@ export const useBoard = create<BoardState>()(
             ? s.activeBoardId
             : (boards[0]?.id ?? s.activeBoardId),
         })),
+      // Replace the SHARED prefs slices with a payload from the backend (GET /prefs). Used only on
+      // the VITE_USE_BACKEND path; the board (boards/groups/parity) and personal UI prefs are not
+      // touched. A flat set() of all 11 slices, mirroring hydrateBoard.
+      hydratePrefs: (payload) =>
+        set({
+          cfg: payload.cfg,
+          integrations: payload.integrations,
+          autoSync: payload.autoSync,
+          twoWay: payload.twoWay,
+          guestLinks: payload.guestLinks,
+          mappingRules: payload.mappingRules,
+          userOverrides: payload.userOverrides,
+          invites: payload.invites,
+          customCols: payload.customCols,
+          colValues: payload.colValues,
+          colLabels: payload.colLabels,
+        }),
       login: () => set({ authed: true }),
       setLoginEmail: (v) => set({ loginEmail: v }),
       toggleNav: () => set((s) => ({ navOpen: !s.navOpen })),

@@ -1,6 +1,7 @@
 // Root container — login gate + app shell (sidebar/topbar/header/tabs/view) and overlays.
 import { useEffect, useState } from 'react';
 import { fetchBoard } from '../api/board';
+import { fetchPrefs } from '../api/prefs';
 import { startBackendSync } from '../api/sync';
 import { useBoard } from './store';
 import { Login } from './Login';
@@ -55,28 +56,37 @@ export function BoardApp() {
   const startCoach = useBoard((s) => s.startCoach);
 
   // One-shot backend hydration. Only runs when VITE_USE_BACKEND === 'true'. On success the
-  // store's boards/groups/parity are replaced with the backend payload; on any error we keep
-  // the existing (demo/localStorage) data so the board still renders. Flag off → no-op.
-  // After hydration settles we start the debounced write-back (PUT /board) — started here, post-
-  // hydration, so the sync never fires for the hydration commit itself, only for later edits.
+  // store's boards/groups/parity are replaced from GET /board and the SHARED prefs slices from
+  // GET /prefs; on any error we keep the existing (demo/localStorage) data so the app still
+  // renders. The two fetches are independent (allSettled) so one failing doesn't drop the other.
+  // Flag off → no-op. After BOTH hydrations settle we start the debounced write-back (PUT /board
+  // + PUT /prefs) — started here, post-hydration, so the sync never fires for the hydration
+  // commits themselves, only for later edits.
   const [loadingBoard, setLoadingBoard] = useState(USE_BACKEND);
   useEffect(() => {
     if (!USE_BACKEND) return;
     let cancelled = false;
     let disposeSync: (() => void) | null = null;
-    fetchBoard()
-      .then((payload) => {
+    void Promise.allSettled([
+      fetchBoard().then((payload) => {
         if (!cancelled) useBoard.getState().hydrateBoard(payload);
-      })
-      .catch((err) => {
-        console.error('[board] backend load failed, using local data', err);
-      })
-      .finally(() => {
-        if (!cancelled) {
-          disposeSync = startBackendSync();
-          setLoadingBoard(false);
-        }
-      });
+      }),
+      fetchPrefs().then((payload) => {
+        if (!cancelled) useBoard.getState().hydratePrefs(payload);
+      }),
+    ]).then((results) => {
+      const [board, prefs] = results;
+      if (board.status === 'rejected') {
+        console.error('[board] backend load failed, using local data', board.reason);
+      }
+      if (prefs.status === 'rejected') {
+        console.error('[prefs] backend load failed, using local data', prefs.reason);
+      }
+      if (!cancelled) {
+        disposeSync = startBackendSync();
+        setLoadingBoard(false);
+      }
+    });
     return () => {
       cancelled = true;
       disposeSync?.();
