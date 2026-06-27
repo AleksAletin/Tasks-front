@@ -7,11 +7,11 @@ import { useBoard } from './store';
 import { STATUS, STATUS_ORDER, type StatusKey, type Task } from './model';
 
 const CARD: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.58)',
+  background: 'var(--glass)',
   backdropFilter: 'blur(20px) saturate(165%)',
   WebkitBackdropFilter: 'blur(20px) saturate(165%)',
-  border: '1px solid rgba(255,255,255,0.55)',
-  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+  border: '1px solid var(--glass)',
+  boxShadow: 'inset 0 1px 0 var(--glass)',
   borderRadius: 14,
 };
 
@@ -122,7 +122,7 @@ export function DashboardScreen() {
             id: task.id,
             title: task.name,
             sub: (task.note || 'требует внимания') + ' · ' + (g ? g.name : ''),
-            bg: high ? '#fbf0f0' : '#fbf6ef',
+            bg: high ? 'var(--red-tint)' : 'var(--amber-tint)',
             dot: high ? '#cf6b6b' : '#d6953f',
           };
         }),
@@ -146,7 +146,7 @@ export function DashboardScreen() {
             fontSize: 12,
             fontWeight: 700,
             color: '#3a7d63',
-            background: '#e8f3ee',
+            background: 'var(--green-tint)',
             padding: '3px 10px',
             borderRadius: 6,
           }}
@@ -157,7 +157,7 @@ export function DashboardScreen() {
           </svg>
           Витрина для бизнеса · только просмотр
         </span>
-        <span style={{ fontSize: 12.5, fontWeight: 600, color: '#797d84' }}>обновлено 14 мин назад</span>
+        <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-soft)' }}>обновлено 14 мин назад</span>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: kpiCols, gap: 14, marginTop: 20 }}>
@@ -165,12 +165,12 @@ export function DashboardScreen() {
           <div key={k.label} className="dashkpi" style={{ ...CARD, padding: '16px 18px' }}>
             <div
               className="mono"
-              style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-1px', color: '#23262b' }}
+              style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-1px', color: 'var(--text)' }}
             >
               {k.value}
             </div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#3a3d42', marginTop: 6 }}>{k.label}</div>
-            <div style={{ fontSize: 12, color: '#9a9da2', marginTop: 2 }}>{k.sub}</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-3)', marginTop: 6 }}>{k.label}</div>
+            <div style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 2 }}>{k.sub}</div>
           </div>
         ))}
       </div>
@@ -191,7 +191,7 @@ export function DashboardScreen() {
                 borderRadius: 8,
                 overflow: 'hidden',
                 marginTop: 14,
-                boxShadow: 'inset 0 1px 1px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25)',
+                boxShadow: 'inset 0 1px 1px var(--scrim), inset 0 1px 0 var(--glass-edge)',
               }}
             >
               {dist.segs.map((s) => (
@@ -202,7 +202,7 @@ export function DashboardScreen() {
               {dist.segs.map((s) => (
                 <div
                   key={s.key}
-                  style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12.5, fontWeight: 600, color: '#5b5f66' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12.5, fontWeight: 600, color: 'var(--text-mut)' }}
                 >
                   <span className="noinv" style={{ width: 11, height: 11, borderRadius: 3, background: s.bg }} />
                   {s.label} · {s.val}
@@ -218,7 +218,7 @@ export function DashboardScreen() {
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 13, padding: '8px 0' }}>
                   <div
                     className="mono"
-                    style={{ width: 60, textAlign: 'right', fontSize: 12, fontWeight: 700, color: '#9a9da2' }}
+                    style={{ width: 60, textAlign: 'right', fontSize: 12, fontWeight: 700, color: 'var(--text-faint)' }}
                   >
                     {m.date}
                   </div>
@@ -229,11 +229,11 @@ export function DashboardScreen() {
                       height: 13,
                       borderRadius: '50%',
                       background: m.done ? '#4a9b7f' : '#fff',
-                      border: `2.5px solid ${m.done ? '#4a9b7f' : '#d2d2cc'}`,
+                      border: `2.5px solid ${m.done ? '#4a9b7f' : 'var(--surf-2)'}`,
                       flexShrink: 0,
                     }}
                   />
-                  <div style={{ fontSize: 13.5, fontWeight: 600, color: m.done ? '#9a9da2' : '#3a3d42' }}>{m.label}</div>
+                  <div style={{ fontSize: 13.5, fontWeight: 600, color: m.done ? 'var(--text-faint)' : 'var(--text-3)' }}>{m.label}</div>
                   {m.done && (
                     <span
                       style={{
@@ -241,7 +241,7 @@ export function DashboardScreen() {
                         fontSize: 11,
                         fontWeight: 700,
                         color: '#4a9b7f',
-                        background: '#e8f3ee',
+                        background: 'var(--green-tint)',
                         padding: '2px 8px',
                         borderRadius: 5,
                       }}
@@ -264,11 +264,11 @@ export function DashboardScreen() {
                 {dist.segs.map((s) => (
                   <div
                     key={s.key}
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600, color: '#3a3d42' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600, color: 'var(--text-3)' }}
                   >
                     <span className="noinv" style={{ width: 11, height: 11, borderRadius: 3, background: s.bg }} />
                     {s.label}
-                    <span style={{ color: '#9a9da2', fontWeight: 700, marginLeft: 2 }}>{s.val}</span>
+                    <span style={{ color: 'var(--text-faint)', fontWeight: 700, marginLeft: 2 }}>{s.val}</span>
                   </div>
                 ))}
               </div>
@@ -297,8 +297,8 @@ export function DashboardScreen() {
                     style={{ width: 8, height: 8, borderRadius: '50%', background: r.dot, marginTop: 5, flexShrink: 0 }}
                   />
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#3a3d42' }}>{r.title}</div>
-                    <div style={{ fontSize: 12, color: '#797d84', marginTop: 1 }}>{r.sub}</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-3)' }}>{r.title}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-soft)', marginTop: 1 }}>{r.sub}</div>
                   </div>
                 </div>
               ))}
@@ -321,7 +321,7 @@ function Donut({ segs, total, progress }: { segs: Segment[]; total: number; prog
   return (
     <div style={{ width: size, height: size, position: 'relative', flexShrink: 0 }}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(0,0,0,0.05)" strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--hover)" strokeWidth={stroke} />
         {segs.map((s) => {
           const len = s.frac * circ * progress;
           const off = -acc * circ * progress;
@@ -362,7 +362,7 @@ function Donut({ segs, total, progress }: { segs: Segment[]; total: number; prog
         <span className="mono" style={{ fontSize: 24, fontWeight: 800 }}>
           {total}
         </span>
-        <span style={{ fontSize: 10, color: '#9a9da2', fontWeight: 600 }}>задач</span>
+        <span style={{ fontSize: 10, color: 'var(--text-faint)', fontWeight: 600 }}>задач</span>
       </div>
     </div>
   );

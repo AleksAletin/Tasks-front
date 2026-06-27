@@ -24,7 +24,7 @@ export function AlertsView() {
     <div style={{ padding: '20px 22px 50px', maxWidth: 920 }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 18 }}>
         <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, letterSpacing: '-.4px' }}>Что горит</h2>
-        <span style={{ fontSize: 12.5, fontWeight: 600, color: '#797d84' }}>
+        <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-soft)' }}>
           {alerts.count} флагов · {alerts.high} критичных · считается из данных
         </span>
       </div>
@@ -40,13 +40,13 @@ export function AlertsView() {
               alignItems: 'flex-start',
               gap: 13,
               padding: '13px 15px',
-              background: 'rgba(255,255,255,0.55)',
+              background: 'var(--glass)',
               backdropFilter: 'blur(16px) saturate(150%)',
               WebkitBackdropFilter: 'blur(16px) saturate(150%)',
-              border: '1px solid rgba(255,255,255,0.55)',
+              border: '1px solid var(--glass)',
               borderRadius: 13,
               cursor: 'pointer',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+              boxShadow: 'inset 0 1px 0 var(--glass)',
             }}
           >
             <span className="noinv" style={{ width: 9, height: 9, borderRadius: '50%', background: a.dot, marginTop: 5, flexShrink: 0 }} />
@@ -67,10 +67,10 @@ export function AlertsView() {
                   {a.cat}
                 </span>
               </div>
-              <div style={{ fontSize: 13.5, fontWeight: 700, color: '#2a2d32', lineHeight: 1.35 }}>{a.title}</div>
-              <div style={{ fontSize: 12.5, color: '#797d84', marginTop: 1 }}>{a.sub}</div>
+              <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text-2)', lineHeight: 1.35 }}>{a.title}</div>
+              <div style={{ fontSize: 12.5, color: 'var(--text-soft)', marginTop: 1 }}>{a.sub}</div>
             </div>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c4c4bf" strokeWidth="2" style={{ marginTop: 3, flexShrink: 0 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--line)" strokeWidth="2" style={{ marginTop: 3, flexShrink: 0 }}>
               <path d="M9 18l6-6-6-6" />
             </svg>
           </div>

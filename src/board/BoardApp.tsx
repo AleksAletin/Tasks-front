@@ -133,11 +133,10 @@ export function BoardApp() {
     return () => clearTimeout(t);
   }, [authed, startCoach]);
 
-  // Dark theme: apply the invert-based «liquid glass» filter at the document root.
-  // On a React wrapper the glass backdrop-filter escapes the ancestor invert; on <html> it works.
+  // Dark theme: switch the design-token palette at the document root (real dark
+  // tokens — theme.css resolves :root[data-theme='dark']; no filter:invert).
   useEffect(() => {
-    document.documentElement.classList.toggle('appdark', dark);
-    return () => document.documentElement.classList.remove('appdark');
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
   }, [dark]);
 
   if (loadingBoard) return <BoardLoading />;
@@ -204,8 +203,8 @@ function BoardLoading() {
         gap: 14,
         background: `radial-gradient(820px 580px at 12% 8%, rgba(91,141,239,0.18), transparent 58%),
           radial-gradient(760px 560px at 88% 14%, rgba(139,111,214,0.16), transparent 55%),
-          #eceef2`,
-        color: '#797d84',
+          var(--bg)`,
+        color: 'var(--text-soft)',
         fontSize: 14,
         fontWeight: 600,
       }}
@@ -235,10 +234,10 @@ function BoardHeader() {
   return (
     <div
       style={{
-        background: 'rgba(255,255,255,0.46)',
+        background: 'var(--glass-soft)',
         backdropFilter: 'blur(22px) saturate(160%)',
         WebkitBackdropFilter: 'blur(22px) saturate(160%)',
-        borderBottom: '1px solid rgba(255,255,255,0.4)',
+        borderBottom: '1px solid var(--glass-soft)',
         padding: '14px 18px 0',
         position: 'relative',
         zIndex: 7,
@@ -246,10 +245,10 @@ function BoardHeader() {
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, letterSpacing: '-.4px' }}>Переезд на Work</h1>
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a6a8ab" strokeWidth="2.2" style={{ cursor: 'pointer' }}>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="2.2" style={{ cursor: 'pointer' }}>
           <path d="M6 9l6 6 6-6" />
         </svg>
-        <span style={{ fontSize: 12, fontWeight: 600, color: '#a86b3f', background: '#f6ecdf', padding: '3px 9px', borderRadius: 6 }}>
+        <span style={{ fontSize: 12, fontWeight: 600, color: '#a86b3f', background: 'var(--amber-tint)', padding: '3px 9px', borderRadius: 6 }}>
           {sourceLabel}
         </span>
         {viewer && (
@@ -261,7 +260,7 @@ function BoardHeader() {
               fontSize: 12,
               fontWeight: 700,
               color: '#3a7d63',
-              background: '#e8f3ee',
+              background: 'var(--green-tint)',
               padding: '3px 10px',
               borderRadius: 6,
             }}
@@ -291,7 +290,7 @@ function BoardHeader() {
                 padding: '9px 13px',
                 fontSize: 13.5,
                 fontWeight: 600,
-                color: active ? '#23262b' : '#797d84',
+                color: active ? 'var(--text)' : 'var(--text-soft)',
                 borderBottom: `2.5px solid ${active ? ACCENT : 'transparent'}`,
                 cursor: 'pointer',
                 marginBottom: -1,
@@ -376,10 +375,10 @@ function Toolbar() {
   return (
     <div
       style={{
-        background: 'rgba(255,255,255,0.38)',
+        background: 'var(--glass-soft)',
         backdropFilter: 'blur(18px) saturate(160%)',
         WebkitBackdropFilter: 'blur(18px) saturate(160%)',
-        borderBottom: '1px solid rgba(255,255,255,0.38)',
+        borderBottom: '1px solid var(--glass-soft)',
         padding: '9px 18px',
         display: 'flex',
         alignItems: 'center',
@@ -416,7 +415,7 @@ function Toolbar() {
               height: 34,
               width: 30,
               border: 'none',
-              borderLeft: '1px solid rgba(255,255,255,.25)',
+              borderLeft: '1px solid var(--glass-edge)',
               background: ACCENT,
               color: '#fff',
               cursor: 'pointer',
@@ -440,7 +439,7 @@ function Toolbar() {
             padding: '0 11px',
             border: `1px solid ${b.active ? 'rgba(66,99,216,0.25)' : 'transparent'}`,
             background: b.active ? 'rgba(66,99,216,0.07)' : 'transparent',
-            color: b.active ? ACCENT : '#5b5f66',
+            color: b.active ? ACCENT : 'var(--text-mut)',
             fontSize: 13,
             fontWeight: 600,
             cursor: 'pointer',
@@ -450,7 +449,7 @@ function Toolbar() {
             borderRadius: 8,
           }}
         >
-          <span style={{ display: 'flex', color: '#9a9da2' }}>
+          <span style={{ display: 'flex', color: 'var(--text-faint)' }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d={b.d} />
             </svg>

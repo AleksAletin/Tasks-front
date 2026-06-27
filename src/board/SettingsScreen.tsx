@@ -7,28 +7,28 @@ import { ROLES, ROLE_COLORS, type Cfg } from './model';
 const ACCENT = '#4263d8';
 
 const cardStyle = {
-  background: 'rgba(255,255,255,0.55)',
-  border: '1px solid rgba(255,255,255,0.6)',
+  background: 'var(--glass)',
+  border: '1px solid var(--glass)',
   borderRadius: 16,
-  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+  boxShadow: 'inset 0 1px 0 var(--glass)',
   padding: 22,
 } as const;
 
 const inputStyle = {
   width: '100%',
   height: 40,
-  border: '1px solid rgba(0,0,0,0.12)',
+  border: '1px solid var(--scrim)',
   borderRadius: 10,
   padding: '0 12px',
   fontSize: 13.5,
   outline: 'none',
-  background: '#fff',
-  color: '#23262b',
+  background: 'var(--card)',
+  color: 'var(--text)',
 } as const;
 
 const monoInput = { ...inputStyle, fontFamily: "'JetBrains Mono', monospace" } as const;
 
-const fieldLabel = { fontSize: 12, fontWeight: 700, color: '#5b5f66', marginBottom: 6 } as const;
+const fieldLabel = { fontSize: 12, fontWeight: 700, color: 'var(--text-mut)', marginBottom: 6 } as const;
 
 function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
   return (
@@ -38,7 +38,7 @@ function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
         width: 42,
         height: 24,
         borderRadius: 12,
-        background: on ? '#4a9b7f' : 'rgba(0,0,0,0.15)',
+        background: on ? '#4a9b7f' : 'var(--scrim)',
         cursor: 'pointer',
         position: 'relative',
         flexShrink: 0,
@@ -52,8 +52,8 @@ function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
           width: 20,
           height: 20,
           borderRadius: '50%',
-          background: '#fff',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+          background: 'var(--card)',
+          boxShadow: '0 1px 3px var(--scrim)',
           transition: 'left .16s ease',
         }}
       />
@@ -81,16 +81,16 @@ function ToggleRow({
         alignItems: 'center',
         gap: 14,
         padding: '16px 18px',
-        background: 'rgba(255,255,255,0.55)',
-        border: '1px solid rgba(255,255,255,0.6)',
+        background: 'var(--glass)',
+        border: '1px solid var(--glass)',
         borderRadius: 13,
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+        boxShadow: 'inset 0 1px 0 var(--glass)',
         ...style,
       }}
     >
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 14, fontWeight: 700 }}>{title}</div>
-        <div style={{ fontSize: 12.5, color: '#9a9da2' }}>{desc}</div>
+        <div style={{ fontSize: 12.5, color: 'var(--text-faint)' }}>{desc}</div>
       </div>
       <Toggle on={on} onClick={onClick} />
     </div>
@@ -132,7 +132,7 @@ function SectionHead({ title, sub }: { title: string; sub: string }) {
   return (
     <>
       <h2 style={{ margin: '0 0 5px', fontSize: 22, fontWeight: 800, letterSpacing: '-.4px' }}>{title}</h2>
-      <p style={{ margin: '0 0 24px', fontSize: 13.5, color: '#797d84' }}>{sub}</p>
+      <p style={{ margin: '0 0 24px', fontSize: 13.5, color: 'var(--text-soft)' }}>{sub}</p>
     </>
   );
 }
@@ -146,8 +146,8 @@ function Integrations() {
   const setCfg = useBoard((s) => s.setCfg);
 
   const badge = ytrack ? 'Подключено' : 'Отключено';
-  const badgeColor = ytrack ? '#3a7d63' : '#9a9da2';
-  const badgeBg = ytrack ? '#e8f3ee' : '#eeeeea';
+  const badgeColor = ytrack ? '#3a7d63' : 'var(--text-faint)';
+  const badgeBg = ytrack ? 'var(--green-tint)' : 'var(--surf-1)';
 
   return (
     <>
@@ -210,12 +210,12 @@ function Integrations() {
                 style={{
                   height: 40,
                   padding: '0 14px',
-                  border: '1px solid rgba(0,0,0,0.12)',
-                  background: 'rgba(255,255,255,0.7)',
+                  border: '1px solid var(--scrim)',
+                  background: 'var(--glass-hi)',
                   borderRadius: 10,
                   fontSize: 12.5,
                   fontWeight: 700,
-                  color: '#5b5f66',
+                  color: 'var(--text-mut)',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                 }}
@@ -234,7 +234,7 @@ function Integrations() {
                   inputMode="numeric"
                   style={{ ...inputStyle, width: 70, textAlign: 'center' }}
                 />
-                <span style={{ fontSize: 13, color: '#797d84' }}>минут</span>
+                <span style={{ fontSize: 13, color: 'var(--text-soft)' }}>минут</span>
               </div>
             </div>
             <button
@@ -284,7 +284,7 @@ function Integrations() {
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 16, fontWeight: 800 }}>Email-уведомления</div>
-            <div style={{ fontSize: 12, color: '#9a9da2' }}>SMTP для дайджестов и алертов</div>
+            <div style={{ fontSize: 12, color: 'var(--text-faint)' }}>SMTP для дайджестов и алертов</div>
           </div>
           <Toggle on={email} onClick={() => setIntegration('email', !email)} />
         </div>
@@ -345,11 +345,11 @@ function Sync() {
             border: '1px solid rgba(66,99,216,0.16)',
             borderRadius: 13,
             fontSize: 13,
-            color: '#5b5f66',
+            color: 'var(--text-mut)',
             lineHeight: 1.5,
           }}
         >
-          <b style={{ color: '#3a3d42' }}>Текущий статус:</b> последняя успешная синхронизация — 2 минуты назад · 0
+          <b style={{ color: 'var(--text-3)' }}>Текущий статус:</b> последняя успешная синхронизация — 2 минуты назад · 0
           конфликтов · 1 247 тикетов в проекте.
         </div>
       </div>
@@ -367,11 +367,11 @@ function Mapping() {
       <SectionHead title="Правила маппинга" sub="Условия: как значения из источника превращаются в поля доски." />
       <div
         style={{
-          background: 'rgba(255,255,255,0.55)',
-          border: '1px solid rgba(255,255,255,0.6)',
+          background: 'var(--glass)',
+          border: '1px solid var(--glass)',
           borderRadius: 14,
           overflow: 'hidden',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+          boxShadow: 'inset 0 1px 0 var(--glass)',
         }}
       >
         <div
@@ -379,10 +379,10 @@ function Mapping() {
             display: 'grid',
             gridTemplateColumns: grid,
             padding: '11px 16px',
-            borderBottom: '1px solid rgba(0,0,0,0.06)',
+            borderBottom: '1px solid var(--hover)',
             fontSize: 11.5,
             fontWeight: 700,
-            color: '#8a8d92',
+            color: 'var(--text-soft)',
           }}
         >
           <div>Поле доски</div>
@@ -399,14 +399,14 @@ function Mapping() {
               gridTemplateColumns: grid,
               alignItems: 'center',
               padding: '12px 16px',
-              borderBottom: '1px solid rgba(0,0,0,0.04)',
+              borderBottom: '1px solid var(--hover)',
               fontSize: 13,
             }}
           >
-            <div style={{ fontWeight: 700, color: '#2a2d32' }}>{r.field}</div>
-            <div style={{ color: '#797d84', fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}>{r.src}</div>
-            <div style={{ color: '#5b5f66' }}>
-              <span style={{ fontSize: 12, color: '#9a9da2' }}>если =</span>{' '}
+            <div style={{ fontWeight: 700, color: 'var(--text-2)' }}>{r.field}</div>
+            <div style={{ color: 'var(--text-soft)', fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}>{r.src}</div>
+            <div style={{ color: 'var(--text-mut)' }}>
+              <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>если =</span>{' '}
               <span style={{ fontWeight: 600 }}>{r.cond}</span>
             </div>
             <div>
@@ -427,7 +427,7 @@ function Mapping() {
             <div
               onClick={() => removeMappingRule(r.id)}
               title="Удалить правило"
-              style={{ display: 'flex', justifyContent: 'center', color: '#c4c4bf', cursor: 'pointer' }}
+              style={{ display: 'flex', justifyContent: 'center', color: 'var(--line)', cursor: 'pointer' }}
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
@@ -482,11 +482,11 @@ function Access() {
       />
       <div
         style={{
-          background: 'rgba(255,255,255,0.55)',
-          border: '1px solid rgba(255,255,255,0.6)',
+          background: 'var(--glass)',
+          border: '1px solid var(--glass)',
           borderRadius: 14,
           overflow: 'hidden',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+          boxShadow: 'inset 0 1px 0 var(--glass)',
         }}
       >
         <div
@@ -494,10 +494,10 @@ function Access() {
             display: 'grid',
             gridTemplateColumns: grid,
             padding: '11px 16px',
-            borderBottom: '1px solid rgba(0,0,0,0.06)',
+            borderBottom: '1px solid var(--hover)',
             fontSize: 11.5,
             fontWeight: 700,
-            color: '#8a8d92',
+            color: 'var(--text-soft)',
           }}
         >
           <div>Роль</div>
@@ -515,7 +515,7 @@ function Access() {
               gridTemplateColumns: grid,
               alignItems: 'center',
               padding: '13px 16px',
-              borderBottom: '1px solid rgba(0,0,0,0.04)',
+              borderBottom: '1px solid var(--hover)',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
@@ -529,7 +529,7 @@ function Access() {
                     <path d="M20 6L9 17l-5-5" />
                   </svg>
                 ) : (
-                  <span style={{ width: 14, height: 2, borderRadius: 2, background: '#dcdcd7' }} />
+                  <span style={{ width: 14, height: 2, borderRadius: 2, background: 'var(--surf-2)' }} />
                 )}
               </div>
             ))}
@@ -579,7 +579,7 @@ export function SettingsScreen() {
             marginBottom: 18,
             fontSize: 13,
             fontWeight: 700,
-            color: '#797d84',
+            color: 'var(--text-soft)',
             cursor: 'pointer',
           }}
         >

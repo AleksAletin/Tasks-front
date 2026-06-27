@@ -30,12 +30,12 @@ export function Coachmarks() {
           right: data.right,
           width: 320,
           maxWidth: '90vw',
-          background: 'rgba(252,252,254,0.82)',
+          background: 'var(--glass-hi)',
           backdropFilter: 'blur(34px) saturate(185%)',
           WebkitBackdropFilter: 'blur(34px) saturate(185%)',
-          border: '1px solid rgba(255,255,255,0.65)',
+          border: '1px solid var(--glass)',
           borderRadius: 16,
-          boxShadow: '0 30px 70px rgba(30,40,80,0.34), inset 0 1px 0 rgba(255,255,255,0.75)',
+          boxShadow: '0 30px 70px var(--shadow-lg), inset 0 1px 0 var(--glass-hi)',
           padding: 18,
           animation: 'popIn .18s ease',
         }}
@@ -60,9 +60,9 @@ export function Coachmarks() {
           </div>
           <div style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-.2px' }}>{data.title}</div>
         </div>
-        <div style={{ fontSize: 13, color: '#5b5f66', lineHeight: 1.5, marginBottom: 15 }}>{data.body}</div>
+        <div style={{ fontSize: 13, color: 'var(--text-mut)', lineHeight: 1.5, marginBottom: 15 }}>{data.body}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: '#9a9da2' }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-faint)' }}>
             {coachStep + 1} / {COACH.length}
           </span>
           <div style={{ flex: 1 }} />
@@ -73,7 +73,7 @@ export function Coachmarks() {
               padding: '0 12px',
               border: 'none',
               background: 'transparent',
-              color: '#797d84',
+              color: 'var(--text-soft)',
               fontSize: 12.5,
               fontWeight: 700,
               cursor: 'pointer',

@@ -112,12 +112,12 @@ export function CommandPalette() {
         style={{
           width: 560,
           maxWidth: '92vw',
-          background: 'rgba(252,252,254,0.8)',
+          background: 'var(--glass-hi)',
           backdropFilter: 'blur(40px) saturate(185%)',
           WebkitBackdropFilter: 'blur(40px) saturate(185%)',
-          border: '1px solid rgba(255,255,255,0.65)',
+          border: '1px solid var(--glass)',
           borderRadius: 17,
-          boxShadow: '0 40px 90px rgba(30,40,80,0.34), inset 0 1px 0 rgba(255,255,255,0.75)',
+          boxShadow: '0 40px 90px var(--shadow-lg), inset 0 1px 0 var(--glass-hi)',
           overflow: 'hidden',
           animation: 'popIn .15s ease',
         }}
@@ -128,10 +128,10 @@ export function CommandPalette() {
             alignItems: 'center',
             gap: 11,
             padding: '15px 17px',
-            borderBottom: '1px solid rgba(0,0,0,0.07)',
+            borderBottom: '1px solid var(--hover)',
           }}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9a9da2" strokeWidth="2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="2">
             <circle cx="11" cy="11" r="7" />
             <path d="M21 21l-4.3-4.3" />
           </svg>
@@ -140,14 +140,14 @@ export function CommandPalette() {
             value={cmdQuery}
             onChange={(e) => setCmdQuery(e.target.value)}
             placeholder="Перейти к задаче, виду, роли…"
-            style={{ flex: 1, border: 'none', background: 'transparent', fontSize: 15, outline: 'none', color: '#23262b' }}
+            style={{ flex: 1, border: 'none', background: 'transparent', fontSize: 15, outline: 'none', color: 'var(--text)' }}
           />
           <span
             style={{
               fontSize: 11,
               fontWeight: 700,
-              color: '#9a9da2',
-              border: '1px solid rgba(0,0,0,0.12)',
+              color: 'var(--text-faint)',
+              border: '1px solid var(--scrim)',
               borderRadius: 6,
               padding: '2px 7px',
             }}
@@ -179,7 +179,7 @@ export function CommandPalette() {
                     fontWeight: 800,
                     textTransform: 'uppercase',
                     letterSpacing: '.4px',
-                    color: '#9a9da2',
+                    color: 'var(--text-faint)',
                     minWidth: 62,
                   }}
                 >
@@ -189,7 +189,7 @@ export function CommandPalette() {
                   style={{
                     fontSize: 13.5,
                     fontWeight: 600,
-                    color: '#2a2d32',
+                    color: 'var(--text-2)',
                     flex: 1,
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
@@ -198,14 +198,14 @@ export function CommandPalette() {
                 >
                   {it.label}
                 </span>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c4c4bf" strokeWidth="2">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--line)" strokeWidth="2">
                   <path d="M9 18l6-6-6-6" />
                 </svg>
               </div>
             );
           })}
           {items.length === 0 && (
-            <div style={{ padding: 26, textAlign: 'center', fontSize: 13, color: '#9a9da2' }}>Ничего не найдено</div>
+            <div style={{ padding: 26, textAlign: 'center', fontSize: 13, color: 'var(--text-faint)' }}>Ничего не найдено</div>
           )}
         </div>
         <div
@@ -214,10 +214,10 @@ export function CommandPalette() {
             alignItems: 'center',
             gap: 14,
             padding: '9px 15px',
-            borderTop: '1px solid rgba(0,0,0,0.06)',
+            borderTop: '1px solid var(--hover)',
             fontSize: 11.5,
             fontWeight: 600,
-            color: '#9a9da2',
+            color: 'var(--text-faint)',
           }}
         >
           <span>↑↓ навигация</span>

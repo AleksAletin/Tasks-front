@@ -66,8 +66,8 @@ export function ParityView() {
       ready,
       barColor: ready ? '#4a9b7f' : ACCENT,
       gateLabel: ready ? 'Переключить роль' : pct + '% готовности',
-      gateBg: ready ? '#4a9b7f' : 'rgba(0,0,0,0.05)',
-      gateFg: ready ? '#fff' : '#9a9da2',
+      gateBg: ready ? '#4a9b7f' : 'var(--hover)',
+      gateFg: ready ? '#fff' : 'var(--text-faint)',
     };
   });
 
@@ -81,24 +81,24 @@ export function ParityView() {
     <div style={{ padding: '20px 22px 50px' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 16 }}>
         <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, letterSpacing: '-.4px' }}>Паритет-матрица</h2>
-        <span style={{ fontSize: 12.5, fontWeight: 600, color: '#797d84' }}>
+        <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-soft)' }}>
           состояние «старое ↔ новое» по (роль × модуль) · клик по ячейке меняет
         </span>
       </div>
 
       <div
         style={{
-          background: 'rgba(255,255,255,0.55)',
+          background: 'var(--glass)',
           backdropFilter: 'blur(20px) saturate(165%)',
           WebkitBackdropFilter: 'blur(20px) saturate(165%)',
-          border: '1px solid rgba(255,255,255,0.55)',
+          border: '1px solid var(--glass)',
           borderRadius: 16,
           overflow: 'hidden',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+          boxShadow: 'inset 0 1px 0 var(--glass)',
         }}
       >
-        <div style={{ display: 'grid', gridTemplateColumns: GRID, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-          <div style={{ padding: '12px 16px', fontSize: 12, fontWeight: 700, color: '#8a8d92' }}>Роль · модуль</div>
+        <div style={{ display: 'grid', gridTemplateColumns: GRID, borderBottom: '1px solid var(--hover)' }}>
+          <div style={{ padding: '12px 16px', fontSize: 12, fontWeight: 700, color: 'var(--text-soft)' }}>Роль · модуль</div>
           {PARITY_COLS.map((c) => (
             <div
               key={c}
@@ -107,8 +107,8 @@ export function ParityView() {
                 textAlign: 'center',
                 fontSize: 12,
                 fontWeight: 700,
-                color: '#8a8d92',
-                borderLeft: '1px solid rgba(0,0,0,0.04)',
+                color: 'var(--text-soft)',
+                borderLeft: '1px solid var(--hover)',
               }}
             >
               {c}
@@ -120,8 +120,8 @@ export function ParityView() {
               textAlign: 'center',
               fontSize: 12,
               fontWeight: 700,
-              color: '#8a8d92',
-              borderLeft: '1px solid rgba(0,0,0,0.04)',
+              color: 'var(--text-soft)',
+              borderLeft: '1px solid var(--hover)',
             }}
           >
             Готовность роли
@@ -134,13 +134,13 @@ export function ParityView() {
             style={{
               display: 'grid',
               gridTemplateColumns: GRID,
-              borderBottom: '1px solid rgba(0,0,0,0.04)',
+              borderBottom: '1px solid var(--hover)',
               alignItems: 'stretch',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '0 16px' }}>
               <span className="noinv" style={{ width: 9, height: 9, borderRadius: 3, background: r.color, flexShrink: 0 }} />
-              <span style={{ fontSize: 13.5, fontWeight: 700, color: '#2a2d32' }}>{r.name}</span>
+              <span style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text-2)' }}>{r.name}</span>
             </div>
             {r.cells.map((cell) => (
               <div
@@ -153,7 +153,7 @@ export function ParityView() {
                   position: 'relative',
                   minHeight: 48,
                   cursor: viewer ? 'default' : 'pointer',
-                  borderLeft: '1px solid rgba(0,0,0,0.04)',
+                  borderLeft: '1px solid var(--hover)',
                 }}
               >
                 {cell.hatch ? (
@@ -163,7 +163,7 @@ export function ParityView() {
                       inset: 5,
                       borderRadius: 6,
                       background:
-                        'repeating-linear-gradient(45deg,#dededa,#dededa 4px,#f3f3ef 4px,#f3f3ef 8px)',
+                        'repeating-linear-gradient(45deg,var(--surf-2),var(--surf-2) 4px,var(--surf-1) 4px,var(--surf-1) 8px)',
                     }}
                   />
                 ) : (
@@ -174,7 +174,7 @@ export function ParityView() {
                       inset: 5,
                       borderRadius: 6,
                       background: cell.color,
-                      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3)',
+                      boxShadow: 'inset 0 1px 0 var(--glass-edge)',
                     }}
                   />
                 )}
@@ -196,8 +196,8 @@ export function ParityView() {
                 )}
               </div>
             ))}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 16px', borderLeft: '1px solid rgba(0,0,0,0.04)' }}>
-              <div style={{ flex: 1, height: 7, borderRadius: 4, background: '#ececea', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 16px', borderLeft: '1px solid var(--hover)' }}>
+              <div style={{ flex: 1, height: 7, borderRadius: 4, background: 'var(--surf-1)', overflow: 'hidden' }}>
                 <div className="noinv" style={{ height: '100%', width: r.pct + '%', background: r.barColor }} />
               </div>
               <span
@@ -212,16 +212,16 @@ export function ParityView() {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginTop: 14 }}>
-        <span style={{ fontSize: 12, fontWeight: 700, color: '#8a8d92' }}>Легенда:</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-soft)' }}>Легенда:</span>
         {legend.map((lg) => (
-          <div key={lg.label} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12.5, fontWeight: 600, color: '#5b5f66' }}>
+          <div key={lg.label} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12.5, fontWeight: 600, color: 'var(--text-mut)' }}>
             {lg.hatch ? (
               <span
                 style={{
                   width: 14,
                   height: 14,
                   borderRadius: 4,
-                  background: 'repeating-linear-gradient(45deg,#dededa,#dededa 3px,#f3f3ef 3px,#f3f3ef 6px)',
+                  background: 'repeating-linear-gradient(45deg,var(--surf-2),var(--surf-2) 3px,var(--surf-1) 3px,var(--surf-1) 6px)',
                 }}
               />
             ) : (
@@ -241,13 +241,13 @@ export function ParityView() {
               display: 'flex',
               alignItems: 'center',
               gap: 12,
-              background: 'rgba(255,255,255,0.55)',
+              background: 'var(--glass)',
               backdropFilter: 'blur(16px) saturate(150%)',
               WebkitBackdropFilter: 'blur(16px) saturate(150%)',
-              border: '1px solid rgba(255,255,255,0.55)',
+              border: '1px solid var(--glass)',
               borderRadius: 13,
               padding: '12px 14px',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+              boxShadow: 'inset 0 1px 0 var(--glass)',
             }}
           >
             <span className="noinv" style={{ width: 9, height: 9, borderRadius: 3, background: r.color }} />

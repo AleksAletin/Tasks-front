@@ -37,11 +37,11 @@ export function Sidebar() {
       style={{
         width: navW,
         flexShrink: 0,
-        background: 'rgba(250,250,253,0.58)',
+        background: 'var(--glass)',
         backdropFilter: 'blur(26px) saturate(170%)',
         WebkitBackdropFilter: 'blur(26px) saturate(170%)',
-        borderRight: '1px solid rgba(255,255,255,0.5)',
-        boxShadow: 'inset -1px 0 0 rgba(255,255,255,0.35)',
+        borderRight: '1px solid var(--glass)',
+        boxShadow: 'inset -1px 0 0 var(--glass-edge)',
         display: 'flex',
         flexDirection: 'column',
         transition: 'width .18s ease',
@@ -54,7 +54,7 @@ export function Sidebar() {
           alignItems: 'center',
           gap: 9,
           padding: '0 16px',
-          borderBottom: '1px solid #eeeeea',
+          borderBottom: '1px solid var(--surf-1)',
         }}
       >
         <div
@@ -88,7 +88,7 @@ export function Sidebar() {
             padding: '8px 10px',
             borderRadius: 8,
             cursor: 'pointer',
-            color: '#797d84',
+            color: 'var(--text-soft)',
           }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -114,7 +114,7 @@ export function Sidebar() {
                 cursor: 'pointer',
                 fontSize: 13,
                 fontWeight: 600,
-                color: '#797d84',
+                color: 'var(--text-soft)',
               }}
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -131,7 +131,7 @@ export function Sidebar() {
                   fontWeight: 700,
                   letterSpacing: '.4px',
                   textTransform: 'uppercase',
-                  color: '#a6a8ab',
+                  color: 'var(--text-faint)',
                 }}
               >
                 Настройки
@@ -152,8 +152,8 @@ export function Sidebar() {
                     cursor: 'pointer',
                     fontSize: 13,
                     fontWeight: 600,
-                    color: active ? ACCENT : '#797d84',
-                    background: active ? '#eef0fb' : 'transparent',
+                    color: active ? ACCENT : 'var(--text-soft)',
+                    background: active ? 'var(--blue-tint)' : 'transparent',
                   }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -214,7 +214,7 @@ function BoardsNav({
                 fontWeight: 700,
                 letterSpacing: '.4px',
                 textTransform: 'uppercase',
-                color: '#a6a8ab',
+                color: 'var(--text-faint)',
               }}
             >
               Доски
@@ -230,7 +230,7 @@ function BoardsNav({
                 justifyContent: 'center',
                 borderRadius: 6,
                 cursor: 'pointer',
-                color: '#a6a8ab',
+                color: 'var(--text-faint)',
               }}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
@@ -242,7 +242,7 @@ function BoardsNav({
 
         {boards.map((b) => {
           const active = b.id === activeBoardId;
-          const bg = active && boardActive ? '#eef0fb' : 'transparent';
+          const bg = active && boardActive ? 'var(--blue-tint)' : 'transparent';
           return (
             <div
               key={b.id}
@@ -260,7 +260,7 @@ function BoardsNav({
                 fontWeight: active ? 600 : 500,
                 fontSize: 13,
                 background: bg,
-                color: active ? '#3a3d42' : '#797d84',
+                color: active ? 'var(--text-3)' : 'var(--text-soft)',
               }}
             >
               <span
@@ -274,7 +274,7 @@ function BoardsNav({
           );
         })}
 
-        <div style={{ height: 1, background: '#eeeeea', margin: '12px 6px' }} />
+        <div style={{ height: 1, background: 'var(--surf-1)', margin: '12px 6px' }} />
 
         <NavItem
           active={dashActive}
@@ -329,8 +329,8 @@ function NavItem({
         cursor: 'pointer',
         fontWeight: 600,
         fontSize: 13,
-        background: active ? '#eef0fb' : 'transparent',
-        color: active ? ACCENT : '#797d84',
+        background: active ? 'var(--blue-tint)' : 'transparent',
+        color: active ? ACCENT : 'var(--text-soft)',
       }}
     >
       {icon}

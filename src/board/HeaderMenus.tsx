@@ -43,12 +43,12 @@ export function HeaderMenus() {
               top: addColMenu.y,
               zIndex: 89,
               width: 240,
-              background: 'rgba(255,255,255,0.72)',
+              background: 'var(--glass-hi)',
               backdropFilter: 'blur(30px) saturate(185%)',
               WebkitBackdropFilter: 'blur(30px) saturate(185%)',
-              border: '1px solid rgba(255,255,255,0.6)',
+              border: '1px solid var(--glass)',
               borderRadius: 13,
-              boxShadow: '0 16px 44px rgba(30,40,80,.2), inset 0 1px 0 rgba(255,255,255,.75)',
+              boxShadow: '0 16px 44px var(--shadow), inset 0 1px 0 var(--glass-hi)',
               padding: 8,
               animation: 'popIn .12s ease',
             }}
@@ -67,11 +67,11 @@ export function HeaderMenus() {
                     height: 30,
                     flexShrink: 0,
                     borderRadius: 8,
-                    background: 'rgba(0,0,0,0.05)',
+                    background: 'var(--hover)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#5b5f66',
+                    color: 'var(--text-mut)',
                   }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -79,8 +79,8 @@ export function HeaderMenus() {
                   </svg>
                 </div>
                 <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: 13.5, fontWeight: 700, color: '#2a2d32' }}>{ty.label}</div>
-                  <div style={{ fontSize: 11.5, color: '#9a9da2' }}>{ty.sub}</div>
+                  <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text-2)' }}>{ty.label}</div>
+                  <div style={{ fontSize: 11.5, color: 'var(--text-faint)' }}>{ty.sub}</div>
                 </div>
               </div>
             ))}
@@ -98,12 +98,12 @@ export function HeaderMenus() {
               top: headerMenu.y,
               zIndex: 89,
               width: 240,
-              background: 'rgba(255,255,255,0.72)',
+              background: 'var(--glass-hi)',
               backdropFilter: 'blur(30px) saturate(185%)',
               WebkitBackdropFilter: 'blur(30px) saturate(185%)',
-              border: '1px solid rgba(255,255,255,0.6)',
+              border: '1px solid var(--glass)',
               borderRadius: 13,
-              boxShadow: '0 16px 44px rgba(30,40,80,.2), inset 0 1px 0 rgba(255,255,255,.75)',
+              boxShadow: '0 16px 44px var(--shadow), inset 0 1px 0 var(--glass-hi)',
               padding: 12,
               animation: 'popIn .12s ease',
             }}
@@ -117,17 +117,17 @@ export function HeaderMenus() {
               onChange={(e) => setColLabel(headerMenu.key, e.target.value)}
               autoFocus
               onFocus={(e) => (e.currentTarget.style.borderColor = ACCENT)}
-              onBlur={(e) => (e.currentTarget.style.borderColor = 'rgba(0,0,0,0.12)')}
+              onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--scrim)')}
               style={{
                 width: '100%',
                 height: 34,
-                border: '1px solid rgba(0,0,0,0.12)',
+                border: '1px solid var(--scrim)',
                 borderRadius: 8,
                 padding: '0 10px',
                 fontSize: 13.5,
                 fontWeight: 600,
                 outline: 'none',
-                background: '#fff',
+                background: 'var(--card)',
               }}
             />
             {headerMenu.custom && (

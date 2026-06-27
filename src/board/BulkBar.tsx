@@ -30,13 +30,13 @@ export function BulkBar() {
         color: '#fff',
         borderRadius: 14,
         padding: '8px 8px 8px 16px',
-        boxShadow: '0 14px 40px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.14)',
-        border: '1px solid rgba(255,255,255,.12)',
+        boxShadow: '0 14px 40px var(--scrim), inset 0 1px 0 var(--glass-edge)',
+        border: '1px solid var(--glass-edge)',
         animation: 'popIn .16s ease',
       }}
     >
       <span style={{ fontSize: 13, fontWeight: 700 }}>{ids.length} выбрано</span>
-      <div style={{ width: 1, height: 22, background: 'rgba(255,255,255,.18)', margin: '0 8px' }} />
+      <div style={{ width: 1, height: 22, background: 'var(--glass-edge)', margin: '0 8px' }} />
       <button
         onClick={() => duplicateTasks(ids)}
         style={{

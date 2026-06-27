@@ -45,12 +45,12 @@ export function ToolMenu() {
           top: toolMenu.y,
           zIndex: 89,
           width: 248,
-          background: 'rgba(255,255,255,0.72)',
+          background: 'var(--glass-hi)',
           backdropFilter: 'blur(30px) saturate(185%)',
           WebkitBackdropFilter: 'blur(30px) saturate(185%)',
-          border: '1px solid rgba(255,255,255,0.6)',
+          border: '1px solid var(--glass)',
           borderRadius: 13,
-          boxShadow: '0 16px 44px rgba(30,40,80,.2), inset 0 1px 0 rgba(255,255,255,.75)',
+          boxShadow: '0 16px 44px var(--shadow), inset 0 1px 0 var(--glass-hi)',
           padding: 10,
           animation: 'popIn .12s ease',
         }}
@@ -78,8 +78,8 @@ export function ToolMenu() {
                       width: 16,
                       height: 16,
                       borderRadius: 5,
-                      border: `2px solid ${on ? ACCENT : '#cfcfca'}`,
-                      background: on ? ACCENT : '#fff',
+                      border: `2px solid ${on ? ACCENT : 'var(--line)'}`,
+                      background: on ? ACCENT : 'var(--card)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -92,7 +92,7 @@ export function ToolMenu() {
                     )}
                   </span>
                   <span className="noinv" style={{ width: 9, height: 9, borderRadius: 3, background: STATUS[k].bg }} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#3a3d42' }}>{STATUS[k].label}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-3)' }}>{STATUS[k].label}</span>
                 </div>
               );
             })}
@@ -149,7 +149,7 @@ export function ToolMenu() {
                     cursor: 'pointer',
                     fontSize: 13,
                     fontWeight: 600,
-                    color: on ? ACCENT : '#3a3d42',
+                    color: on ? ACCENT : 'var(--text-3)',
                   }}
                 >
                   <span style={{ flex: 1 }}>{label}</span>
@@ -178,7 +178,7 @@ export function ToolMenu() {
                     cursor: 'pointer',
                     fontSize: 13,
                     fontWeight: 600,
-                    color: on ? ACCENT : '#3a3d42',
+                    color: on ? ACCENT : 'var(--text-3)',
                   }}
                 >
                   <span style={{ flex: 1 }}>{label}</span>
@@ -203,5 +203,5 @@ const sectionLabel = {
   fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: '.3px',
-  color: '#9a9da2',
+  color: 'var(--text-faint)',
 } as const;

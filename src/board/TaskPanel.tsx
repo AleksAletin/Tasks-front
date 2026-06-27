@@ -66,10 +66,10 @@ export function TaskPanel() {
   const lastBy = personById(t.lastBy) ?? personById('p1')!;
 
   let dueLabel = 'Не задан';
-  let dueColor = '#9a9da2';
+  let dueColor = 'var(--text-faint)';
   if (t.due) {
     dueLabel = fmt(t.due) + (t.status === 'done' ? ' · закрыт' : '');
-    dueColor = t.status === 'done' ? '#4a9b7f' : dayNum(t.due) < dayNum(TODAY) ? '#cf6b6b' : '#3a3d42';
+    dueColor = t.status === 'done' ? '#4a9b7f' : dayNum(t.due) < dayNum(TODAY) ? '#cf6b6b' : 'var(--text-3)';
   }
   const tlLabel = t.tl ? fmt(t.tl.start) + ' – ' + fmt(t.tl.end) : 'Не задана';
 
@@ -102,7 +102,7 @@ export function TaskPanel() {
   ];
 
   const fieldLabel = (text: string) => (
-    <div style={{ fontSize: 12.5, fontWeight: 600, color: '#9a9da2' }}>{text}</div>
+    <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-faint)' }}>{text}</div>
   );
   const editable = !viewer;
 
@@ -118,20 +118,20 @@ export function TaskPanel() {
           width: 480,
           maxWidth: '94vw',
           zIndex: 70,
-          background: 'rgba(250,250,253,0.78)',
+          background: 'var(--glass-hi)',
           backdropFilter: 'blur(34px) saturate(180%)',
           WebkitBackdropFilter: 'blur(34px) saturate(180%)',
-          borderLeft: '1px solid rgba(255,255,255,0.6)',
-          boxShadow: '-16px 0 54px rgba(30,40,80,.18), inset 1px 0 0 rgba(255,255,255,.6)',
+          borderLeft: '1px solid var(--glass)',
+          boxShadow: '-16px 0 54px var(--shadow), inset 1px 0 0 var(--glass)',
           display: 'flex',
           flexDirection: 'column',
           animation: 'slideIn .22s ease',
         }}
       >
-        <div style={{ padding: '18px 22px', borderBottom: '1px solid #eeeeea' }}>
+        <div style={{ padding: '18px 22px', borderBottom: '1px solid var(--surf-1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
             <span className="noinv" style={{ width: 9, height: 9, borderRadius: 3, background: group.color }} />
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#9a9da2' }}>{group.name}</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-faint)' }}>{group.name}</span>
             <div style={{ flex: 1 }} />
             <div
               onClick={closePanel}
@@ -143,7 +143,7 @@ export function TaskPanel() {
                 justifyContent: 'center',
                 borderRadius: 8,
                 cursor: 'pointer',
-                color: '#9a9da2',
+                color: 'var(--text-faint)',
               }}
             >
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -163,10 +163,10 @@ export function TaskPanel() {
               gridTemplateColumns: '110px 1fr',
               gap: '12px 12px',
               alignItems: 'center',
-              background: 'rgba(255,255,255,0.45)',
-              border: '1px solid rgba(255,255,255,0.6)',
+              background: 'var(--glass-soft)',
+              border: '1px solid var(--glass)',
               borderRadius: 14,
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+              boxShadow: 'inset 0 1px 0 var(--glass)',
               padding: '16px 16px',
             }}
           >
@@ -227,8 +227,8 @@ export function TaskPanel() {
                 </>
               ) : (
                 <>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', border: '1.5px dashed #cfcfca' }} />
-                  <span style={{ fontSize: 13, color: '#9a9da2' }}>Назначить</span>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', border: '1.5px dashed var(--line)' }} />
+                  <span style={{ fontSize: 13, color: 'var(--text-faint)' }}>Назначить</span>
                 </>
               )}
             </div>
@@ -242,14 +242,14 @@ export function TaskPanel() {
                 height: 30,
                 padding: '0 16px',
                 borderRadius: 8,
-                background: pr ? pr.bg : '#f0f0ec',
-                color: pr ? '#fff' : '#9a9da2',
+                background: pr ? pr.bg : 'var(--surf-1)',
+                color: pr ? '#fff' : 'var(--text-faint)',
                 display: 'flex',
                 alignItems: 'center',
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: editable ? 'pointer' : 'default',
-                boxShadow: pr ? 'none' : 'inset 0 0 0 1px #e6e6e2',
+                boxShadow: pr ? 'none' : 'inset 0 0 0 1px var(--surf-2)',
               }}
             >
               {pr ? pr.label : 'Не задан'}
@@ -277,7 +277,7 @@ export function TaskPanel() {
                 justifySelf: 'start',
                 fontSize: 13,
                 fontWeight: 600,
-                color: '#3a3d42',
+                color: 'var(--text-3)',
                 padding: '5px 9px',
                 borderRadius: 7,
               }}
@@ -287,7 +287,7 @@ export function TaskPanel() {
 
             {fieldLabel('Раздел')}
             <div onClick={(e) => edit('section', undefined, e)} style={{ justifySelf: 'start', cursor: editable ? 'pointer' : 'default' }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#5b5f66', background: '#f0f0ec', padding: '4px 11px', borderRadius: 6 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-mut)', background: 'var(--surf-1)', padding: '4px 11px', borderRadius: 6 }}>
                 {t.section}
               </span>
             </div>
@@ -312,7 +312,7 @@ export function TaskPanel() {
           </div>
 
           <div style={{ marginTop: 24 }}>
-            <div style={{ display: 'flex', gap: 18, borderBottom: '1px solid #eeeeea', marginBottom: 16 }}>
+            <div style={{ display: 'flex', gap: 18, borderBottom: '1px solid var(--surf-1)', marginBottom: 16 }}>
               {([
                 ['updates', 'Обновления'],
                 ['files', 'Файлы'],
@@ -327,7 +327,7 @@ export function TaskPanel() {
                       paddingBottom: 9,
                       fontSize: 13.5,
                       fontWeight: active ? 700 : 600,
-                      color: active ? '#23262b' : '#9a9da2',
+                      color: active ? 'var(--text)' : 'var(--text-faint)',
                       borderBottom: `2.5px solid ${active ? ACCENT : 'transparent'}`,
                       marginBottom: -1,
                       cursor: 'pointer',
@@ -341,7 +341,7 @@ export function TaskPanel() {
 
             {tab === 'updates' && (
               <>
-                <div style={{ border: '1px solid #ebebe7', borderRadius: 11, padding: '11px 13px', marginBottom: 16 }}>
+                <div style={{ border: '1px solid var(--surf-1)', borderRadius: 11, padding: '11px 13px', marginBottom: 16 }}>
                   <input
                     placeholder="Написать обновление, @ — упомянуть…"
                     style={{ width: '100%', border: 'none', outline: 'none', fontSize: 13, padding: '4px 0', background: 'transparent' }}
@@ -371,9 +371,9 @@ export function TaskPanel() {
                       <div style={{ minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
                           <span style={{ fontSize: 13, fontWeight: 700 }}>{u.name}</span>
-                          <span style={{ fontSize: 11.5, color: '#9a9da2' }}>{u.ago}</span>
+                          <span style={{ fontSize: 11.5, color: 'var(--text-faint)' }}>{u.ago}</span>
                         </div>
-                        <div style={{ fontSize: 13, color: '#3a3d42', marginTop: 3, lineHeight: 1.45 }}>{u.text}</div>
+                        <div style={{ fontSize: 13, color: 'var(--text-3)', marginTop: 3, lineHeight: 1.45 }}>{u.text}</div>
                       </div>
                     </div>
                   ))}
@@ -393,17 +393,17 @@ export function TaskPanel() {
                       display: 'flex',
                       alignItems: 'center',
                       gap: 11,
-                      border: '1px solid #ebebe7',
+                      border: '1px solid var(--surf-1)',
                       borderRadius: 11,
                       padding: '11px 13px',
                     }}
                   >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#797d84" strokeWidth="2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-soft)" strokeWidth="2">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                       <path d="M14 2v6h6" />
                     </svg>
-                    <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: '#2a2d32' }}>{name}</span>
-                    <span style={{ fontSize: 11.5, color: '#9a9da2' }}>{size}</span>
+                    <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: 'var(--text-2)' }}>{name}</span>
+                    <span style={{ fontSize: 11.5, color: 'var(--text-faint)' }}>{size}</span>
                   </div>
                 ))}
               </div>
@@ -416,9 +416,9 @@ export function TaskPanel() {
                   ['Создана задача', '3 д назад'],
                 ].map(([text, ago], i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#c4c4bf', flexShrink: 0 }} />
-                    <span style={{ flex: 1, fontSize: 13, color: '#3a3d42' }}>{text}</span>
-                    <span style={{ fontSize: 11.5, color: '#9a9da2' }}>{ago}</span>
+                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--line)', flexShrink: 0 }} />
+                    <span style={{ flex: 1, fontSize: 13, color: 'var(--text-3)' }}>{text}</span>
+                    <span style={{ fontSize: 11.5, color: 'var(--text-faint)' }}>{ago}</span>
                   </div>
                 ))}
               </div>
@@ -426,7 +426,7 @@ export function TaskPanel() {
           </div>
         </div>
 
-        <div style={{ padding: '14px 22px', borderTop: '1px solid #eeeeea', display: 'flex', gap: 10 }}>
+        <div style={{ padding: '14px 22px', borderTop: '1px solid var(--surf-1)', display: 'flex', gap: 10 }}>
           <a
             href={'https://youtrack.work.app/issue/YT-' + (1240 + t.name.length)}
             target="_blank"
@@ -434,12 +434,12 @@ export function TaskPanel() {
             style={{
               flex: 1,
               height: 38,
-              border: '1px solid #e6e6e2',
-              background: '#fff',
+              border: '1px solid var(--surf-2)',
+              background: 'var(--card)',
               borderRadius: 9,
               fontSize: 13.5,
               fontWeight: 700,
-              color: '#3a3d42',
+              color: 'var(--text-3)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',

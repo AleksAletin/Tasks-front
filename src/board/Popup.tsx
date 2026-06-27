@@ -91,14 +91,14 @@ export function Popup() {
                 borderRadius: 7,
                 fontSize: 13,
                 fontWeight: 600,
-                color: '#3a3d42',
+                color: 'var(--text-3)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
               }}
             >
-              <span style={{ width: 8, height: 8, borderRadius: 2, background: '#c4c4bf' }} />
+              <span style={{ width: 8, height: 8, borderRadius: 2, background: 'var(--line)' }} />
               {sec}
             </div>
           ))}
@@ -113,14 +113,14 @@ export function Popup() {
               borderRadius: 7,
               fontSize: 13,
               fontWeight: 600,
-              color: '#9a9da2',
+              color: 'var(--text-faint)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: 10,
             }}
           >
-            <div style={{ width: 26, height: 26, borderRadius: '50%', border: '1.5px dashed #cfcfca' }} />
+            <div style={{ width: 26, height: 26, borderRadius: '50%', border: '1.5px dashed var(--line)' }} />
             Без владельца
           </div>
           {PEOPLE.map((p) => (
@@ -132,7 +132,7 @@ export function Popup() {
                 borderRadius: 7,
                 fontSize: 13,
                 fontWeight: 600,
-                color: '#3a3d42',
+                color: 'var(--text-3)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -195,10 +195,10 @@ function PhaseEditor({ task }: { task: Task }) {
         justifyContent: 'center',
         borderRadius: 6,
         cursor: 'pointer',
-        background: 'rgba(0,0,0,0.05)',
+        background: 'var(--hover)',
         fontSize: 16,
         fontWeight: 700,
-        color: '#5b5f66',
+        color: 'var(--text-mut)',
       }}
     >
       {label}
@@ -215,7 +215,7 @@ function PhaseEditor({ task }: { task: Task }) {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-        <div style={{ display: 'flex', background: 'rgba(0,0,0,0.05)', borderRadius: 8, padding: 2 }}>
+        <div style={{ display: 'flex', background: 'var(--hover)', borderRadius: 8, padding: 2 }}>
           <div
             onClick={() => phaseAnchorType(task.id, 'start')}
             style={{
@@ -225,7 +225,7 @@ function PhaseEditor({ task }: { task: Task }) {
               fontWeight: 600,
               cursor: 'pointer',
               background: isStart ? ACCENT : 'transparent',
-              color: isStart ? '#fff' : '#797d84',
+              color: isStart ? '#fff' : 'var(--text-soft)',
             }}
           >
             Старт
@@ -239,7 +239,7 @@ function PhaseEditor({ task }: { task: Task }) {
               fontWeight: 600,
               cursor: 'pointer',
               background: isStart ? 'transparent' : ACCENT,
-              color: isStart ? '#797d84' : '#fff',
+              color: isStart ? 'var(--text-soft)' : '#fff',
             }}
           >
             Дедлайн
@@ -257,7 +257,7 @@ function PhaseEditor({ task }: { task: Task }) {
         return (
           <div
             key={k}
-            style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 4px', borderTop: '1px solid rgba(0,0,0,0.06)' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 4px', borderTop: '1px solid var(--hover)' }}
           >
             <span className="noinv" style={{ width: 9, height: 9, borderRadius: 3, background: PHASES[k].color, flexShrink: 0 }} />
             <span style={{ fontSize: 12.5, fontWeight: 600, flex: 1 }}>{PHASES[k].label}</span>
@@ -268,7 +268,7 @@ function PhaseEditor({ task }: { task: Task }) {
                 width: 26,
                 height: 26,
                 borderRadius: '50%',
-                background: res ? res.color : '#c4c4bf',
+                background: res ? res.color : 'var(--line)',
                 color: '#fff',
                 display: 'flex',
                 alignItems: 'center',
@@ -292,10 +292,10 @@ function PhaseEditor({ task }: { task: Task }) {
                   justifyContent: 'center',
                   borderRadius: 6,
                   cursor: 'pointer',
-                  background: 'rgba(0,0,0,0.05)',
+                  background: 'var(--hover)',
                   fontSize: 15,
                   fontWeight: 700,
-                  color: '#5b5f66',
+                  color: 'var(--text-mut)',
                 }}
               >
                 −
@@ -312,10 +312,10 @@ function PhaseEditor({ task }: { task: Task }) {
                   justifyContent: 'center',
                   borderRadius: 6,
                   cursor: 'pointer',
-                  background: 'rgba(0,0,0,0.05)',
+                  background: 'var(--hover)',
                   fontSize: 15,
                   fontWeight: 700,
-                  color: '#5b5f66',
+                  color: 'var(--text-mut)',
                 }}
               >
                 +
@@ -338,12 +338,12 @@ function PhaseEditor({ task }: { task: Task }) {
           fontWeight: 700,
         }}
       >
-        <span style={{ color: '#8a8d92' }}>Старт</span>
+        <span style={{ color: 'var(--text-soft)' }}>Старт</span>
         <span>{fmt(cp.start)}</span>
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a6a8ab" strokeWidth="2.4">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="2.4">
           <path d="M5 12h14M13 6l6 6-6 6" />
         </svg>
-        <span style={{ color: '#8a8d92' }}>Финал</span>
+        <span style={{ color: 'var(--text-soft)' }}>Финал</span>
         <span>{fmt(cp.end)}</span>
         <div style={{ flex: 1 }} />
         <span style={{ color: ACCENT }}>{cp.total} дн</span>
@@ -377,7 +377,7 @@ function Pills({
             fontSize: 13,
             fontWeight: 600,
             cursor: 'pointer',
-            boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.05)',
+            boxShadow: 'inset 0 0 0 1px var(--hover)',
           }}
         >
           {it.label}
@@ -428,7 +428,7 @@ function Calendar({
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 4px 10px' }}>
         <div
           onClick={() => nav(-1)}
-          style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 7, cursor: 'pointer', color: '#6b6f76' }}
+          style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 7, cursor: 'pointer', color: 'var(--text-mut)' }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
             <path d="M15 18l-6-6 6-6" />
@@ -439,7 +439,7 @@ function Calendar({
         </div>
         <div
           onClick={() => nav(1)}
-          style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 7, cursor: 'pointer', color: '#6b6f76' }}
+          style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 7, cursor: 'pointer', color: 'var(--text-mut)' }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
             <path d="M9 18l6-6-6-6" />
@@ -448,7 +448,7 @@ function Calendar({
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 2, marginBottom: 4 }}>
         {DOWS.map((d) => (
-          <div key={d} style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#b0b2b6', padding: '3px 0' }}>
+          <div key={d} style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: 'var(--text-faint)', padding: '3px 0' }}>
             {d}
           </div>
         ))}
@@ -474,7 +474,7 @@ function Calendar({
                   fontWeight: 600,
                   cursor: 'pointer',
                   background: sel ? ACCENT : 'transparent',
-                  color: sel ? '#fff' : today ? ACCENT : '#3a3d42',
+                  color: sel ? '#fff' : today ? ACCENT : 'var(--text-3)',
                   boxShadow: today && !sel ? `inset 0 0 0 1.5px ${ACCENT}` : 'none',
                 }}
               >
@@ -484,16 +484,16 @@ function Calendar({
           })}
         </div>
       ))}
-      <div style={{ display: 'flex', gap: 6, borderTop: '1px solid #eeeeea', marginTop: 8, paddingTop: 8 }}>
+      <div style={{ display: 'flex', gap: 6, borderTop: '1px solid var(--surf-1)', marginTop: 8, paddingTop: 8 }}>
         <button
           onClick={() => onPick(TODAY)}
-          style={{ flex: 1, height: 30, border: '1px solid #e6e6e2', background: '#fff', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', color: '#3a3d42' }}
+          style={{ flex: 1, height: 30, border: '1px solid var(--surf-2)', background: 'var(--card)', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', color: 'var(--text-3)' }}
         >
           Сегодня
         </button>
         <button
           onClick={onClear}
-          style={{ flex: 1, height: 30, border: '1px solid #e6e6e2', background: '#fff', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', color: '#cf6b6b' }}
+          style={{ flex: 1, height: 30, border: '1px solid var(--surf-2)', background: 'var(--card)', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', color: '#cf6b6b' }}
         >
           Очистить
         </button>

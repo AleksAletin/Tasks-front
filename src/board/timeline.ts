@@ -97,7 +97,7 @@ export function buildTimeline(groups: Group[], tlDrag: TlDrag | null): TimelineD
       monthFirst: dt.getUTCDate() === 1 || i === 0,
       monthLabel: MONTHS[dt.getUTCMonth()],
       colBg: today ? 'rgba(66,99,216,0.07)' : weekend ? 'rgba(120,130,200,0.05)' : 'transparent',
-      color: today ? '#4263d8' : weekend ? '#bcbcc6' : '#8a8d92',
+      color: today ? '#4263d8' : weekend ? 'var(--line)' : 'var(--text-soft)',
     });
   }
 

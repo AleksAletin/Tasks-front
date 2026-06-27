@@ -141,24 +141,24 @@ export function TableView() {
           zIndex: 6,
           display: 'grid',
           gridTemplateColumns: `${gridCols} 44px`,
-          background: 'rgba(252,252,253,0.66)',
+          background: 'var(--glass)',
           backdropFilter: 'blur(16px) saturate(150%)',
           WebkitBackdropFilter: 'blur(16px) saturate(150%)',
-          borderBottom: '1px solid rgba(0,0,0,0.06)',
+          borderBottom: '1px solid var(--hover)',
           height: 38,
           fontSize: 12,
           fontWeight: 700,
-          color: '#8a8d92',
+          color: 'var(--text-soft)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid #efefeb' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid var(--surf-1)' }}>
           <div
             style={{
               width: 17,
               height: 17,
               borderRadius: 5,
-              border: `2px solid ${allChecked ? ACCENT : '#cfcfca'}`,
-              background: allChecked ? ACCENT : '#fff',
+              border: `2px solid ${allChecked ? ACCENT : 'var(--line)'}`,
+              background: allChecked ? ACCENT : 'var(--card)',
               cursor: viewer ? 'default' : 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -182,7 +182,7 @@ export function TableView() {
               alignItems: 'center',
               justifyContent: key === 'task' ? 'flex-start' : key === 'updated' ? 'flex-start' : 'center',
               paddingLeft: key === 'task' ? 6 : key === 'updated' ? 18 : 0,
-              borderRight: '1px solid #efefeb',
+              borderRight: '1px solid var(--surf-1)',
               cursor: viewer ? 'default' : 'pointer',
             }}
           >
@@ -199,12 +199,12 @@ export function TableView() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: 5,
-              borderRight: '1px solid #efefeb',
+              borderRight: '1px solid var(--surf-1)',
               cursor: viewer ? 'default' : 'pointer',
               position: 'relative',
             }}
           >
-            <span className="colgrip" style={{ opacity: 0, transition: 'opacity .12s', color: '#c4c4bf', display: 'flex' }}>
+            <span className="colgrip" style={{ opacity: 0, transition: 'opacity .12s', color: 'var(--line)', display: 'flex' }}>
               <svg width="9" height="13" viewBox="0 0 24 24" fill="currentColor">
                 <circle cx="9" cy="6" r="1.6" />
                 <circle cx="15" cy="6" r="1.6" />
@@ -221,7 +221,7 @@ export function TableView() {
           <div
             onClick={onAddCol}
             title="Добавить столбец"
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#a6a8ab' }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-faint)' }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <path d="M12 5v14M5 12h14" />
@@ -259,10 +259,10 @@ export function TableView() {
             margin: '18px 0 0 14px',
             padding: '8px 12px',
             width: 'fit-content',
-            border: '1px solid #e6e6e2',
-            background: '#fff',
+            border: '1px solid var(--surf-2)',
+            background: 'var(--card)',
             borderRadius: 9,
-            color: '#5b5f66',
+            color: 'var(--text-mut)',
             fontSize: 13,
             fontWeight: 600,
             cursor: 'pointer',
@@ -332,7 +332,7 @@ function GroupBlock({
           <span
             className="ghandle"
             title="Перетащите, чтобы переместить группу"
-            style={{ display: 'flex', alignItems: 'center', cursor: 'grab', color: '#c4c4bf', opacity: 0, transition: 'opacity .12s' }}
+            style={{ display: 'flex', alignItems: 'center', cursor: 'grab', color: 'var(--line)', opacity: 0, transition: 'opacity .12s' }}
           >
             <svg width="14" height="16" viewBox="0 0 24 24" fill="currentColor">
               <circle cx="9" cy="6" r="1.6" />
@@ -366,8 +366,8 @@ function GroupBlock({
           style={{
             fontSize: 12,
             fontWeight: 600,
-            color: '#a6a8ab',
-            background: '#f0f0ec',
+            color: 'var(--text-faint)',
+            background: 'var(--surf-1)',
             padding: '1px 8px',
             borderRadius: 10,
           }}
@@ -379,7 +379,7 @@ function GroupBlock({
             onClick={() => moveGroup(g.id, -1)}
             className="gmove"
             title="Выше"
-            style={{ width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6, cursor: 'pointer', color: '#a6a8ab', opacity: 0, transition: 'opacity .12s, background .12s' }}
+            style={{ width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6, cursor: 'pointer', color: 'var(--text-faint)', opacity: 0, transition: 'opacity .12s, background .12s' }}
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
               <path d="M18 15l-6-6-6 6" />
@@ -391,7 +391,7 @@ function GroupBlock({
             onClick={() => moveGroup(g.id, 1)}
             className="gmove"
             title="Ниже"
-            style={{ width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6, cursor: 'pointer', color: '#a6a8ab', opacity: 0, transition: 'opacity .12s, background .12s' }}
+            style={{ width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6, cursor: 'pointer', color: 'var(--text-faint)', opacity: 0, transition: 'opacity .12s, background .12s' }}
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
               <path d="M6 9l6 6 6-6" />
@@ -429,8 +429,8 @@ function GroupBlock({
                 gridTemplateColumns: gridCols,
                 height: 34,
                 borderLeft: `3px solid ${g.color}`,
-                borderBottom: '1px solid #efefeb',
-                background: 'rgba(252,252,251,0.45)',
+                borderBottom: '1px solid var(--surf-1)',
+                background: 'var(--glass-soft)',
               }}
             >
               <div />
@@ -450,7 +450,7 @@ function GroupBlock({
                   justifyContent: 'center',
                   fontSize: 11,
                   fontWeight: 600,
-                  color: '#9a9da2',
+                  color: 'var(--text-faint)',
                 }}
               >
                 {g.summary.tlLabel}
@@ -486,7 +486,7 @@ function GroupBlock({
                 padding: '0 0 0 19px',
                 height: 36,
                 borderLeft: '3px solid transparent',
-                color: '#9a9da2',
+                color: 'var(--text-faint)',
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -630,11 +630,11 @@ function Row({
         display: 'grid',
         gridTemplateColumns: gridCols,
         height: ROW_H,
-        background: dragging ? 'rgba(255,255,255,0.97)' : selected ? 'rgba(238,242,253,0.82)' : 'rgba(255,255,255,0.55)',
-        borderBottom: '1px solid #efefeb',
+        background: dragging ? 'var(--glass-hi)' : selected ? 'var(--sel)' : 'var(--glass)',
+        borderBottom: '1px solid var(--surf-1)',
         borderLeft: `3px solid ${g.color}`,
         boxShadow: dragging
-          ? '0 18px 40px rgba(30,40,80,0.22), 0 2px 10px rgba(30,40,80,0.12), inset 0 1px 0 rgba(255,255,255,0.7)'
+          ? '0 18px 40px var(--shadow), 0 2px 10px var(--shadow), inset 0 1px 0 var(--glass-hi)'
           : 'none',
         transform: dragging ? 'scale(1.004)' : 'none',
         opacity: dragging ? 0.96 : 1,
@@ -648,18 +648,18 @@ function Row({
       {dropAfter && (
         <div style={{ position: 'absolute', bottom: -1, left: 0, right: 0, height: 2, background: ACCENT, zIndex: 3 }} />
       )}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3, borderRight: '1px solid #efefeb' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3, borderRight: '1px solid var(--surf-1)' }}>
         {canDrag && (
           <span
             aria-hidden="true"
             style={{ display: 'grid', gridTemplateColumns: '2px 2px', gridTemplateRows: '2px 2px 2px', gap: 2, cursor: 'grab', opacity: 0.45 }}
           >
-            <i style={{ width: 2, height: 2, borderRadius: '50%', background: '#9a9da2' }} />
-            <i style={{ width: 2, height: 2, borderRadius: '50%', background: '#9a9da2' }} />
-            <i style={{ width: 2, height: 2, borderRadius: '50%', background: '#9a9da2' }} />
-            <i style={{ width: 2, height: 2, borderRadius: '50%', background: '#9a9da2' }} />
-            <i style={{ width: 2, height: 2, borderRadius: '50%', background: '#9a9da2' }} />
-            <i style={{ width: 2, height: 2, borderRadius: '50%', background: '#9a9da2' }} />
+            <i style={{ width: 2, height: 2, borderRadius: '50%', background: 'var(--text-faint)' }} />
+            <i style={{ width: 2, height: 2, borderRadius: '50%', background: 'var(--text-faint)' }} />
+            <i style={{ width: 2, height: 2, borderRadius: '50%', background: 'var(--text-faint)' }} />
+            <i style={{ width: 2, height: 2, borderRadius: '50%', background: 'var(--text-faint)' }} />
+            <i style={{ width: 2, height: 2, borderRadius: '50%', background: 'var(--text-faint)' }} />
+            <i style={{ width: 2, height: 2, borderRadius: '50%', background: 'var(--text-faint)' }} />
           </span>
         )}
         <div
@@ -671,8 +671,8 @@ function Row({
             width: 17,
             height: 17,
             borderRadius: 5,
-            border: `2px solid ${selected ? ACCENT : '#cfcfca'}`,
-            background: selected ? ACCENT : '#fff',
+            border: `2px solid ${selected ? ACCENT : 'var(--line)'}`,
+            background: selected ? ACCENT : 'var(--card)',
             cursor: viewer ? 'default' : 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -693,7 +693,7 @@ function Row({
           alignItems: 'center',
           gap: 5,
           padding: '0 8px 0 4px',
-          borderRight: '1px solid #efefeb',
+          borderRight: '1px solid var(--surf-1)',
           minWidth: 0,
         }}
       >
@@ -710,7 +710,7 @@ function Row({
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: 5,
-            color: '#a6a8ab',
+            color: 'var(--text-faint)',
             cursor: 'pointer',
             transform: expanded ? 'rotate(0deg)' : 'rotate(-90deg)',
             transition: 'transform .12s',
@@ -728,7 +728,7 @@ function Row({
           style={{
             fontSize: 13.5,
             fontWeight: 600,
-            color: '#2a2d32',
+            color: 'var(--text-2)',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -746,14 +746,14 @@ function Row({
               gap: 5,
               fontSize: 11,
               fontWeight: 700,
-              color: '#797d84',
-              background: '#f0f0ec',
+              color: 'var(--text-soft)',
+              background: 'var(--surf-1)',
               padding: '2px 8px',
               borderRadius: 9,
             }}
           >
             <span
-              style={{ position: 'relative', width: 26, height: 5, borderRadius: 3, background: '#dcdcd7', overflow: 'hidden' }}
+              style={{ position: 'relative', width: 26, height: 5, borderRadius: 3, background: 'var(--surf-2)', overflow: 'hidden' }}
             >
               <span
                 style={{
@@ -773,14 +773,14 @@ function Row({
 
       <div
         onClick={(e) => cellPopup('people', undefined, e)}
-        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid #efefeb', cursor: viewer ? 'default' : 'pointer' }}
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid var(--surf-1)', cursor: viewer ? 'default' : 'pointer' }}
       >
         {owner ? <Avatar initials={owner.initials} color={owner.color} /> : <AvatarEmpty />}
       </div>
 
       <div
         onClick={(e) => cellPopup('status', undefined, e)}
-        style={{ borderRight: '1px solid #efefeb', cursor: viewer ? 'default' : 'pointer' }}
+        style={{ borderRight: '1px solid var(--surf-1)', cursor: viewer ? 'default' : 'pointer' }}
       >
         <div
           className="noinv"
@@ -794,7 +794,7 @@ function Row({
             color: '#fff',
             fontSize: 12.5,
             fontWeight: 600,
-            boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.05)',
+            boxShadow: 'inset 0 0 0 1px var(--hover)',
           }}
         >
           {st.label}
@@ -808,7 +808,7 @@ function Row({
           alignItems: 'center',
           justifyContent: 'center',
           gap: 5,
-          borderRight: '1px solid #efefeb',
+          borderRight: '1px solid var(--surf-1)',
           cursor: viewer ? 'default' : 'pointer',
           fontSize: 12.5,
           fontWeight: 600,
@@ -832,7 +832,7 @@ function Row({
 
       <div
         onClick={(e) => cellPopup('priority', undefined, e)}
-        style={{ borderRight: '1px solid #efefeb', cursor: viewer ? 'default' : 'pointer' }}
+        style={{ borderRight: '1px solid var(--surf-1)', cursor: viewer ? 'default' : 'pointer' }}
       >
         {pr ? (
           <div
@@ -847,13 +847,13 @@ function Row({
               color: '#fff',
               fontSize: 12.5,
               fontWeight: 600,
-              boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.05)',
+              boxShadow: 'inset 0 0 0 1px var(--hover)',
             }}
           >
             {pr.label}
           </div>
         ) : (
-          <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c4c4bf', fontSize: 16 }}>
+          <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--line)', fontSize: 16 }}>
             +
           </div>
         )}
@@ -861,10 +861,10 @@ function Row({
 
       <div
         onClick={onTlClick}
-        style={{ display: 'flex', alignItems: 'center', padding: '0 12px', borderRight: '1px solid #efefeb', cursor: viewer ? 'default' : 'pointer' }}
+        style={{ display: 'flex', alignItems: 'center', padding: '0 12px', borderRight: '1px solid var(--surf-1)', cursor: viewer ? 'default' : 'pointer' }}
       >
         {t.tl ? (
-          <div style={{ position: 'relative', width: '100%', height: 20, background: '#eeeeea', borderRadius: 7 }}>
+          <div style={{ position: 'relative', width: '100%', height: 20, background: 'var(--surf-1)', borderRadius: 7 }}>
             {t.phases ? (
               <PhasedBar task={t} fallback={g.color} />
             ) : (
@@ -894,40 +894,40 @@ function Row({
             )}
           </div>
         ) : (
-          <span style={{ color: '#c4c4bf', fontSize: 16, width: '100%', textAlign: 'center' }}>+</span>
+          <span style={{ color: 'var(--line)', fontSize: 16, width: '100%', textAlign: 'center' }}>+</span>
         )}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', padding: '0 10px', borderRight: '1px solid #efefeb', minWidth: 0 }}>
-        <span style={{ fontSize: 12.5, color: '#797d84', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <div style={{ display: 'flex', alignItems: 'center', padding: '0 10px', borderRight: '1px solid var(--surf-1)', minWidth: 0 }}>
+        <span style={{ fontSize: 12.5, color: 'var(--text-soft)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {t.note || '—'}
         </span>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 7, paddingLeft: 18, borderRight: '1px solid #efefeb' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 7, paddingLeft: 18, borderRight: '1px solid var(--surf-1)' }}>
         <Avatar initials={lastBy.initials} color={lastBy.color} size={22} font={9.5} />
-        <span style={{ fontSize: 11.5, color: '#9a9da2', fontWeight: 500, whiteSpace: 'nowrap' }}>{t.lastAgo}</span>
+        <span style={{ fontSize: 11.5, color: 'var(--text-faint)', fontWeight: 500, whiteSpace: 'nowrap' }}>{t.lastAgo}</span>
       </div>
 
       <div
         onClick={(e) => cellPopup('section', undefined, e)}
-        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid #efefeb', cursor: viewer ? 'default' : 'pointer' }}
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid var(--surf-1)', cursor: viewer ? 'default' : 'pointer' }}
       >
-        <span style={{ fontSize: 12, fontWeight: 600, color: '#5b5f66', background: '#f0f0ec', padding: '3px 10px', borderRadius: 6 }}>
+        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-mut)', background: 'var(--surf-1)', padding: '3px 10px', borderRadius: 6 }}>
           {t.section}
         </span>
       </div>
 
       <div
         onClick={(e) => cellPopup('type', undefined, e)}
-        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid #efefeb', cursor: viewer ? 'default' : 'pointer' }}
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid var(--surf-1)', cursor: viewer ? 'default' : 'pointer' }}
       >
         <Pill label={ty.label} bg={ty.bg} />
       </div>
 
       <div
         onClick={(e) => cellPopup('source', undefined, e)}
-        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid #efefeb', cursor: viewer ? 'default' : 'pointer' }}
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid var(--surf-1)', cursor: viewer ? 'default' : 'pointer' }}
       >
         <Pill label={so.label} bg={so.bg} />
       </div>
@@ -955,11 +955,11 @@ function CustomCell({ col, taskId, viewer }: { col: CustomCol; taskId: string; v
     fontSize: 13,
     background: 'transparent',
     outline: 'none',
-    color: '#3a3d42',
+    color: 'var(--text-3)',
   };
 
   const wrap = (child: React.ReactNode) => (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', borderRight: '1px solid #efefeb' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', borderRight: '1px solid var(--surf-1)' }}>
       {child}
     </div>
   );
@@ -1009,8 +1009,8 @@ function CustomCell({ col, taskId, viewer }: { col: CustomCol; taskId: string; v
           width: 19,
           height: 19,
           borderRadius: 5,
-          border: `2px solid ${checked ? ACCENT : '#cfcfca'}`,
-          background: checked ? ACCENT : '#fff',
+          border: `2px solid ${checked ? ACCENT : 'var(--line)'}`,
+          background: checked ? ACCENT : 'var(--card)',
           cursor: viewer ? 'default' : 'pointer',
           display: 'flex',
           alignItems: 'center',
@@ -1039,7 +1039,7 @@ function CustomCell({ col, taskId, viewer }: { col: CustomCol; taskId: string; v
           width: '100%',
           height: 28,
           borderRadius: 6,
-          background: cur ? cur.color : 'rgba(0,0,0,0.05)',
+          background: cur ? cur.color : 'var(--hover)',
           color: '#fff',
           display: 'flex',
           alignItems: 'center',
@@ -1047,7 +1047,7 @@ function CustomCell({ col, taskId, viewer }: { col: CustomCol; taskId: string; v
           fontSize: 12,
           fontWeight: 600,
           cursor: viewer ? 'default' : 'pointer',
-          boxShadow: cur ? 'inset 0 1px 0 rgba(255,255,255,0.25)' : 'none',
+          boxShadow: cur ? 'inset 0 1px 0 var(--glass-edge)' : 'none',
         }}
       >
         {cur ? cur.label : '—'}
@@ -1109,8 +1109,8 @@ function SubRows({
             padding: '0 0 0 84px',
             height: 36,
             borderLeft: `3px solid ${g.color}`,
-            borderBottom: '1px solid #efefeb',
-            background: 'rgba(247,247,250,0.75)',
+            borderBottom: '1px solid var(--surf-1)',
+            background: 'var(--glass-hi)',
           }}
         >
           <input
@@ -1152,7 +1152,7 @@ function SubRows({
             padding: '0 0 0 84px',
             height: 32,
             borderLeft: '3px solid transparent',
-            color: '#a6a8ab',
+            color: 'var(--text-faint)',
             fontSize: 12.5,
             fontWeight: 600,
             cursor: 'pointer',
@@ -1189,7 +1189,7 @@ function SubRow({
   const so = personById(sub.owner);
 
   let sdueLabel = '—';
-  let sdueColor = '#c4c4bf';
+  let sdueColor = 'var(--line)';
   let sdueStrike = 'none';
   if (sub.due) {
     sdueLabel = fmt(sub.due);
@@ -1197,7 +1197,7 @@ function SubRow({
       sdueColor = '#4a9b7f';
       sdueStrike = 'line-through';
     } else {
-      sdueColor = dayNum(sub.due) < dayNum(TODAY) ? '#cf6b6b' : '#6b6f76';
+      sdueColor = dayNum(sub.due) < dayNum(TODAY) ? '#cf6b6b' : 'var(--text-mut)';
     }
   }
 
@@ -1218,30 +1218,30 @@ function SubRow({
         display: 'grid',
         gridTemplateColumns: gridCols,
         height: 36,
-        background: 'rgba(247,247,250,0.6)',
-        borderBottom: '1px solid #efefeb',
+        background: 'var(--glass)',
+        borderBottom: '1px solid var(--surf-1)',
         borderLeft: `3px solid ${g.color}`,
       }}
     >
-      <div style={{ borderRight: '1px solid #efefeb' }} />
+      <div style={{ borderRight: '1px solid var(--surf-1)' }} />
       <div
         onClick={() => openPanel(taskId)}
-        style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 8px 0 28px', borderRight: '1px solid #efefeb', cursor: 'pointer', minWidth: 0 }}
+        style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 8px 0 28px', borderRight: '1px solid var(--surf-1)', cursor: 'pointer', minWidth: 0 }}
       >
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#bcbcc2" strokeWidth="2.2" style={{ flexShrink: 0 }}>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--line)" strokeWidth="2.2" style={{ flexShrink: 0 }}>
           <path d="M5 5v8a3 3 0 0 0 3 3h11" />
         </svg>
-        <span style={{ fontSize: 12.5, fontWeight: 500, color: '#4a4d52', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {sub.name}
         </span>
       </div>
       <div
         onClick={(e) => subPopup('people', undefined, e)}
-        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid #efefeb', cursor: viewer ? 'default' : 'pointer' }}
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: '1px solid var(--surf-1)', cursor: viewer ? 'default' : 'pointer' }}
       >
-        {so ? <Avatar initials={so.initials} color={so.color} size={24} font={10} /> : <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1.5px dashed #cfcfca' }} />}
+        {so ? <Avatar initials={so.initials} color={so.color} size={24} font={10} /> : <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1.5px dashed var(--line)' }} />}
       </div>
-      <div onClick={(e) => subPopup('status', undefined, e)} style={{ borderRight: '1px solid #efefeb', cursor: viewer ? 'default' : 'pointer' }}>
+      <div onClick={(e) => subPopup('status', undefined, e)} style={{ borderRight: '1px solid var(--surf-1)', cursor: viewer ? 'default' : 'pointer' }}>
         <div
           className="noinv"
           style={{
@@ -1254,7 +1254,7 @@ function SubRow({
             color: '#fff',
             fontSize: 12,
             fontWeight: 600,
-            boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.05)',
+            boxShadow: 'inset 0 0 0 1px var(--hover)',
           }}
         >
           {sst.label}
@@ -1266,7 +1266,7 @@ function SubRow({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRight: '1px solid #efefeb',
+          borderRight: '1px solid var(--surf-1)',
           cursor: viewer ? 'default' : 'pointer',
           fontSize: 12,
           fontWeight: 600,
@@ -1277,7 +1277,7 @@ function SubRow({
         {sdueLabel}
       </div>
       {Array.from({ length: tail }).map((_, i) => (
-        <div key={i} style={i === tail - 1 ? undefined : { borderRight: '1px solid #efefeb' }} />
+        <div key={i} style={i === tail - 1 ? undefined : { borderRight: '1px solid var(--surf-1)' }} />
       ))}
     </div>
   );
@@ -1340,7 +1340,7 @@ function Battery({ segs }: { segs: { pct: string; bg: string }[] }) {
         height: 11,
         borderRadius: 6,
         overflow: 'hidden',
-        boxShadow: 'inset 0 1px 1px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25)',
+        boxShadow: 'inset 0 1px 1px var(--scrim), inset 0 1px 0 var(--glass-edge)',
       }}
     >
       {segs.map((s, i) => (
@@ -1359,22 +1359,22 @@ function EmptyRow({ color, icon, children }: { color: string; icon: 'board' | 's
         gap: 11,
         padding: '14px 18px 14px 22px',
         borderLeft: `3px solid ${color}`,
-        borderBottom: '1px solid #efefeb',
-        background: 'rgba(255,255,255,0.4)',
+        borderBottom: '1px solid var(--surf-1)',
+        background: 'var(--glass-soft)',
       }}
     >
       {icon === 'board' ? (
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#bcbcb7" strokeWidth="2">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--line)" strokeWidth="2">
           <rect x="3" y="4" width="18" height="16" rx="2" />
           <path d="M3 10h18" />
         </svg>
       ) : (
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#bcbcb7" strokeWidth="2">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--line)" strokeWidth="2">
           <circle cx="11" cy="11" r="7" />
           <path d="M21 21l-4.3-4.3" />
         </svg>
       )}
-      <span style={{ fontSize: 13, color: '#9a9da2' }}>{children}</span>
+      <span style={{ fontSize: 13, color: 'var(--text-faint)' }}>{children}</span>
     </div>
   );
 }
@@ -1388,22 +1388,22 @@ function NoResults({ query }: { query: string }) {
           width: 60,
           height: 60,
           borderRadius: 18,
-          background: 'rgba(255,255,255,0.55)',
-          border: '1px solid rgba(255,255,255,0.6)',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
+          background: 'var(--glass)',
+          border: '1px solid var(--glass)',
+          boxShadow: 'inset 0 1px 0 var(--glass-hi)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: 16,
         }}
       >
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a6a8ab" strokeWidth="1.8">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="1.8">
           <circle cx="11" cy="11" r="7" />
           <path d="M21 21l-4.3-4.3" />
         </svg>
       </div>
       <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 5 }}>Ничего не найдено</div>
-      <div style={{ fontSize: 13.5, color: '#797d84', marginBottom: 18 }}>
+      <div style={{ fontSize: 13.5, color: 'var(--text-soft)', marginBottom: 18 }}>
         По запросу «{query}» нет задач ни в одной роли.
       </div>
       <button
@@ -1411,12 +1411,12 @@ function NoResults({ query }: { query: string }) {
         style={{
           height: 38,
           padding: '0 18px',
-          border: '1px solid rgba(0,0,0,0.1)',
-          background: 'rgba(255,255,255,0.6)',
+          border: '1px solid var(--hover)',
+          background: 'var(--glass)',
           borderRadius: 10,
           fontSize: 13.5,
           fontWeight: 700,
-          color: '#3a3d42',
+          color: 'var(--text-3)',
           cursor: 'pointer',
         }}
       >

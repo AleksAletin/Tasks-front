@@ -23,7 +23,7 @@ export function UsersScreen() {
     <div style={{ padding: '24px 28px 60px', maxWidth: 1080 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
         <h2 style={{ margin: 0, fontSize: 22, fontWeight: 800, letterSpacing: '-.4px' }}>Пользователи и доступ</h2>
-        <span style={{ fontSize: 12.5, fontWeight: 600, color: '#797d84' }}>{rows.length} человек</span>
+        <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-soft)' }}>{rows.length} человек</span>
         <div style={{ flex: 1 }} />
         <button
           onClick={openInvite}
@@ -53,13 +53,13 @@ export function UsersScreen() {
 
       <div
         style={{
-          background: 'rgba(255,255,255,0.55)',
+          background: 'var(--glass)',
           backdropFilter: 'blur(20px) saturate(165%)',
           WebkitBackdropFilter: 'blur(20px) saturate(165%)',
-          border: '1px solid rgba(255,255,255,0.55)',
+          border: '1px solid var(--glass)',
           borderRadius: 16,
           overflow: 'hidden',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+          boxShadow: 'inset 0 1px 0 var(--glass)',
         }}
       >
         <div
@@ -67,10 +67,10 @@ export function UsersScreen() {
             display: 'grid',
             gridTemplateColumns: GRID,
             padding: '12px 18px',
-            borderBottom: '1px solid rgba(0,0,0,0.06)',
+            borderBottom: '1px solid var(--hover)',
             fontSize: 12,
             fontWeight: 700,
-            color: '#8a8d92',
+            color: 'var(--text-soft)',
           }}
         >
           <div>Пользователь</div>
@@ -79,10 +79,10 @@ export function UsersScreen() {
           <div>Статус</div>
         </div>
         {rows.map((u) => {
-          const roleBg = ROLE_COLORS[u.role] || '#9aa0a6';
+          const roleBg = ROLE_COLORS[u.role] || 'var(--text-faint)';
           const statusLabel = u.active ? 'Активен' : 'Деактивирован';
-          const statusColor = u.active ? '#3a7d63' : '#9a9da2';
-          const statusBg = u.active ? '#e8f3ee' : '#eeeeea';
+          const statusColor = u.active ? '#3a7d63' : 'var(--text-faint)';
+          const statusBg = u.active ? 'var(--green-tint)' : 'var(--surf-1)';
           return (
             <div
               key={u.id}
@@ -91,7 +91,7 @@ export function UsersScreen() {
                 gridTemplateColumns: GRID,
                 alignItems: 'center',
                 padding: '11px 18px',
-                borderBottom: '1px solid rgba(0,0,0,0.04)',
+                borderBottom: '1px solid var(--hover)',
                 opacity: u.active ? 1 : 0.5,
               }}
             >
@@ -110,7 +110,7 @@ export function UsersScreen() {
                     fontSize: 12,
                     fontWeight: 700,
                     flexShrink: 0,
-                    boxShadow: 'inset 0 0 0 1.5px rgba(255,255,255,0.35)',
+                    boxShadow: 'inset 0 0 0 1.5px var(--glass-edge)',
                   }}
                 >
                   {u.initials}
@@ -120,7 +120,7 @@ export function UsersScreen() {
                     style={{
                       fontSize: 13.5,
                       fontWeight: 700,
-                      color: '#2a2d32',
+                      color: 'var(--text-2)',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -131,7 +131,7 @@ export function UsersScreen() {
                   <div
                     style={{
                       fontSize: 12,
-                      color: '#9a9da2',
+                      color: 'var(--text-faint)',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -156,13 +156,13 @@ export function UsersScreen() {
                     padding: '4px 11px',
                     borderRadius: 7,
                     cursor: 'pointer',
-                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25)',
+                    boxShadow: 'inset 0 1px 0 var(--glass-edge)',
                   }}
                 >
                   {u.role}
                 </span>
               </div>
-              <div style={{ fontSize: 12.5, fontWeight: 500, color: '#797d84' }}>{u.lastActive}</div>
+              <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text-soft)' }}>{u.lastActive}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span
                   style={{
@@ -187,7 +187,7 @@ export function UsersScreen() {
                     justifyContent: 'center',
                     borderRadius: 7,
                     cursor: 'pointer',
-                    color: '#a6a8ab',
+                    color: 'var(--text-faint)',
                   }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -201,7 +201,7 @@ export function UsersScreen() {
           );
         })}
       </div>
-      <div style={{ fontSize: 12, color: '#9a9da2', marginTop: 12 }}>
+      <div style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 12 }}>
         Клик по роли — сменить · «⋯» — деактивировать/активировать. Наблюдатель и Гость имеют доступ только на просмотр.
       </div>
 
@@ -230,12 +230,12 @@ function InvitePopup() {
           zIndex: 96,
           width: 440,
           maxWidth: '92vw',
-          background: 'rgba(250,250,253,0.84)',
+          background: 'var(--glass-hi)',
           backdropFilter: 'blur(34px) saturate(180%)',
           WebkitBackdropFilter: 'blur(34px) saturate(180%)',
-          border: '1px solid rgba(255,255,255,0.6)',
+          border: '1px solid var(--glass)',
           borderRadius: 18,
-          boxShadow: '0 30px 70px rgba(30,40,80,.28), inset 0 1px 0 rgba(255,255,255,.7)',
+          boxShadow: '0 30px 70px var(--shadow-lg), inset 0 1px 0 var(--glass-hi)',
           padding: 24,
           animation: 'popIn .16s ease',
         }}
@@ -272,7 +272,7 @@ function InvitePopup() {
               justifyContent: 'center',
               borderRadius: 8,
               cursor: 'pointer',
-              color: '#9a9da2',
+              color: 'var(--text-faint)',
             }}
           >
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -284,7 +284,7 @@ function InvitePopup() {
           style={{
             fontSize: 11.5,
             fontWeight: 700,
-            color: '#8a8d92',
+            color: 'var(--text-soft)',
             textTransform: 'uppercase',
             letterSpacing: '.4px',
             marginBottom: 7,
@@ -299,21 +299,21 @@ function InvitePopup() {
           style={{
             width: '100%',
             height: 42,
-            border: '1px solid rgba(0,0,0,0.1)',
+            border: '1px solid var(--hover)',
             borderRadius: 11,
-            background: 'rgba(255,255,255,0.6)',
+            background: 'var(--glass)',
             padding: '0 13px',
             fontSize: 14,
             outline: 'none',
             marginBottom: 18,
-            color: '#23262b',
+            color: 'var(--text)',
           }}
         />
         <div
           style={{
             fontSize: 11.5,
             fontWeight: 700,
-            color: '#8a8d92',
+            color: 'var(--text-soft)',
             textTransform: 'uppercase',
             letterSpacing: '.4px',
             marginBottom: 8,
@@ -336,9 +336,9 @@ function InvitePopup() {
                   fontSize: 12,
                   fontWeight: 700,
                   cursor: 'pointer',
-                  background: on ? ROLE_COLORS[r] : 'rgba(255,255,255,0.6)',
-                  color: on ? '#fff' : '#5b5f66',
-                  border: `1px solid ${on ? ROLE_COLORS[r] : 'rgba(0,0,0,0.08)'}`,
+                  background: on ? ROLE_COLORS[r] : 'var(--glass)',
+                  color: on ? '#fff' : 'var(--text-mut)',
+                  border: `1px solid ${on ? ROLE_COLORS[r] : 'var(--hover)'}`,
                   transition: 'all .14s ease',
                 }}
               >
@@ -353,9 +353,9 @@ function InvitePopup() {
             style={{
               flex: 1,
               height: 40,
-              border: '1px solid rgba(0,0,0,0.1)',
+              border: '1px solid var(--hover)',
               background: 'transparent',
-              color: '#5b5f66',
+              color: 'var(--text-mut)',
               borderRadius: 10,
               fontSize: 13.5,
               fontWeight: 700,

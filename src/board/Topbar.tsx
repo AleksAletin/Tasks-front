@@ -19,11 +19,11 @@ export function Topbar() {
       style={{
         height: 54,
         flexShrink: 0,
-        background: 'rgba(255,255,255,0.55)',
+        background: 'var(--glass)',
         backdropFilter: 'blur(26px) saturate(170%)',
         WebkitBackdropFilter: 'blur(26px) saturate(170%)',
-        borderBottom: '1px solid rgba(255,255,255,0.5)',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+        borderBottom: '1px solid var(--glass)',
+        boxShadow: 'inset 0 1px 0 var(--glass)',
         display: 'flex',
         alignItems: 'center',
         gap: 14,
@@ -39,7 +39,7 @@ export function Topbar() {
             left: 11,
             top: '50%',
             transform: 'translateY(-50%)',
-            color: '#a6a8ab',
+            color: 'var(--text-faint)',
             display: 'flex',
           }}
         >
@@ -55,16 +55,16 @@ export function Topbar() {
           style={{
             width: '100%',
             height: 34,
-            border: '1px solid #e6e6e2',
+            border: '1px solid var(--surf-2)',
             borderRadius: 9,
-            background: 'rgba(255,255,255,0.45)',
+            background: 'var(--glass-soft)',
             backdropFilter: 'blur(12px) saturate(150%)',
             WebkitBackdropFilter: 'blur(12px) saturate(150%)',
-            boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.04)',
+            boxShadow: 'inset 0 1px 2px var(--hover)',
             padding: '0 12px 0 33px',
             fontSize: 13,
             outline: 'none',
-            color: '#23262b',
+            color: 'var(--text)',
           }}
         />
       </div>
@@ -73,7 +73,7 @@ export function Topbar() {
         style={{
           display: 'flex',
           alignItems: 'center',
-          background: 'rgba(0,0,0,0.045)',
+          background: 'var(--hover)',
           borderRadius: 9,
           padding: 3,
           marginRight: 8,
@@ -87,9 +87,9 @@ export function Topbar() {
             fontSize: 12.5,
             fontWeight: 600,
             cursor: 'pointer',
-            background: !viewer ? '#fff' : 'transparent',
-            color: !viewer ? '#23262b' : '#797d84',
-            boxShadow: !viewer ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+            background: !viewer ? 'var(--card)' : 'transparent',
+            color: !viewer ? 'var(--text)' : 'var(--text-soft)',
+            boxShadow: !viewer ? '0 1px 3px var(--hover)' : 'none',
             transition: 'all .14s ease',
           }}
         >
@@ -103,16 +103,16 @@ export function Topbar() {
             fontSize: 12.5,
             fontWeight: 600,
             cursor: 'pointer',
-            background: viewer ? '#fff' : 'transparent',
-            color: viewer ? '#23262b' : '#797d84',
-            boxShadow: viewer ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+            background: viewer ? 'var(--card)' : 'transparent',
+            color: viewer ? 'var(--text)' : 'var(--text-soft)',
+            boxShadow: viewer ? '0 1px 3px var(--hover)' : 'none',
             transition: 'all .14s ease',
           }}
         >
           Наблюдатель
         </div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#6b6f76' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--text-mut)' }}>
         <Tip text="Уведомления" style={iconBtn}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
             <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -142,8 +142,8 @@ export function Topbar() {
             alignItems: 'center',
             gap: 7,
             cursor: 'pointer',
-            color: '#9a9da2',
-            border: '1px solid #e6e6e2',
+            color: 'var(--text-faint)',
+            border: '1px solid var(--surf-2)',
           }}
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -165,7 +165,7 @@ export function Topbar() {
           )}
         </Tip>
         {!viewer && (
-          <Tip text="Настройки · Админ" style={{ ...iconBtn, color: '#6b6f76' }} onClick={openSettings}>
+          <Tip text="Настройки · Админ" style={{ ...iconBtn, color: 'var(--text-mut)' }} onClick={openSettings}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
               <circle cx="12" cy="12" r="3" />
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
@@ -177,12 +177,12 @@ export function Topbar() {
             height: 34,
             padding: '0 13px',
             marginLeft: 6,
-            border: '1px solid #e6e6e2',
-            background: '#fff',
+            border: '1px solid var(--surf-2)',
+            background: 'var(--card)',
             borderRadius: 9,
             fontSize: 13,
             fontWeight: 600,
-            color: '#3a3d42',
+            color: 'var(--text-3)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',

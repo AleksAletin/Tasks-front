@@ -173,13 +173,13 @@ export function buildView(p: ViewParams): { groups: ViewGroup[]; tableEmptyAll: 
             : k;
     const cl = (k: string) =>
       gBy === 'status'
-        ? STATUS[k as StatusKey]?.bg || '#a3a7af'
+        ? STATUS[k as StatusKey]?.bg || 'var(--text-faint)'
         : gBy === 'priority'
           ? k === 'none'
-            ? '#cfcfca'
-            : PRIO[k as PrioKey]?.bg || '#a3a7af'
+            ? 'var(--line)'
+            : PRIO[k as PrioKey]?.bg || 'var(--text-faint)'
           : gBy === 'owner'
-            ? personById(k)?.color || '#a3a7af'
+            ? personById(k)?.color || 'var(--text-faint)'
             : ACCENT;
     rawGroups = keys.map((k) => ({
       id: 'grp_' + gBy + '_' + k,
@@ -221,7 +221,7 @@ export interface DueInfo {
 }
 export function deriveDue(task: Task): DueInfo {
   let label = '—';
-  let color = '#c4c4bf';
+  let color = 'var(--line)';
   let strike: 'none' | 'line-through' = 'none';
   let check = false;
   let clock = false;
@@ -233,7 +233,7 @@ export function deriveDue(task: Task): DueInfo {
       check = true;
     } else {
       const overdue = dayNum(task.due) < dayNum(TODAY);
-      color = overdue ? '#cf6b6b' : '#6b6f76';
+      color = overdue ? '#cf6b6b' : 'var(--text-mut)';
       clock = true;
     }
   }

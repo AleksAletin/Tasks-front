@@ -114,7 +114,7 @@ export const STATUS: Record<StatusKey, { label: string; bg: string }> = {
   work: { label: 'В работе', bg: '#cf9248' },
   done: { label: 'Готово', bg: '#4a9b7f' },
   stuck: { label: 'Застряли', bg: '#cf6b6b' },
-  plan: { label: 'План', bg: '#a3a7af' },
+  plan: { label: 'План', bg: 'var(--text-faint)' },
 };
 export const STATUS_ORDER: StatusKey[] = ['done', 'work', 'stuck', 'plan'];
 
@@ -122,7 +122,7 @@ export const PRIO: Record<PrioKey, { label: string; bg: string }> = {
   crit: { label: 'Критичный', bg: '#cf6b6b' },
   high: { label: 'Высокий', bg: '#4e5499' },
   mid: { label: 'Средний', bg: '#7d83c4' },
-  low: { label: 'Низкий', bg: '#a3a7af' },
+  low: { label: 'Низкий', bg: 'var(--text-faint)' },
 };
 export const PRIO_ORDER: PrioKey[] = ['crit', 'high', 'mid', 'low'];
 
@@ -135,7 +135,7 @@ export const TYPE_ORDER: TypeKey[] = ['mig', 'feat', 'bug'];
 
 export const SOURCE: Record<SourceKey, { label: string; bg: string }> = {
   ours: { label: 'наша БД', bg: '#3fa8a0' },
-  contour: { label: 'контур БД', bg: '#7a8290' },
+  contour: { label: 'контур БД', bg: 'var(--text-soft)' },
 };
 export const SOURCE_ORDER: SourceKey[] = ['ours', 'contour'];
 
@@ -155,7 +155,7 @@ export const PEOPLE: Person[] = [
   { id: 'p4', name: 'Сергей Павлов', initials: 'СП', color: '#d6953f', email: 's.pavlov@work.app', role: 'Участник', lastActive: '40 мин назад', active: true },
   { id: 'p5', name: 'Игорь Романов', initials: 'ИР', color: '#cf6b6b', email: 'i.romanov@work.app', role: 'Наблюдатель', lastActive: '3 ч назад', active: true },
   { id: 'p6', name: 'Ольга Зайцева', initials: 'ОЗ', color: '#6b9b4a', email: 'o.zaytseva@partner.io', role: 'Гость', lastActive: 'вчера', active: true },
-  { id: 'p7', name: 'Павел Лебедев', initials: 'ПЛ', color: '#9aa0a6', email: 'p.lebedev@work.app', role: 'Участник', lastActive: '2 недели назад', active: false },
+  { id: 'p7', name: 'Павел Лебедев', initials: 'ПЛ', color: 'var(--text-faint)', email: 'p.lebedev@work.app', role: 'Участник', lastActive: '2 недели назад', active: false },
 ];
 
 export const ROLES = ['Админ', 'Участник', 'Наблюдатель', 'Гость'];
@@ -163,16 +163,16 @@ export const ROLE_COLORS: Record<string, string> = {
   Админ: '#7d83c4',
   Участник: '#5b8def',
   Наблюдатель: '#3fa8a0',
-  Гость: '#9aa0a6',
+  Гость: 'var(--text-faint)',
 };
 
 export const PARITY_COLS = ['Чтение', 'CRUD', 'Экспорт', 'Права', 'Отчёты', 'API'];
 export const PARITY_ORDER: ParityKey[] = ['none', 'work', 'done', 'skip'];
 export const PARITY_STATES: Record<ParityKey, { label: string; color: string }> = {
-  none: { label: 'нет', color: '#cfcfca' },
+  none: { label: 'нет', color: 'var(--line)' },
   work: { label: 'в работе', color: '#cf9248' },
   done: { label: 'готово', color: '#4a9b7f' },
-  skip: { label: 'не переносим', color: '#e3e3df' },
+  skip: { label: 'не переносим', color: 'var(--surf-2)' },
 };
 export const PARITY_DIVERGED: Record<string, string> = { g2: 'Права', g1: 'Отчёты' };
 
@@ -185,7 +185,7 @@ export const COL_TYPES: { key: ColType; label: string; sub: string; d: string }[
   { key: 'check', label: 'Чекбокс', sub: 'Да / нет', d: 'M5 12l5 5L20 6' },
 ];
 export const CUSTOM_STATES = [
-  { label: 'Не начато', color: '#a3a7af' },
+  { label: 'Не начато', color: 'var(--text-faint)' },
   { label: 'В работе', color: '#cf9248' },
   { label: 'На проверке', color: '#7d83c4' },
   { label: 'Готово', color: '#4a9b7f' },

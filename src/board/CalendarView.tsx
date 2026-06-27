@@ -51,8 +51,8 @@ export function CalendarView() {
               key: 'e' + i + j,
               empty: true,
               day: null,
-              cellBg: 'rgba(0,0,0,0.02)',
-              dayColor: '#3a3d42',
+              cellBg: 'var(--hover)',
+              dayColor: 'var(--text-3)',
               dayBg: 'transparent',
               chips: [],
               more: 0,
@@ -68,7 +68,7 @@ export function CalendarView() {
             empty: false,
             day: d,
             cellBg: today ? 'rgba(66,99,216,0.05)' : 'transparent',
-            dayColor: today ? '#fff' : '#3a3d42',
+            dayColor: today ? '#fff' : 'var(--text-3)',
             dayBg: today ? ACCENT : 'transparent',
             chips,
             more,
@@ -98,8 +98,8 @@ export function CalendarView() {
               justifyContent: 'center',
               borderRadius: 9,
               cursor: 'pointer',
-              color: '#6b6f76',
-              background: 'rgba(255,255,255,0.5)',
+              color: 'var(--text-mut)',
+              background: 'var(--glass)',
             }}
           >
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
@@ -118,8 +118,8 @@ export function CalendarView() {
               justifyContent: 'center',
               borderRadius: 9,
               cursor: 'pointer',
-              color: '#6b6f76',
-              background: 'rgba(255,255,255,0.5)',
+              color: 'var(--text-mut)',
+              background: 'var(--glass)',
             }}
           >
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
@@ -135,12 +135,12 @@ export function CalendarView() {
               height: 32,
               padding: '0 14px',
               marginLeft: 6,
-              border: '1px solid rgba(255,255,255,0.6)',
-              background: 'rgba(255,255,255,0.55)',
+              border: '1px solid var(--glass)',
+              background: 'var(--glass)',
               borderRadius: 9,
               fontSize: 13,
               fontWeight: 600,
-              color: '#3a3d42',
+              color: 'var(--text-3)',
               cursor: 'pointer',
             }}
           >
@@ -151,18 +151,18 @@ export function CalendarView() {
 
       <div
         style={{
-          background: 'rgba(255,255,255,0.5)',
+          background: 'var(--glass)',
           backdropFilter: 'blur(20px) saturate(165%)',
           WebkitBackdropFilter: 'blur(20px) saturate(165%)',
-          border: '1px solid rgba(255,255,255,0.55)',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+          border: '1px solid var(--glass)',
+          boxShadow: 'inset 0 1px 0 var(--glass)',
           borderRadius: 16,
           overflow: 'hidden',
         }}
       >
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', borderBottom: '1px solid var(--hover)' }}>
           {DOWS.map((d) => (
-            <div key={d} style={{ padding: 9, textAlign: 'center', fontSize: 12, fontWeight: 700, color: '#8a8d92' }}>
+            <div key={d} style={{ padding: 9, textAlign: 'center', fontSize: 12, fontWeight: 700, color: 'var(--text-soft)' }}>
               {d}
             </div>
           ))}
@@ -174,8 +174,8 @@ export function CalendarView() {
                 key={c.key}
                 style={{
                   minHeight: 114,
-                  borderRight: '1px solid rgba(0,0,0,0.05)',
-                  borderTop: '1px solid rgba(0,0,0,0.05)',
+                  borderRight: '1px solid var(--hover)',
+                  borderTop: '1px solid var(--hover)',
                   padding: '7px 7px 6px',
                   background: c.cellBg,
                 }}
@@ -220,14 +220,14 @@ export function CalendarView() {
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
-                            boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.05), inset 0 1px 0 rgba(255,255,255,0.3)',
+                            boxShadow: 'inset 0 0 0 1px var(--hover), inset 0 1px 0 var(--glass-edge)',
                           }}
                         >
                           {ct.name}
                         </div>
                       ))}
                       {c.more > 0 && (
-                        <div style={{ fontSize: 11, fontWeight: 600, color: '#9a9da2', padding: '1px 7px' }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-faint)', padding: '1px 7px' }}>
                           +{c.more} ещё
                         </div>
                       )}

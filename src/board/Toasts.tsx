@@ -35,9 +35,9 @@ export function Toasts() {
             background: 'rgba(28,31,36,0.8)',
             backdropFilter: 'blur(24px) saturate(180%)',
             WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-            border: '1px solid rgba(255,255,255,0.12)',
+            border: '1px solid var(--glass-edge)',
             borderRadius: 13,
-            boxShadow: '0 16px 40px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.14)',
+            boxShadow: '0 16px 40px var(--scrim), inset 0 1px 0 var(--glass-edge)',
             animation: 'toastIn .22s cubic-bezier(.22,.85,.25,1)',
           }}
         >
@@ -52,7 +52,7 @@ export function Toasts() {
                 height: 28,
                 padding: '0 12px',
                 border: 'none',
-                background: 'rgba(255,255,255,0.14)',
+                background: 'var(--glass-edge)',
                 color: '#fff',
                 borderRadius: 7,
                 fontSize: 12.5,
@@ -73,7 +73,7 @@ export function Toasts() {
               justifyContent: 'center',
               borderRadius: 6,
               cursor: 'pointer',
-              color: '#b6b9be',
+              color: 'var(--text-faint)',
             }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">

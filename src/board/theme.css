@@ -1,5 +1,80 @@
-/* Design system ported 1:1 from the prototype (Ultra Board.dc.html <style> + §3 brief).
-   "Liquid glass": ambient gradient base + translucent blurred chrome. */
+/* Design system ported from the prototype (Ultra Board.dc.html <style> + §3 brief).
+   "Liquid glass": ambient gradient base + translucent blurred chrome.
+
+   Theming: a semantic token layer (:root = light) with a real dark palette
+   (:root[data-theme='dark']). Neutrals (text / surfaces / lines / glass /
+   overlays / tints) are tokenized; brand fills and on-colour #fff stay literal
+   (they read on both themes). No filter:invert — dark is a true palette. */
+
+:root {
+  /* base */
+  --bg: #eceef2;
+  /* text ramp (dark→light text) */
+  --text: #23262b;
+  --text-2: #2a2d32;
+  --text-3: #3a3d42;
+  --text-mut: #5b5f66;
+  --text-soft: #797d84;
+  --text-faint: #9a9da2;
+  /* surfaces & lines */
+  --card: #fff; /* solid opaque surfaces (panels, menus, invite, checkbox) */
+  --surf-1: #efefeb;
+  --surf-2: #e6e6e2;
+  --line: #cfcfca;
+  /* glass (translucent chrome) */
+  --glass: rgba(255, 255, 255, 0.6);
+  --glass-soft: rgba(255, 255, 255, 0.45);
+  --glass-hi: rgba(255, 255, 255, 0.75);
+  --glass-edge: rgba(255, 255, 255, 0.6); /* inner top specular highlight */
+  --glass-border: rgba(255, 255, 255, 0.6);
+  /* overlays */
+  --hover: rgba(0, 0, 0, 0.05); /* hover/press tint — inverts on dark */
+  --scrim: rgba(0, 0, 0, 0.15);
+  --shadow: rgba(30, 40, 80, 0.18);
+  --shadow-lg: rgba(30, 40, 80, 0.3);
+  /* pastel chip tints */
+  --blue-tint: #eef0fb;
+  --green-tint: #e8f3ee;
+  --red-tint: #fbf0f0;
+  --amber-tint: #fbf6ef;
+  /* selected row */
+  --sel: rgba(238, 242, 253, 0.82);
+  /* scrollbar */
+  --sb-thumb: #d8d8d3;
+  --sb-thumb-hover: #c4c4be;
+  --sb-track: #f4f4f2;
+}
+
+:root[data-theme='dark'] {
+  --bg: #0f1116;
+  --text: #e9eaed;
+  --text-2: #e2e3e6;
+  --text-3: #cccfd5;
+  --text-mut: #aaaeb5;
+  --text-soft: #969aa2;
+  --text-faint: #777b83;
+  --card: #1c1f26;
+  --surf-1: #1d2128;
+  --surf-2: #23272f;
+  --line: #343941;
+  --glass: rgba(34, 38, 46, 0.62);
+  --glass-soft: rgba(34, 38, 46, 0.4);
+  --glass-hi: rgba(46, 51, 60, 0.72);
+  --glass-edge: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --hover: rgba(255, 255, 255, 0.055);
+  --scrim: rgba(0, 0, 0, 0.5);
+  --shadow: rgba(0, 0, 0, 0.4);
+  --shadow-lg: rgba(0, 0, 0, 0.55);
+  --blue-tint: #1b2742;
+  --green-tint: #142420;
+  --red-tint: #2a1617;
+  --amber-tint: #271f12;
+  --sel: rgba(48, 60, 92, 0.5);
+  --sb-thumb: #3a3f48;
+  --sb-thumb-hover: #4a4f58;
+  --sb-track: #14171c;
+}
 
 * {
   box-sizing: border-box;
@@ -13,14 +88,24 @@ body,
 }
 body {
   font-family: 'Onest', system-ui, sans-serif;
-  color: #23262b;
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
   background:
     radial-gradient(820px 580px at 10% 6%, rgba(91, 141, 239, 0.13), transparent 58%),
     radial-gradient(760px 560px at 90% 10%, rgba(139, 111, 214, 0.12), transparent 55%),
     radial-gradient(720px 620px at 78% 96%, rgba(63, 168, 160, 0.11), transparent 56%),
     radial-gradient(680px 520px at 24% 90%, rgba(214, 149, 63, 0.08), transparent 55%),
-    #eceef2;
+    var(--bg);
+  background-attachment: fixed;
+}
+/* dark ambient base — deeper blobs over a near-black field */
+:root[data-theme='dark'] body {
+  background:
+    radial-gradient(820px 580px at 10% 6%, rgba(91, 141, 239, 0.16), transparent 58%),
+    radial-gradient(760px 560px at 90% 10%, rgba(139, 111, 214, 0.15), transparent 55%),
+    radial-gradient(720px 620px at 78% 96%, rgba(63, 168, 160, 0.13), transparent 56%),
+    radial-gradient(680px 520px at 24% 90%, rgba(214, 149, 63, 0.09), transparent 55%),
+    var(--bg);
   background-attachment: fixed;
 }
 .mono {
@@ -32,12 +117,12 @@ body {
   height: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #d8d8d3;
+  background: var(--sb-thumb);
   border-radius: 6px;
-  border: 2px solid #f4f4f2;
+  border: 2px solid var(--sb-track);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #c4c4be;
+  background: var(--sb-thumb-hover);
 }
 input,
 button,
@@ -141,18 +226,18 @@ textarea {
 
 /* glass surface helpers */
 .glass {
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--glass);
   backdrop-filter: blur(24px) saturate(170%);
   -webkit-backdrop-filter: blur(24px) saturate(170%);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 12px 34px rgba(30, 40, 80, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 12px 34px var(--shadow), inset 0 1px 0 var(--glass-edge);
 }
 .glass-strong {
-  background: rgba(255, 255, 255, 0.66);
+  background: var(--glass-hi);
   backdrop-filter: blur(34px) saturate(180%);
   -webkit-backdrop-filter: blur(34px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  box-shadow: 0 18px 50px rgba(30, 40, 80, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 18px 50px var(--shadow-lg), inset 0 1px 0 var(--glass-edge);
 }
 
 .tipwrap {
@@ -167,13 +252,13 @@ textarea {
   padding: 5px 10px;
   font-size: 12px;
   font-weight: 600;
-  color: #2a2d32;
-  background: rgba(255, 255, 255, 0.6);
+  color: var(--text-2);
+  background: var(--glass);
   backdrop-filter: blur(20px) saturate(185%);
   -webkit-backdrop-filter: blur(20px) saturate(185%);
-  border: 1px solid rgba(255, 255, 255, 0.65);
+  border: 1px solid var(--glass-border);
   border-radius: 9px;
-  box-shadow: 0 10px 28px rgba(30, 40, 80, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  box-shadow: 0 10px 28px var(--shadow), inset 0 1px 0 var(--glass-edge);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.16s ease, transform 0.16s ease;
@@ -185,26 +270,10 @@ textarea {
 }
 
 .skel {
-  background: linear-gradient(100deg, rgba(255, 255, 255, 0.25) 30%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0.25) 70%);
+  background: linear-gradient(100deg, var(--glass-soft) 30%, var(--glass) 50%, var(--glass-soft) 70%);
   background-size: 460px 100%;
   animation: shimmer 1.25s linear infinite;
   border-radius: 7px;
-}
-
-/* dark theme: invert filter trick from the prototype */
-.appdark {
-  filter: invert(0.95) hue-rotate(180deg) saturate(1.08);
-  background:
-    radial-gradient(820px 580px at 10% 6%, rgba(91, 141, 239, 0.16), transparent 58%),
-    radial-gradient(760px 560px at 90% 10%, rgba(139, 111, 214, 0.15), transparent 55%),
-    radial-gradient(720px 620px at 78% 96%, rgba(63, 168, 160, 0.14), transparent 56%),
-    radial-gradient(680px 520px at 24% 90%, rgba(214, 149, 63, 0.1), transparent 55%),
-    #eef0f4;
-}
-.appdark img,
-.appdark image,
-.appdark .noinv {
-  filter: invert(1) hue-rotate(180deg);
 }
 
 .grouprow:hover .ghandle,
@@ -212,8 +281,8 @@ textarea {
   opacity: 1;
 }
 .gmove:hover {
-  background: #ececec;
-  color: #5b5f66;
+  background: var(--surf-2);
+  color: var(--text-mut);
 }
 .colhead:hover .colgrip {
   opacity: 1;
@@ -224,14 +293,14 @@ textarea {
 }
 .tlbar:hover {
   filter: brightness(1.05);
-  box-shadow: 0 7px 18px rgba(30, 40, 80, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow: 0 7px 18px var(--shadow-lg), inset 0 1px 0 var(--glass-edge);
 }
 /* phase-dates editor steppers + resource avatar hover (prototype style-hover) */
 .phstep {
   transition: background 0.12s ease;
 }
 .phstep:hover {
-  background: rgba(0, 0, 0, 0.1) !important;
+  background: var(--hover) !important;
 }
 .phres {
   transition: filter 0.12s ease;
@@ -244,7 +313,7 @@ textarea {
   transition: box-shadow 0.16s ease, transform 0.16s ease;
 }
 .alertcard:hover {
-  box-shadow: 0 8px 20px rgba(30, 40, 80, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 20px var(--shadow), inset 0 1px 0 var(--glass-edge);
   transform: translateY(-1px);
 }
 /* dashboard KPI card hover lift (prototype style-hover) */
@@ -253,7 +322,7 @@ textarea {
   transition: border-color 0.16s ease, transform 0.16s ease;
 }
 .dashkpi:hover {
-  border-color: #d6d6d0;
+  border-color: var(--line);
   transform: translateY(-1px);
 }
 .btn-sheen {

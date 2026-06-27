@@ -53,7 +53,7 @@ export function buildAlerts(groups: Group[], parity: Parity, tlDrag: TlDrag | nu
         A.push({
           sev: 'high',
           dot: '#cf6b6b',
-          catBg: '#fbf0f0',
+          catBg: 'var(--red-tint)',
           cat: 'Просрочка',
           title: t.name,
           sub: 'Срок ' + fmt(t.due) + ' · ' + g.name,
@@ -64,7 +64,7 @@ export function buildAlerts(groups: Group[], parity: Parity, tlDrag: TlDrag | nu
         A.push({
           sev: 'high',
           dot: '#cf6b6b',
-          catBg: '#fbf0f0',
+          catBg: 'var(--red-tint)',
           cat: 'Застряли',
           title: t.name,
           sub: (t.note || 'требует внимания') + ' · ' + g.name,
@@ -74,7 +74,7 @@ export function buildAlerts(groups: Group[], parity: Parity, tlDrag: TlDrag | nu
         A.push({
           sev: 'mid',
           dot: '#d6953f',
-          catBg: '#fbf6ef',
+          catBg: 'var(--amber-tint)',
           cat: 'Критичный приоритет',
           title: t.name,
           sub: g.name,
@@ -91,7 +91,7 @@ export function buildAlerts(groups: Group[], parity: Parity, tlDrag: TlDrag | nu
       A.push({
         sev: 'mid',
         dot: '#d6953f',
-        catBg: '#fbf6ef',
+        catBg: 'var(--amber-tint)',
         cat: 'Гейт роли',
         title: 'Роль «' + g.name + '» не готова к переключению',
         sub: pct + '% паритета',
@@ -106,7 +106,7 @@ export function buildAlerts(groups: Group[], parity: Parity, tlDrag: TlDrag | nu
     A.push({
       sev: 'high',
       dot: '#cf6b6b',
-      catBg: '#fbf0f0',
+      catBg: 'var(--red-tint)',
       cat: 'Бутылочное горло',
       title: tl.flag,
       sub: 'Ресурсный затык в плане',

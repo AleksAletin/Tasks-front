@@ -57,7 +57,7 @@ export function TimelineView() {
     <div style={{ padding: '18px 0 60px' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, padding: '0 22px 14px' }}>
         <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, letterSpacing: '-.4px' }}>Таймлайн переезда</h2>
-        <span style={{ fontSize: 12.5, fontWeight: 600, color: '#797d84' }}>{tl.rangeLabel}</span>
+        <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-soft)' }}>{tl.rangeLabel}</span>
       </div>
 
       <div style={{ overflowX: 'auto', padding: '0 22px' }}>
@@ -65,11 +65,11 @@ export function TimelineView() {
           <div
             style={{
               display: 'flex',
-              borderBottom: '1px solid rgba(0,0,0,0.08)',
+              borderBottom: '1px solid var(--hover)',
               position: 'sticky',
               top: 0,
               zIndex: 4,
-              background: 'rgba(252,252,253,0.66)',
+              background: 'var(--glass)',
               backdropFilter: 'blur(14px) saturate(150%)',
               WebkitBackdropFilter: 'blur(14px) saturate(150%)',
             }}
@@ -97,7 +97,7 @@ export function TimelineView() {
                       top: -2,
                       left: 4,
                       fontSize: 9,
-                      color: '#9a9da2',
+                      color: 'var(--text-faint)',
                       textTransform: 'uppercase',
                       letterSpacing: '.3px',
                     }}
@@ -113,7 +113,7 @@ export function TimelineView() {
           <div style={{ position: 'relative' }}>
             <div style={{ position: 'absolute', top: 0, bottom: 0, left: LANE_LABEL_W, display: 'flex', pointerEvents: 'none' }}>
               {tl.days.map((d) => (
-                <div key={d.i} style={{ width: DAY_W, background: d.colBg, borderRight: '1px solid rgba(0,0,0,0.035)' }} />
+                <div key={d.i} style={{ width: DAY_W, background: d.colBg, borderRight: '1px solid var(--hover)' }} />
               ))}
             </div>
             <div
@@ -125,7 +125,7 @@ export function TimelineView() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, height: 34, paddingLeft: 6, marginTop: 8, position: 'relative' }}>
                   <span className="noinv" style={{ width: 8, height: 8, borderRadius: 3, background: grp.color }} />
                   <span style={{ fontSize: 13.5, fontWeight: 700, color: grp.color, letterSpacing: '-.2px' }}>{grp.name}</span>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#a6a8ab', background: '#f0f0ec', padding: '1px 7px', borderRadius: 9 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-faint)', background: 'var(--surf-1)', padding: '1px 7px', borderRadius: 9 }}>
                     {grp.count}
                   </span>
                 </div>
@@ -135,12 +135,12 @@ export function TimelineView() {
               </div>
             ))}
 
-            <div style={{ marginTop: 14, paddingTop: 12, borderTop: '2px solid rgba(0,0,0,0.08)', position: 'relative' }}>
+            <div style={{ marginTop: 14, paddingTop: 12, borderTop: '2px solid var(--hover)', position: 'relative' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 9, height: 30, paddingLeft: 6, marginBottom: 4 }}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5b5f66" strokeWidth="2">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-mut)" strokeWidth="2">
                   <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
                 </svg>
-                <span style={{ fontSize: 13.5, fontWeight: 700, color: '#2a2d32' }}>Загрузка ресурсов</span>
+                <span style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text-2)' }}>Загрузка ресурсов</span>
                 {tl.flag && (
                   <span
                     style={{
@@ -183,7 +183,7 @@ export function TimelineView() {
                     >
                       {rs.initials}
                     </div>
-                    <span style={{ fontSize: 12.5, fontWeight: 600, color: '#3a3d42', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {rs.name}
                     </span>
                   </div>
@@ -199,7 +199,7 @@ export function TimelineView() {
                             height: 16,
                             flexShrink: 0,
                             background: cl.bg,
-                            borderRight: '1px solid rgba(255,255,255,0.5)',
+                            borderRight: '1px solid var(--glass)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -226,7 +226,7 @@ export function TimelineView() {
 
 function Lane({ r, viewer, onDown }: { r: TlRow; viewer: boolean; onDown: (id: string, e: React.MouseEvent) => void }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', height: 38, borderTop: '1px solid rgba(0,0,0,0.03)', position: 'relative' }}>
+    <div style={{ display: 'flex', alignItems: 'center', height: 38, borderTop: '1px solid var(--hover)', position: 'relative' }}>
       <div
         style={{
           width: LANE_LABEL_W,
@@ -234,7 +234,7 @@ function Lane({ r, viewer, onDown }: { r: TlRow; viewer: boolean; onDown: (id: s
           padding: '0 12px 0 18px',
           fontSize: 12.5,
           fontWeight: 600,
-          color: '#3a3d42',
+          color: 'var(--text-3)',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -258,7 +258,7 @@ function Lane({ r, viewer, onDown }: { r: TlRow; viewer: boolean; onDown: (id: s
               display: 'flex',
               alignItems: 'center',
               overflow: 'hidden',
-              boxShadow: '0 3px 10px rgba(30,40,80,0.16), inset 0 1px 0 rgba(255,255,255,0.35)',
+              boxShadow: '0 3px 10px var(--shadow), inset 0 1px 0 var(--glass-edge)',
               userSelect: 'none',
             }}
           >
@@ -299,14 +299,14 @@ function Lane({ r, viewer, onDown }: { r: TlRow; viewer: boolean; onDown: (id: s
                 }}
               >
                 <span
-                  style={{ width: 6, height: 6, borderRadius: '50%', background: r.statusBg, boxShadow: '0 0 0 1.5px rgba(255,255,255,.55)', flexShrink: 0 }}
+                  style={{ width: 6, height: 6, borderRadius: '50%', background: r.statusBg, boxShadow: '0 0 0 1.5px var(--glass)', flexShrink: 0 }}
                 />
                 <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.barLabel}</span>
               </div>
             )}
           </div>
         )}
-        {r.noBar && <span style={{ position: 'absolute', left: 6, top: 12, fontSize: 11, color: '#c4c4bf', fontStyle: 'italic' }}>нет дат</span>}
+        {r.noBar && <span style={{ position: 'absolute', left: 6, top: 12, fontSize: 11, color: 'var(--line)', fontStyle: 'italic' }}>нет дат</span>}
       </div>
     </div>
   );
