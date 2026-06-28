@@ -52,6 +52,31 @@ export async function commitImport(
   return data;
 }
 
+/** A saved column-mapping template (`/import/mappings`). columnMapJson is the SPA's field→column map. */
+export interface MappingTemplate {
+  id: string;
+  name: string;
+  targetEntity: string;
+  columnMapJson: string;
+}
+
+export async function listMappings(): Promise<MappingTemplate[]> {
+  const { data } = await apiClient.get<MappingTemplate[]>('/import/mappings');
+  return data;
+}
+
+export async function saveMapping(
+  name: string,
+  columnMapJson: string,
+): Promise<MappingTemplate> {
+  const { data } = await apiClient.post<MappingTemplate>('/import/mappings', {
+    name,
+    targetEntity: 'Report',
+    columnMapJson,
+  });
+  return data;
+}
+
 interface SectionLite {
   id: string;
   name: string;

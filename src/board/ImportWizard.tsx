@@ -3,14 +3,17 @@
 //   • VITE_USE_BACKEND off  → the canned prototype demo (no real parsing), 1:1 with the design.
 //   • VITE_USE_BACKEND on   → wired to the backend: real file → POST /import/preview →
 //     map Report fields → POST /import/commit (upsert into a dedicated section).
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useBoard } from './store';
 import {
   previewImport,
   commitImport,
   ensureImportSection,
+  listMappings,
+  saveMapping,
   type ImportPreview,
   type ImportResult,
+  type MappingTemplate,
 } from '../api/import';
 
 const ACCENT = '#4263d8';
@@ -724,6 +727,30 @@ function RealImportWizard() {
   const [result, setResult] = useState<ImportResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [templates, setTemplates] = useState<MappingTemplate[]>([]);
+  const [saveAsTpl, setSaveAsTpl] = useState(false);
+
+  useEffect(() => {
+    listMappings()
+      .then(setTemplates)
+      .catch(() => {});
+  }, []);
+
+  // Apply a saved field→column template, keeping only columns the current file actually has.
+  const applyTemplate = (t: MappingTemplate) => {
+    const cur = preview?.columns ?? [];
+    try {
+      const saved = JSON.parse(t.columnMapJson) as Record<string, string>;
+      const next: Record<string, string> = {};
+      for (const f of TARGET_FIELDS) {
+        const col = saved[f.field];
+        next[f.field] = col && cur.includes(col) ? col : NONE;
+      }
+      setMap(next);
+    } catch {
+      /* ignore a malformed template */
+    }
+  };
 
   const onFile = async (f: File) => {
     setError(null);
@@ -762,6 +789,11 @@ function RealImportWizard() {
       const keyColumn =
         map.TicketUrl && map.TicketUrl !== NONE ? map.TicketUrl : (nameCol as string);
       setResult(await commitImport(file, { sectionId, columnMap, keyColumn }));
+      if (saveAsTpl) {
+        const name = file.name.replace(/\.[^.]+$/, '') || 'Шаблон';
+        await saveMapping(name, JSON.stringify(map)).catch(() => {});
+        listMappings().then(setTemplates).catch(() => {});
+      }
     } catch (e) {
       setError(errMsg(e));
     } finally {
@@ -805,6 +837,47 @@ function RealImportWizard() {
         <>
           {step > 1 && !result && navBtn('Назад', () => setStep(step - 1), false)}
           <div style={{ flex: 1 }} />
+          {step >= 3 && !result && (
+            <label
+              onClick={() => setSaveAsTpl((v) => !v)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 7,
+                fontSize: 12.5,
+                color: 'var(--text-soft)',
+                cursor: 'pointer',
+              }}
+            >
+              <span
+                style={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: 4,
+                  border: saveAsTpl ? 'none' : '2px solid var(--line)',
+                  background: saveAsTpl ? ACCENT : 'transparent',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fff',
+                }}
+              >
+                {saveAsTpl && (
+                  <svg
+                    width="11"
+                    height="11"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                  >
+                    <path d="M5 12l5 5L20 6" />
+                  </svg>
+                )}
+              </span>
+              Сохранить как шаблон
+            </label>
+          )}
           {error && (
             <span style={{ fontSize: 12, color: '#cf6b6b', fontWeight: 600, maxWidth: 360 }}>
               {error}
@@ -840,6 +913,38 @@ function RealImportWizard() {
             Сопоставьте поля отчёта с колонками файла — авто-подбор по имени, поправьте при
             необходимости. Ключ апсёрта — «Тикет» (или «Название», если тикета нет).
           </div>
+          {templates.length > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 7,
+                marginBottom: 14,
+                alignItems: 'center',
+              }}
+            >
+              <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>Шаблоны:</span>
+              {templates.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => applyTemplate(t)}
+                  style={{
+                    height: 26,
+                    padding: '0 11px',
+                    border: '1px solid var(--line)',
+                    background: 'var(--glass)',
+                    color: 'var(--text-3)',
+                    borderRadius: 8,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {t.name}
+                </button>
+              ))}
+            </div>
+          )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {TARGET_FIELDS.map((t) => (
               <MappingRow
