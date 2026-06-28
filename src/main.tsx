@@ -20,7 +20,7 @@ createRoot(rootElement).render(
       >
         <App />
       </BrowserRouter>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   </StrictMode>,
 );

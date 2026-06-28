@@ -192,7 +192,12 @@ export function buildTimeline(
     color: p.color,
     cells: load[p.id].map(
       (v): TlResCell => ({
-        bg: v <= 0 ? 'transparent' : v === 1 ? p.color + '5e' : '#cf6b6b',
+        bg:
+          v <= 0
+            ? 'transparent'
+            : v === 1
+              ? `color-mix(in srgb, ${p.color} 37%, transparent)`
+              : '#cf6b6b',
         over: v >= 2,
         count: v >= 2 ? String(v) : '',
       }),

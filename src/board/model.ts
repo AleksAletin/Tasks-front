@@ -783,6 +783,8 @@ export const isoFromDate = (dt: Date): string =>
 export const shiftIso = (isoDate: string, dd: number): string =>
   isoFromDate(new Date((dayNum(isoDate) + dd) * 86400000));
 export const lighten = (hex: string): string => {
+  // token-safe: a CSS var (e.g. a theme token) can't be byte-parsed — return as-is.
+  if (!hex.startsWith('#')) return hex;
   const c = hex.replace('#', '');
   const r = parseInt(c.slice(0, 2), 16),
     g = parseInt(c.slice(2, 4), 16),
