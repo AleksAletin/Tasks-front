@@ -282,6 +282,8 @@ interface BoardState {
   groupDrop: (targetId: string) => void;
   groupDragEnd: () => void;
   moveGroup: (id: string, dir: number) => void;
+  addGroup: () => void;
+  createTask: () => void;
   setCalMonth: (m: CalMonth) => void;
   shiftCalMonth: (delta: number) => void;
   importNext: () => void;
@@ -1043,12 +1045,83 @@ export const useBoard = create<BoardState>()(
           if (s.viewer) return {};
           const gs = s.groups.slice();
           const i = gs.findIndex((g) => g.id === id);
-          const j = i + dir;
-          if (i < 0 || j < 0 || j >= gs.length) return {};
+          if (i < 0) return {};
+          // Swap with the nearest neighbour ON THE SAME BOARD (groups of other boards may be
+          // interleaved in the flat array), so the up/down arrows reorder within the board only.
+          const boardId = gs[i].boardId ?? 'b1';
+          let j = i + dir;
+          while (j >= 0 && j < gs.length && (gs[j].boardId ?? 'b1') !== boardId) {
+            j += dir;
+          }
+          if (j < 0 || j >= gs.length) return {};
           const t = gs[i];
           gs[i] = gs[j];
           gs[j] = t;
           return { groups: gs };
+        }),
+      // Add an empty group to the ACTIVE board (entry point for a fresh/empty board).
+      addGroup: () =>
+        set((s) => {
+          if (s.viewer) return {};
+          const palette = [
+            '#5b8def',
+            '#8b6fd6',
+            '#3fa8a0',
+            '#d6953f',
+            '#cf6b6b',
+            '#6b9b4a',
+          ];
+          const boardCount = s.groups.filter(
+            (g) => (g.boardId ?? 'b1') === s.activeBoardId,
+          ).length;
+          const group: Group = {
+            id: 'g' + Date.now(),
+            name: 'Новая группа',
+            color: palette[boardCount % palette.length],
+            boardId: s.activeBoardId,
+            tasks: [],
+          };
+          return { groups: [...s.groups, group] };
+        }),
+      // Add a task to the active board's first group (creating a group if the board is empty).
+      createTask: () =>
+        set((s) => {
+          if (s.viewer) return {};
+          const stamp = Date.now();
+          const nt: Task = {
+            id: 't' + stamp + '_' + Math.floor(Math.random() * 99),
+            name: 'Новая задача',
+            owner: null,
+            status: 'plan',
+            due: null,
+            priority: null,
+            tl: null,
+            note: '',
+            lastBy: 'p1',
+            lastAgo: 'сейчас',
+            section: 'Обращения',
+            type: 'mig',
+            source: 'ours',
+          };
+          const boardGroups = s.groups.filter(
+            (g) => (g.boardId ?? 'b1') === s.activeBoardId,
+          );
+          if (boardGroups.length === 0) {
+            const group: Group = {
+              id: 'g' + stamp,
+              name: 'Новая группа',
+              color: '#5b8def',
+              boardId: s.activeBoardId,
+              tasks: [nt],
+            };
+            return { groups: [...s.groups, group] };
+          }
+          const firstId = boardGroups[0].id;
+          return {
+            groups: s.groups.map((g) =>
+              g.id === firstId ? { ...g, tasks: [nt, ...g.tasks] } : g,
+            ),
+          };
         }),
       setCalMonth: (calMonth) => set({ calMonth }),
       shiftCalMonth: (delta) =>

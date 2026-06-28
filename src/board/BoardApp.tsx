@@ -286,6 +286,9 @@ function BoardHeader() {
   const viewer = useBoard((s) => s.viewer);
   const boardTab = useBoard((s) => s.boardTab);
   const setBoardTab = useBoard((s) => s.setBoardTab);
+  const boards = useBoard((s) => s.boards);
+  const activeBoardId = useBoard((s) => s.activeBoardId);
+  const title = boards.find((b) => b.id === activeBoardId)?.name ?? 'Доска';
   const sourceLabel = ytrack
     ? 'источник правды · YouTrack'
     : 'источник правды · Work';
@@ -311,7 +314,7 @@ function BoardHeader() {
             letterSpacing: '-.4px',
           }}
         >
-          Переезд на Work
+          {title}
         </h1>
         <svg
           width="17"
@@ -431,6 +434,7 @@ function Toolbar() {
   const sortBy = useBoard((s) => s.sortBy);
   const groupBy = useBoard((s) => s.groupBy);
   const openTool = useBoard((s) => s.openTool);
+  const createTask = useBoard((s) => s.createTask);
 
   const fActiveN =
     Object.keys(filterStatus).filter((k) => filterStatus[k]).length +
@@ -506,6 +510,7 @@ function Toolbar() {
         <div style={{ display: 'flex', borderRadius: 9, overflow: 'hidden' }}>
           <button
             className="btn-sheen"
+            onClick={createTask}
             style={{
               height: 34,
               padding: '0 14px',

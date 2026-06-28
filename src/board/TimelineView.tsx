@@ -8,7 +8,12 @@ import { buildTimeline, DAY_W, LANE_LABEL_W } from './timeline';
 import type { TlRow } from './timeline';
 
 export function TimelineView() {
-  const groups = useBoard((s) => s.groups);
+  const allGroups = useBoard((s) => s.groups);
+  const activeBoardId = useBoard((s) => s.activeBoardId);
+  const groups = useMemo(
+    () => allGroups.filter((g) => (g.boardId ?? 'b1') === activeBoardId),
+    [allGroups, activeBoardId],
+  );
   const tlDrag = useBoard((s) => s.tlDrag);
   const viewer = useBoard((s) => s.viewer);
   const setTlDrag = useBoard((s) => s.setTlDrag);

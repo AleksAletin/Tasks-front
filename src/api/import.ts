@@ -56,6 +56,8 @@ export async function commitImport(
 export interface BoardCommitRequest {
   groupName: string;
   columnMap: Record<string, string>;
+  /** Board to import onto (its own «Импорт из Excel» group). */
+  boardId: string;
 }
 
 /**

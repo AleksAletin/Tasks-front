@@ -743,6 +743,7 @@ function DoneToast({ text }: { text: string }) {
 function RealImportWizard() {
   const hydrateBoard = useBoard((s) => s.hydrateBoard);
   const setBoardTab = useBoard((s) => s.setBoardTab);
+  const activeBoardId = useBoard((s) => s.activeBoardId);
   const [step, setStep] = useState(1);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<ImportPreview | null>(null);
@@ -811,6 +812,7 @@ function RealImportWizard() {
       const res = await commitImportToBoard(file, {
         groupName: 'Импорт из Excel',
         columnMap,
+        boardId: activeBoardId,
       });
       setResult(res);
       // Pull the freshly-written board so the new «Импорт из Excel» group shows on the доска at once

@@ -35,7 +35,12 @@ interface ParityRow {
 }
 
 export function ParityView() {
-  const groups = useBoard((s) => s.groups);
+  const allGroups = useBoard((s) => s.groups);
+  const activeBoardId = useBoard((s) => s.activeBoardId);
+  const groups = useMemo(
+    () => allGroups.filter((g) => (g.boardId ?? 'b1') === activeBoardId),
+    [allGroups, activeBoardId],
+  );
   const parity = useBoard((s) => s.parity);
   const viewer = useBoard((s) => s.viewer);
   const cycleParity = useBoard((s) => s.cycleParity);

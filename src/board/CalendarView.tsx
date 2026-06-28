@@ -24,7 +24,12 @@ interface CalCell {
 }
 
 export function CalendarView() {
-  const groups = useBoard((s) => s.groups);
+  const allGroups = useBoard((s) => s.groups);
+  const activeBoardId = useBoard((s) => s.activeBoardId);
+  const groups = useMemo(
+    () => allGroups.filter((g) => (g.boardId ?? 'b1') === activeBoardId),
+    [allGroups, activeBoardId],
+  );
   const calMonth = useBoard((s) => s.calMonth);
   const shiftCalMonth = useBoard((s) => s.shiftCalMonth);
   const setCalMonth = useBoard((s) => s.setCalMonth);

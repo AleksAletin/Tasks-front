@@ -68,6 +68,8 @@ export interface Group {
   id: string;
   name: string;
   color: string;
+  /** Which board this group belongs to (groups are scoped per board). */
+  boardId: string;
   tasks: Task[];
 }
 export interface Board {
@@ -372,6 +374,7 @@ export const initialGroups: Group[] = [
     id: 'g1',
     name: 'Саппорт',
     color: '#5b8def',
+    boardId: 'b1',
     tasks: [
       {
         id: 't1',
@@ -453,6 +456,7 @@ export const initialGroups: Group[] = [
     id: 'g2',
     name: 'Разработка',
     color: '#8b6fd6',
+    boardId: 'b1',
     tasks: [
       {
         id: 't4',
@@ -548,6 +552,7 @@ export const initialGroups: Group[] = [
     id: 'g3',
     name: 'Аналитика',
     color: '#3fa8a0',
+    boardId: 'b1',
     tasks: [
       {
         id: 't8',
@@ -629,6 +634,7 @@ export const initialGroups: Group[] = [
     id: 'g4',
     name: 'QA / Тестирование',
     color: '#d6953f',
+    boardId: 'b1',
     tasks: [
       {
         id: 't11',

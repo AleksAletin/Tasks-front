@@ -7,7 +7,12 @@ import { buildAlerts } from './alerts';
 import type { Alert } from './alerts';
 
 export function AlertsView() {
-  const groups = useBoard((s) => s.groups);
+  const allGroups = useBoard((s) => s.groups);
+  const activeBoardId = useBoard((s) => s.activeBoardId);
+  const groups = useMemo(
+    () => allGroups.filter((g) => (g.boardId ?? 'b1') === activeBoardId),
+    [allGroups, activeBoardId],
+  );
   const parity = useBoard((s) => s.parity);
   const openPanel = useBoard((s) => s.openPanel);
   const setBoardTab = useBoard((s) => s.setBoardTab);

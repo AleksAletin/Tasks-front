@@ -65,6 +65,15 @@ export function TableView() {
   const toggleSelect = useBoard((s) => s.toggleSelect);
   const openHeaderMenu = useBoard((s) => s.openHeaderMenu);
   const openAddColMenu = useBoard((s) => s.openAddColMenu);
+  const activeBoardId = useBoard((s) => s.activeBoardId);
+  const addGroup = useBoard((s) => s.addGroup);
+
+  // Only the active board's groups are shown — groups are scoped per board.
+  const boardGroups = useMemo(
+    () => groups.filter((g) => (g.boardId ?? 'b1') === activeBoardId),
+    [groups, activeBoardId],
+  );
+  const boardEmpty = boardGroups.length === 0;
 
   // FLIP settle: after the persisted `groups` change (a row/group reorder or
   // cross-group move), glide every [data-row-id] from its previous top to its new
@@ -72,13 +81,13 @@ export function TableView() {
   // layout, matching the prototype's getSnapshotBeforeUpdate/componentDidUpdate.
   const flipTops = useRef<Record<string, number>>({});
   const flipReady = useRef(false);
-  const prevGroups = useRef(groups);
+  const prevGroups = useRef(boardGroups);
   useLayoutEffect(() => {
     // Animate only on a real reorder (groups changed). On other layout-affecting
     // changes (filter/sort/group/collapse) just re-measure, so the NEXT reorder
     // still flips from correct positions instead of stale ones.
-    const animate = flipReady.current && prevGroups.current !== groups;
-    prevGroups.current = groups;
+    const animate = flipReady.current && prevGroups.current !== boardGroups;
+    prevGroups.current = boardGroups;
     const prev = flipTops.current;
     const next: Record<string, number> = {};
     const nodes = document.querySelectorAll<HTMLElement>('[data-row-id]');
@@ -108,7 +117,7 @@ export function TableView() {
     flipTops.current = next;
     flipReady.current = true;
   }, [
-    groups,
+    boardGroups,
     collapsed,
     query,
     filterStatus,
@@ -121,7 +130,7 @@ export function TableView() {
   const { groups: viewGroups, tableEmptyAll } = useMemo(
     () =>
       buildView({
-        groups,
+        groups: boardGroups,
         query,
         filterStatus,
         filterOwner,
@@ -129,7 +138,7 @@ export function TableView() {
         sortDir,
         groupBy,
       }),
-    [groups, query, filterStatus, filterOwner, sortBy, sortDir, groupBy],
+    [boardGroups, query, filterStatus, filterOwner, sortBy, sortDir, groupBy],
   );
 
   // Reflect the VISIBLE (filtered/grouped) rows, not the whole board.
@@ -315,39 +324,135 @@ export function TableView() {
         )}
       </div>
 
-      {tableEmptyAll && <NoResults query={query} />}
+      {boardEmpty ? (
+        <BoardEmptyState viewer={viewer} onAdd={addGroup} />
+      ) : (
+        <>
+          {tableEmptyAll && <NoResults query={query} />}
 
-      {viewGroups.map((g, gi) => (
-        <GroupBlock
-          key={g.id}
-          g={g}
-          gi={gi}
-          total={viewGroups.length}
-          gridCols={gridCols}
-          customCols={customCols}
-          collapsed={!!collapsed[g.id]}
-          onToggle={() => toggleCollapse(g.id)}
-          selectedIds={selectedIds}
-          viewer={viewer}
-          onSelect={toggleSelect}
-        />
-      ))}
+          {viewGroups.map((g, gi) => (
+            <GroupBlock
+              key={g.id}
+              g={g}
+              gi={gi}
+              total={viewGroups.length}
+              gridCols={gridCols}
+              customCols={customCols}
+              collapsed={!!collapsed[g.id]}
+              onToggle={() => toggleCollapse(g.id)}
+              selectedIds={selectedIds}
+              viewer={viewer}
+              onSelect={toggleSelect}
+            />
+          ))}
 
+          {!viewer && (
+            <div
+              onClick={addGroup}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                margin: '18px 0 0 14px',
+                padding: '8px 12px',
+                width: 'fit-content',
+                border: '1px solid var(--surf-2)',
+                background: 'var(--card)',
+                borderRadius: 9,
+                color: 'var(--text-mut)',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Добавить группу
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+// Shown when the active board has no groups yet (e.g. a freshly added board) — the entry
+// point to fill it (add a group here, or use the Импорт tab to load an Excel file).
+function BoardEmptyState({
+  viewer,
+  onAdd,
+}: {
+  viewer: boolean;
+  onAdd: () => void;
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '70px 20px',
+        textAlign: 'center',
+      }}
+    >
+      <div
+        style={{
+          width: 60,
+          height: 60,
+          borderRadius: 18,
+          background: 'var(--glass)',
+          border: '1px solid var(--glass)',
+          boxShadow: 'inset 0 1px 0 var(--glass-hi)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: 16,
+        }}
+      >
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="var(--text-faint)"
+          strokeWidth="1.8"
+        >
+          <rect x="3" y="4" width="18" height="16" rx="2" />
+          <path d="M3 10h18M9 4v16" />
+        </svg>
+      </div>
+      <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 5 }}>
+        На этой доске пока пусто
+      </div>
+      <div
+        style={{ fontSize: 13.5, color: 'var(--text-soft)', marginBottom: 18 }}
+      >
+        Добавьте группу или загрузите данные на вкладке «Импорт».
+      </div>
       {!viewer && (
-        <div
+        <button
+          onClick={onAdd}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: 8,
-            margin: '18px 0 0 14px',
-            padding: '8px 12px',
-            width: 'fit-content',
-            border: '1px solid var(--surf-2)',
-            background: 'var(--card)',
-            borderRadius: 9,
-            color: 'var(--text-mut)',
-            fontSize: 13,
-            fontWeight: 600,
+            height: 38,
+            padding: '0 18px',
+            border: 'none',
+            background: ACCENT,
+            color: '#fff',
+            borderRadius: 10,
+            fontSize: 13.5,
+            fontWeight: 700,
             cursor: 'pointer',
           }}
         >
@@ -357,12 +462,12 @@ export function TableView() {
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2.2"
+            strokeWidth="2.4"
           >
             <path d="M12 5v14M5 12h14" />
           </svg>
           Добавить группу
-        </div>
+        </button>
       )}
     </div>
   );
