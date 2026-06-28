@@ -52,6 +52,32 @@ export async function commitImport(
   return data;
 }
 
+/** Body of `POST /import/commit-board` — columnMap is sourceColumn → board field (Name/Status/Due/Owner/Note). */
+export interface BoardCommitRequest {
+  groupName: string;
+  columnMap: Record<string, string>;
+}
+
+/**
+ * Apply a column mapping and load the rows as board tasks into a single import group. This is the
+ * path that actually changes the board the SPA renders (unlike `commitImport`, which writes the
+ * analytical Report domain the board doesn't read). `created` = tasks added; `updated` always 0.
+ */
+export async function commitImportToBoard(
+  file: File,
+  request: BoardCommitRequest,
+): Promise<ImportResult> {
+  const form = new FormData();
+  form.append('file', file);
+  form.append('request', JSON.stringify(request));
+  const { data } = await apiClient.post<ImportResult>(
+    '/import/commit-board',
+    form,
+    MULTIPART,
+  );
+  return data;
+}
+
 /** A saved column-mapping template (`/import/mappings`). columnMapJson is the SPA's field→column map. */
 export interface MappingTemplate {
   id: string;
@@ -71,7 +97,7 @@ export async function saveMapping(
 ): Promise<MappingTemplate> {
   const { data } = await apiClient.post<MappingTemplate>('/import/mappings', {
     name,
-    targetEntity: 'Report',
+    targetEntity: 'BoardTask',
     columnMapJson,
   });
   return data;

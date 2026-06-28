@@ -2,13 +2,14 @@
 // 4-step master: Загрузка → Превью → Маппинг → Импорт.
 //   • VITE_USE_BACKEND off  → the canned prototype demo (no real parsing), 1:1 with the design.
 //   • VITE_USE_BACKEND on   → wired to the backend: real file → POST /import/preview →
-//     map Report fields → POST /import/commit (upsert into a dedicated section).
+//     map board-task fields → POST /import/commit-board (load rows as tasks into an «Импорт из
+//     Excel» group, then re-hydrate /board so they appear on the доска immediately).
 import { useState, useEffect } from 'react';
 import { useBoard } from './store';
+import { fetchBoard } from '../api/board';
 import {
   previewImport,
-  commitImport,
-  ensureImportSection,
+  commitImportToBoard,
   listMappings,
   saveMapping,
   type ImportPreview,
@@ -67,26 +68,46 @@ const ERRORS: { row: string; msg: string }[] = [
 // ── Real (backend) mode ────────────────────────────────────────────────────
 const NONE = '— не выбрано —';
 
-// The Report fields the backend importer maps (ImportService.CommitAsync) + name-match hints.
+// The board-task fields the backend importer maps (ImportService.CommitToBoardAsync) + name-match
+// hints. Name is the task title (required); Status/Due are normalized server-side (keyword → status
+// enum, any date format → ISO); Owner/Note land in the task note (Excel owners can't map to demo ids).
 const TARGET_FIELDS: {
   field: string;
   label: string;
   required: boolean;
   match: string[];
 }[] = [
-  { field: 'Name', label: 'Название отчёта', required: true, match: ['назван', 'отч', 'name'] },
   {
-    field: 'TicketUrl',
-    label: 'Тикет (BAC / YouTrack)',
-    required: false,
-    match: ['задач', 'тикет', 'bac', 'ticket', 'ссыл'],
+    field: 'Name',
+    label: 'Название задачи',
+    required: true,
+    match: ['отч', 'задачк', 'назван', 'модул', 'тема', 'name', 'title'],
   },
-  { field: 'Complexity', label: 'Сложность', required: false, match: ['сложн', 'complex'] },
   {
-    field: 'Percent',
-    label: '% выполнения',
+    field: 'Status',
+    label: 'Статус',
     required: false,
-    match: ['процент', 'percent', '%', 'выполн'],
+    match: ['состоян', 'статус', 'этап', 'status', 'state'],
+  },
+  {
+    // Prefer the final due date: 'окончания' (genitive) hits «Дата окончания» but not
+    // «Окончание Аналитики/Разработки»; avoid bare 'дата'/'оконч' (they'd grab a phase/start date).
+    field: 'Due',
+    label: 'Срок',
+    required: false,
+    match: ['срок сдач', 'дедлайн', 'окончания', 'дата оконч', 'срок', 'due', 'finish'],
+  },
+  {
+    field: 'Owner',
+    label: 'Исполнитель',
+    required: false,
+    match: ['исполн', 'ответствен', 'owner', 'assign', 'manager'],
+  },
+  {
+    field: 'Note',
+    label: 'Заметка',
+    required: false,
+    match: ['примеч', 'коммент', 'заметк', 'опис', 'тикет', 'bac', 'задачк', 'note', 'desc'],
   },
 ];
 
@@ -720,6 +741,8 @@ function DoneToast({ text }: { text: string }) {
 
 // ── Real (backend-wired) wizard — VITE_USE_BACKEND on ──────────────────────
 function RealImportWizard() {
+  const hydrateBoard = useBoard((s) => s.hydrateBoard);
+  const setBoardTab = useBoard((s) => s.setBoardTab);
   const [step, setStep] = useState(1);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<ImportPreview | null>(null);
@@ -780,15 +803,23 @@ function RealImportWizard() {
     setError(null);
     setLoading(true);
     try {
-      const sectionId = await ensureImportSection();
       const columnMap: Record<string, string> = {};
       for (const t of TARGET_FIELDS) {
         const col = map[t.field];
         if (col && col !== NONE) columnMap[col] = t.field;
       }
-      const keyColumn =
-        map.TicketUrl && map.TicketUrl !== NONE ? map.TicketUrl : (nameCol as string);
-      setResult(await commitImport(file, { sectionId, columnMap, keyColumn }));
+      const res = await commitImportToBoard(file, {
+        groupName: 'Импорт из Excel',
+        columnMap,
+      });
+      setResult(res);
+      // Pull the freshly-written board so the new «Импорт из Excel» group shows on the доска at once
+      // (the debounced sync would also re-persist it — this just avoids waiting for a reload).
+      try {
+        hydrateBoard(await fetchBoard());
+      } catch {
+        /* the board will pick the group up on its next load */
+      }
       if (saveAsTpl) {
         const name = file.name.replace(/\.[^.]+$/, '') || 'Шаблон';
         await saveMapping(name, JSON.stringify(map)).catch(() => {});
@@ -821,6 +852,7 @@ function RealImportWizard() {
     }
     if (result) {
       reset();
+      setBoardTab('table'); // land on the доска so the imported «Импорт из Excel» group is visible
       return;
     }
     void commit();
@@ -910,8 +942,8 @@ function RealImportWizard() {
       {step === 3 && (
         <>
           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-soft)', marginBottom: 14 }}>
-            Сопоставьте поля отчёта с колонками файла — авто-подбор по имени, поправьте при
-            необходимости. Ключ апсёрта — «Тикет» (или «Название», если тикета нет).
+            Сопоставьте поля задачи с колонками файла — авто-подбор по имени, поправьте при
+            необходимости. Строки лягут на доску задачами в группе «Импорт из Excel».
           </div>
           {templates.length > 0 && (
             <div
@@ -961,7 +993,7 @@ function RealImportWizard() {
       )}
       {step === 4 && <RealDone result={result} loading={loading} />}
       {result && (
-        <DoneToast text={`Импорт завершён · создано ${result.created}, обновлено ${result.updated}`} />
+        <DoneToast text={`Импорт завершён · ${result.created} задач на доске`} />
       )}
     </WizardShell>
   );
@@ -1076,7 +1108,7 @@ function RealDone({ result, loading }: { result: ImportResult | null; loading: b
   if (loading) {
     return (
       <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text-soft)', fontSize: 14 }}>
-        Импортирую в реестр…
+        Создаю задачи на доске…
       </div>
     );
   }
@@ -1087,7 +1119,7 @@ function RealDone({ result, loading }: { result: ImportResult | null; loading: b
           <DoneCircle />
           <div style={{ fontSize: 16, fontWeight: 800 }}>Импорт завершён</div>
           <div style={{ fontSize: 13, color: 'var(--text-soft)', marginTop: 5 }}>
-            Создано {result.created} · обновлено {result.updated}
+            На доску добавлено задач: {result.created} · группа «Импорт из Excel»
             {result.errors.length > 0 ? ` · пропущено ${result.errors.length}` : ''}
           </div>
         </div>
