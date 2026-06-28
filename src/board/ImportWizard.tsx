@@ -25,7 +25,14 @@ const FIELDS_RAW: [string, string, boolean][] = [
   ['Паритет', NOT_FOUND, false],
 ];
 
-const PREVIEW_COLS = ['Название отчёта', 'Модуль', 'Роль', 'Ответственный', 'Состояние', 'Эст. Разработка'];
+const PREVIEW_COLS = [
+  'Название отчёта',
+  'Модуль',
+  'Роль',
+  'Ответственный',
+  'Состояние',
+  'Эст. Разработка',
+];
 const PREVIEW_ROWS: string[][] = [
   ['Карточка обращения', 'Шапка', 'Саппорт', 'А. Котова', 'В работе', '5'],
   ['Список тикетов', 'Таблица', 'Саппорт', 'Д. Морозов', 'Готово', '3'],
@@ -46,7 +53,14 @@ const ERRORS: { row: string; msg: string }[] = [
 
 function Chevron({ size = 14 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="2.2">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="var(--text-faint)"
+      strokeWidth="2.2"
+    >
       <path d="M6 9l6 6 6-6" />
     </svg>
   );
@@ -103,10 +117,12 @@ function Stepper({ step }: { step: number }) {
         const fg = n <= step ? '#fff' : 'var(--text-faint)';
         const lineBg = n < step ? '#4a9b7f' : 'var(--hover)';
         return (
-          <div key={n} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+          <div
+            key={n}
+            style={{ display: 'flex', alignItems: 'center', flex: 1 }}
+          >
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <div
-                className="noinv"
                 style={{
                   width: 26,
                   height: 26,
@@ -123,9 +139,26 @@ function Stepper({ step }: { step: number }) {
               >
                 {n}
               </div>
-              <span style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--text-3)', whiteSpace: 'nowrap' }}>{label}</span>
+              <span
+                style={{
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  color: 'var(--text-3)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {label}
+              </span>
             </div>
-            <div style={{ flex: 1, height: 2, background: lineBg, margin: '0 10px', borderRadius: 2 }} />
+            <div
+              style={{
+                flex: 1,
+                height: 2,
+                background: lineBg,
+                margin: '0 10px',
+                borderRadius: 2,
+              }}
+            />
           </div>
         );
       })}
@@ -146,12 +179,26 @@ function StepUpload() {
           cursor: 'pointer',
         }}
       >
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="1.8" style={{ marginBottom: 10 }}>
+        <svg
+          width="34"
+          height="34"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="var(--text-faint)"
+          strokeWidth="1.8"
+          style={{ marginBottom: 10 }}
+        >
           <path d="M12 3v12M8 11l4 4 4-4" />
           <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
         </svg>
-        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-3)' }}>Перетащите файл или выберите</div>
-        <div style={{ fontSize: 12.5, color: 'var(--text-faint)', marginTop: 3 }}>.xlsx или .csv до 10 МБ</div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-3)' }}>
+          Перетащите файл или выберите
+        </div>
+        <div
+          style={{ fontSize: 12.5, color: 'var(--text-faint)', marginTop: 3 }}
+        >
+          .xlsx или .csv до 10 МБ
+        </div>
       </div>
       <div
         style={{
@@ -165,15 +212,30 @@ function StepUpload() {
           marginBottom: 16,
         }}
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4a9b7f" strokeWidth="2">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#4a9b7f"
+          strokeWidth="2"
+        >
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
           <path d="M14 2v6h6" />
         </svg>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-2)' }}>gant_pereezd.xlsx</div>
-          <div style={{ fontSize: 11.5, color: 'var(--text-faint)' }}>84 КБ · загружен</div>
+          <div
+            style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-2)' }}
+          >
+            gant_pereezd.xlsx
+          </div>
+          <div style={{ fontSize: 11.5, color: 'var(--text-faint)' }}>
+            84 КБ · загружен
+          </div>
         </div>
-        <span style={{ fontSize: 12, fontWeight: 700, color: '#4a9b7f' }}>✓</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: '#4a9b7f' }}>
+          ✓
+        </span>
       </div>
       <div style={{ display: 'flex', gap: 12 }}>
         <PickerBox label="Лист" value="Саппорт" />
@@ -186,10 +248,23 @@ function StepUpload() {
 function StepPreview() {
   return (
     <>
-      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-soft)', marginBottom: 12 }}>
+      <div
+        style={{
+          fontSize: 13,
+          fontWeight: 600,
+          color: 'var(--text-soft)',
+          marginBottom: 12,
+        }}
+      >
         Первые строки файла — колонки распознаны:
       </div>
-      <div style={{ border: '1px solid var(--hover)', borderRadius: 11, overflow: 'hidden' }}>
+      <div
+        style={{
+          border: '1px solid var(--hover)',
+          borderRadius: 11,
+          overflow: 'hidden',
+        }}
+      >
         <div
           style={{
             display: 'grid',
@@ -218,7 +293,11 @@ function StepPreview() {
         {PREVIEW_ROWS.map((r, i) => (
           <div
             key={i}
-            style={{ display: 'grid', gridTemplateColumns: PREVIEW_GRID, borderBottom: '1px solid var(--hover)' }}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: PREVIEW_GRID,
+              borderBottom: '1px solid var(--hover)',
+            }}
           >
             {r.map((cell, j) => (
               <div
@@ -248,23 +327,57 @@ function StepMapping() {
 
   return (
     <>
-      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-soft)', marginBottom: 14 }}>
-        Сопоставьте поля борды с колонками Excel — авто-подбор по имени, поправьте при необходимости.
+      <div
+        style={{
+          fontSize: 13,
+          fontWeight: 600,
+          color: 'var(--text-soft)',
+          marginBottom: 14,
+        }}
+      >
+        Сопоставьте поля борды с колонками Excel — авто-подбор по имени,
+        поправьте при необходимости.
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 340, overflowY: 'auto' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
+          maxHeight: 340,
+          overflowY: 'auto',
+        }}
+      >
         {FIELDS_RAW.map(([field, autoExcel, req]) => {
           const value = importMap[field] ?? autoExcel;
           const notMapped = value === NOT_FOUND;
           return (
             <div
               key={field}
-              style={{ display: 'grid', gridTemplateColumns: '1fr 18px 1.2fr', alignItems: 'center', gap: 10 }}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 18px 1.2fr',
+                alignItems: 'center',
+                gap: 10,
+              }}
             >
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-2)' }}>
+              <div
+                style={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: 'var(--text-2)',
+                }}
+              >
                 {field}
                 {req && <span style={{ color: '#cf6b6b' }}> *</span>}
               </div>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--line)" strokeWidth="2">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--line)"
+                strokeWidth="2"
+              >
                 <path d="M5 12h14M13 6l6 6-6 6" />
               </svg>
               <div style={{ position: 'relative' }}>
@@ -294,7 +407,14 @@ function StepMapping() {
                     </option>
                   ))}
                 </select>
-                <span style={{ position: 'absolute', right: 10, top: 11, pointerEvents: 'none' }}>
+                <span
+                  style={{
+                    position: 'absolute',
+                    right: 10,
+                    top: 11,
+                    pointerEvents: 'none',
+                  }}
+                >
                   <Chevron size={13} />
                 </span>
               </div>
@@ -313,7 +433,6 @@ function StepValidateDone() {
     return (
       <div style={{ textAlign: 'center', padding: '18px 0' }}>
         <div
-          className="noinv"
           style={{
             width: 54,
             height: 54,
@@ -325,7 +444,14 @@ function StepValidateDone() {
             margin: '0 auto 14px',
           }}
         >
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4a9b7f" strokeWidth="2.6">
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#4a9b7f"
+            strokeWidth="2.6"
+          >
             <path d="M5 12l5 5L20 6" />
           </svg>
         </div>
@@ -337,21 +463,52 @@ function StepValidateDone() {
     );
   }
 
-  const summary: { value: string; label: string; color: string; bg: string }[] = [
-    { value: '16', label: 'строк готовы', color: '#4a9b7f', bg: 'rgba(74,155,127,0.08)' },
-    { value: '2', label: 'с ошибками', color: '#cf6b6b', bg: 'rgba(207,107,107,0.08)' },
-    { value: '14/2', label: 'создать / обновить', color: 'var(--text-3)', bg: 'var(--hover)' },
-  ];
+  const summary: { value: string; label: string; color: string; bg: string }[] =
+    [
+      {
+        value: '16',
+        label: 'строк готовы',
+        color: '#4a9b7f',
+        bg: 'rgba(74,155,127,0.08)',
+      },
+      {
+        value: '2',
+        label: 'с ошибками',
+        color: '#cf6b6b',
+        bg: 'rgba(207,107,107,0.08)',
+      },
+      {
+        value: '14/2',
+        label: 'создать / обновить',
+        color: 'var(--text-3)',
+        bg: 'var(--hover)',
+      },
+    ];
 
   return (
     <>
       <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
         {summary.map((c) => (
-          <div key={c.label} style={{ flex: 1, background: c.bg, borderRadius: 11, padding: 13 }}>
-            <div className="mono" style={{ fontSize: 24, fontWeight: 800, color: c.color }}>
+          <div
+            key={c.label}
+            style={{ flex: 1, background: c.bg, borderRadius: 11, padding: 13 }}
+          >
+            <div
+              className="mono"
+              style={{ fontSize: 24, fontWeight: 800, color: c.color }}
+            >
               {c.value}
             </div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-mut)', marginTop: 2 }}>{c.label}</div>
+            <div
+              style={{
+                fontSize: 12,
+                fontWeight: 600,
+                color: 'var(--text-mut)',
+                marginTop: 2,
+              }}
+            >
+              {c.label}
+            </div>
           </div>
         ))}
       </div>
@@ -389,14 +546,40 @@ export function ImportWizard() {
   const toggleImportTemplate = useBoard((s) => s.toggleImportTemplate);
 
   const canBack = step > 1 && !importDone;
-  const primaryLabel = importDone ? 'Готово' : step < 4 ? 'Далее' : 'Импортировать';
-  const onPrimary = importDone ? importReset : step < 4 ? importNext : importRun;
+  const primaryLabel = importDone
+    ? 'Готово'
+    : step < 4
+      ? 'Далее'
+      : 'Импортировать';
+  const onPrimary = importDone
+    ? importReset
+    : step < 4
+      ? importNext
+      : importRun;
 
   return (
     <div style={{ padding: '20px 22px 50px', maxWidth: 760 }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 18 }}>
-        <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, letterSpacing: '-.4px' }}>Импорт из Excel</h2>
-        <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-soft)' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'baseline',
+          gap: 12,
+          marginBottom: 18,
+        }}
+      >
+        <h2
+          style={{
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 800,
+            letterSpacing: '-.4px',
+          }}
+        >
+          Импорт из Excel
+        </h2>
+        <span
+          style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-soft)' }}
+        >
           мост от текущего гант-файла · дальше данные тянутся из систем
         </span>
       </div>
@@ -450,10 +633,16 @@ export function ImportWizard() {
           <div style={{ flex: 1 }} />
           <label
             onClick={toggleImportTemplate}
-            style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12.5, color: 'var(--text-soft)', cursor: 'pointer' }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 7,
+              fontSize: 12.5,
+              color: 'var(--text-soft)',
+              cursor: 'pointer',
+            }}
           >
             <span
-              className={importTemplate ? 'noinv' : undefined}
               style={{
                 width: 16,
                 height: 16,
@@ -467,7 +656,14 @@ export function ImportWizard() {
               }}
             >
               {importTemplate && (
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                >
                   <path d="M5 12l5 5L20 6" />
                 </svg>
               )}
@@ -476,7 +672,6 @@ export function ImportWizard() {
           </label>
           <button
             onClick={onPrimary}
-            className="noinv"
             style={{
               height: 40,
               padding: '0 22px',
@@ -509,13 +704,13 @@ export function ImportWizard() {
             WebkitBackdropFilter: 'blur(30px) saturate(185%)',
             border: '1px solid var(--glass)',
             borderRadius: 13,
-            boxShadow: '0 18px 50px var(--shadow), inset 0 1px 0 var(--glass-hi)',
+            boxShadow:
+              '0 18px 50px var(--shadow), inset 0 1px 0 var(--glass-hi)',
             padding: '13px 16px',
             animation: 'toastIn .26s ease',
           }}
         >
           <span
-            className="noinv"
             style={{
               width: 22,
               height: 22,
@@ -528,11 +723,20 @@ export function ImportWizard() {
               flexShrink: 0,
             }}
           >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+            >
               <path d="M5 12l5 5L20 6" />
             </svg>
           </span>
-          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-2)' }}>
+          <span
+            style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-2)' }}
+          >
             Импорт завершён · создано 14, обновлено 2
           </span>
         </div>

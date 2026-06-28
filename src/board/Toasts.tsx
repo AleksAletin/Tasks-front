@@ -37,11 +37,16 @@ export function Toasts() {
             WebkitBackdropFilter: 'blur(24px) saturate(180%)',
             border: '1px solid var(--glass-edge)',
             borderRadius: 13,
-            boxShadow: '0 16px 40px var(--scrim), inset 0 1px 0 var(--glass-edge)',
+            boxShadow:
+              '0 16px 40px var(--scrim), inset 0 1px 0 var(--glass-edge)',
             animation: 'toastIn .22s cubic-bezier(.22,.85,.25,1)',
           }}
         >
-          <span style={{ fontSize: 13, fontWeight: 600, color: '#fff', flex: 1 }}>{t.text}</span>
+          <span
+            style={{ fontSize: 13, fontWeight: 600, color: '#fff', flex: 1 }}
+          >
+            {t.text}
+          </span>
           {t.undo && (
             <button
               onClick={() => {
@@ -76,7 +81,14 @@ export function Toasts() {
               color: 'var(--text-faint)',
             }}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+            >
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
           </div>

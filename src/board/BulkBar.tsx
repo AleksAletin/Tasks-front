@@ -35,8 +35,17 @@ export function BulkBar() {
         animation: 'popIn .16s ease',
       }}
     >
-      <span style={{ fontSize: 13, fontWeight: 700 }}>{ids.length} выбрано</span>
-      <div style={{ width: 1, height: 22, background: 'var(--glass-edge)', margin: '0 8px' }} />
+      <span style={{ fontSize: 13, fontWeight: 700 }}>
+        {ids.length} выбрано
+      </span>
+      <div
+        style={{
+          width: 1,
+          height: 22,
+          background: 'var(--glass-edge)',
+          margin: '0 8px',
+        }}
+      />
       <button
         onClick={() => duplicateTasks(ids)}
         style={{
@@ -54,7 +63,14 @@ export function BulkBar() {
           gap: 6,
         }}
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
           <path d="M8 6V4h8v2" />
           <path d="M5 6h14l-1 14H6z" />
         </svg>
@@ -77,7 +93,14 @@ export function BulkBar() {
           gap: 6,
         }}
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
           <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" />
         </svg>
         Удалить
@@ -97,7 +120,14 @@ export function BulkBar() {
           justifyContent: 'center',
         }}
       >
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.4"
+        >
           <path d="M6 6l12 12M18 6L6 18" />
         </svg>
       </button>

@@ -26,9 +26,17 @@ const inputStyle = {
   color: 'var(--text)',
 } as const;
 
-const monoInput = { ...inputStyle, fontFamily: "'JetBrains Mono', monospace" } as const;
+const monoInput = {
+  ...inputStyle,
+  fontFamily: "'JetBrains Mono', monospace",
+} as const;
 
-const fieldLabel = { fontSize: 12, fontWeight: 700, color: 'var(--text-mut)', marginBottom: 6 } as const;
+const fieldLabel = {
+  fontSize: 12,
+  fontWeight: 700,
+  color: 'var(--text-mut)',
+  marginBottom: 6,
+} as const;
 
 function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
   return (
@@ -131,8 +139,25 @@ function Field({
 function SectionHead({ title, sub }: { title: string; sub: string }) {
   return (
     <>
-      <h2 style={{ margin: '0 0 5px', fontSize: 22, fontWeight: 800, letterSpacing: '-.4px' }}>{title}</h2>
-      <p style={{ margin: '0 0 24px', fontSize: 13.5, color: 'var(--text-soft)' }}>{sub}</p>
+      <h2
+        style={{
+          margin: '0 0 5px',
+          fontSize: 22,
+          fontWeight: 800,
+          letterSpacing: '-.4px',
+        }}
+      >
+        {title}
+      </h2>
+      <p
+        style={{
+          margin: '0 0 24px',
+          fontSize: 13.5,
+          color: 'var(--text-soft)',
+        }}
+      >
+        {sub}
+      </p>
     </>
   );
 }
@@ -157,9 +182,15 @@ function Integrations() {
       />
 
       <div style={{ ...cardStyle, marginBottom: 18 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            marginBottom: 20,
+          }}
+        >
           <div
-            className="noinv"
             style={{
               width: 40,
               height: 40,
@@ -190,12 +221,26 @@ function Integrations() {
               {badge}
             </span>
           </div>
-          <Toggle on={ytrack} onClick={() => setIntegration('ytrack', !ytrack)} />
+          <Toggle
+            on={ytrack}
+            onClick={() => setIntegration('ytrack', !ytrack)}
+          />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
-          <Field label="Base URL инстанса" cfgKey="ytrackUrl" placeholder="https://youtrack.company.com" mono />
+          <Field
+            label="Base URL инстанса"
+            cfgKey="ytrackUrl"
+            placeholder="https://youtrack.company.com"
+            mono
+          />
           <div style={{ display: 'flex', gap: 12 }}>
-            <Field label="Permanent token (API)" cfgKey="ytrackToken" type="password" mono flex={2} />
+            <Field
+              label="Permanent token (API)"
+              cfgKey="ytrackToken"
+              type="password"
+              mono
+              flex={2}
+            />
             <Field label="Проект" cfgKey="ytrackProject" flex={1} />
           </div>
           <div>
@@ -234,7 +279,9 @@ function Integrations() {
                   inputMode="numeric"
                   style={{ ...inputStyle, width: 70, textAlign: 'center' }}
                 />
-                <span style={{ fontSize: 13, color: 'var(--text-soft)' }}>минут</span>
+                <span style={{ fontSize: 13, color: 'var(--text-soft)' }}>
+                  минут
+                </span>
               </div>
             </div>
             <button
@@ -253,7 +300,14 @@ function Integrations() {
                 gap: 7,
               }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+              >
                 <path d="M20 6L9 17l-5-5" />
               </svg>
               Проверить соединение
@@ -263,9 +317,15 @@ function Integrations() {
       </div>
 
       <div style={cardStyle}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            marginBottom: 18,
+          }}
+        >
           <div
-            className="noinv"
             style={{
               width: 40,
               height: 40,
@@ -277,14 +337,25 @@ function Integrations() {
               justifyContent: 'center',
             }}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <rect x="3" y="5" width="18" height="14" rx="2" />
               <path d="m3 7 9 6 9-6" />
             </svg>
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 16, fontWeight: 800 }}>Email-уведомления</div>
-            <div style={{ fontSize: 12, color: 'var(--text-faint)' }}>SMTP для дайджестов и алертов</div>
+            <div style={{ fontSize: 16, fontWeight: 800 }}>
+              Email-уведомления
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--text-faint)' }}>
+              SMTP для дайджестов и алертов
+            </div>
           </div>
           <Toggle on={email} onClick={() => setIntegration('email', !email)} />
         </div>
@@ -297,7 +368,12 @@ function Integrations() {
         </div>
         <div style={{ display: 'flex', gap: 12 }}>
           <Field label="Адрес отправителя" cfgKey="fromEmail" mono flex={2} />
-          <Field label="Время дайджеста" cfgKey="digestTime" type="time" flex={1} />
+          <Field
+            label="Время дайджеста"
+            cfgKey="digestTime"
+            type="time"
+            flex={1}
+          />
         </div>
       </div>
     </>
@@ -323,7 +399,10 @@ function Sync() {
   const setFlag = useBoard((s) => s.setFlag);
   return (
     <>
-      <SectionHead title="Синхронизация" sub="Как данные движутся между доской и источником правды." />
+      <SectionHead
+        title="Синхронизация"
+        sub="Как данные движутся между доской и источником правды."
+      />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <ToggleRow
           title="Авто-синхронизация"
@@ -349,8 +428,9 @@ function Sync() {
             lineHeight: 1.5,
           }}
         >
-          <b style={{ color: 'var(--text-3)' }}>Текущий статус:</b> последняя успешная синхронизация — 2 минуты назад · 0
-          конфликтов · 1 247 тикетов в проекте.
+          <b style={{ color: 'var(--text-3)' }}>Текущий статус:</b> последняя
+          успешная синхронизация — 2 минуты назад · 0 конфликтов · 1 247 тикетов
+          в проекте.
         </div>
       </div>
     </>
@@ -364,7 +444,10 @@ function Mapping() {
   const grid = '1.1fr 1.3fr 1.6fr 1.2fr 40px';
   return (
     <>
-      <SectionHead title="Правила маппинга" sub="Условия: как значения из источника превращаются в поля доски." />
+      <SectionHead
+        title="Правила маппинга"
+        sub="Условия: как значения из источника превращаются в поля доски."
+      />
       <div
         style={{
           background: 'var(--glass)',
@@ -403,15 +486,26 @@ function Mapping() {
               fontSize: 13,
             }}
           >
-            <div style={{ fontWeight: 700, color: 'var(--text-2)' }}>{r.field}</div>
-            <div style={{ color: 'var(--text-soft)', fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}>{r.src}</div>
+            <div style={{ fontWeight: 700, color: 'var(--text-2)' }}>
+              {r.field}
+            </div>
+            <div
+              style={{
+                color: 'var(--text-soft)',
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 12,
+              }}
+            >
+              {r.src}
+            </div>
             <div style={{ color: 'var(--text-mut)' }}>
-              <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>если =</span>{' '}
+              <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>
+                если =
+              </span>{' '}
               <span style={{ fontWeight: 600 }}>{r.cond}</span>
             </div>
             <div>
               <span
-                className="noinv"
                 style={{
                   fontSize: 12,
                   fontWeight: 700,
@@ -427,9 +521,21 @@ function Mapping() {
             <div
               onClick={() => removeMappingRule(r.id)}
               title="Удалить правило"
-              style={{ display: 'flex', justifyContent: 'center', color: 'var(--line)', cursor: 'pointer' }}
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                color: 'var(--line)',
+                cursor: 'pointer',
+              }}
             >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
               </svg>
             </div>
@@ -448,7 +554,14 @@ function Mapping() {
             cursor: 'pointer',
           }}
         >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+          >
             <path d="M12 5v14M5 12h14" />
           </svg>
           Добавить правило
@@ -519,17 +632,41 @@ function Access() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-              <span className="noinv" style={{ width: 10, height: 10, borderRadius: 3, background: ROLE_COLORS[role] }} />
+              <span
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 3,
+                  background: ROLE_COLORS[role],
+                }}
+              />
               <span style={{ fontSize: 13.5, fontWeight: 700 }}>{role}</span>
             </div>
             {ROLE_RIGHTS[role].map((ok, i) => (
-              <div key={RIGHTS[i]} style={{ display: 'flex', justifyContent: 'center' }}>
+              <div
+                key={RIGHTS[i]}
+                style={{ display: 'flex', justifyContent: 'center' }}
+              >
                 {ok ? (
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4a9b7f" strokeWidth="2.4">
+                  <svg
+                    width="17"
+                    height="17"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#4a9b7f"
+                    strokeWidth="2.4"
+                  >
                     <path d="M20 6L9 17l-5-5" />
                   </svg>
                 ) : (
-                  <span style={{ width: 14, height: 2, borderRadius: 2, background: 'var(--surf-2)' }} />
+                  <span
+                    style={{
+                      width: 14,
+                      height: 2,
+                      borderRadius: 2,
+                      background: 'var(--surf-2)',
+                    }}
+                  />
                 )}
               </div>
             ))}
@@ -569,7 +706,14 @@ export function SettingsScreen() {
 
   return (
     <div style={{ display: 'flex', height: '100%', boxSizing: 'border-box' }}>
-      <div style={{ flex: 1, minWidth: 0, overflowY: 'auto', padding: '24px 36px 60px' }}>
+      <div
+        style={{
+          flex: 1,
+          minWidth: 0,
+          overflowY: 'auto',
+          padding: '24px 36px 60px',
+        }}
+      >
         <div
           onClick={closeSettings}
           style={{
@@ -583,7 +727,14 @@ export function SettingsScreen() {
             cursor: 'pointer',
           }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+          >
             <path d="M15 18l-6-6 6-6" />
           </svg>
           Назад

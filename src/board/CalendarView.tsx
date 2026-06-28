@@ -30,7 +30,10 @@ export function CalendarView() {
   const setCalMonth = useBoard((s) => s.setCalMonth);
   const openPanel = useBoard((s) => s.openPanel);
 
-  const allTasks = useMemo<Task[]>(() => groups.flatMap((g) => g.tasks), [groups]);
+  const allTasks = useMemo<Task[]>(
+    () => groups.flatMap((g) => g.tasks),
+    [groups],
+  );
 
   const weeks = useMemo<CalCell[][]>(() => {
     const { y, m0 } = calMonth;
@@ -60,7 +63,9 @@ export function CalendarView() {
           }
           const isoStr = iso(y, m0, d);
           const dayTasks = allTasks.filter((t) => t.due === isoStr);
-          const chips = dayTasks.slice(0, 3).map((t) => ({ id: t.id, name: t.name, bg: STATUS[t.status].bg }));
+          const chips = dayTasks
+            .slice(0, 3)
+            .map((t) => ({ id: t.id, name: t.name, bg: STATUS[t.status].bg }));
           const more = Math.max(0, dayTasks.length - 3);
           const today = isoStr === TODAY;
           return {
@@ -83,8 +88,24 @@ export function CalendarView() {
 
   return (
     <div style={{ padding: '18px 22px 50px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
-        <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, letterSpacing: '-.4px' }}>Календарь дедлайнов</h2>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 14,
+          marginBottom: 16,
+        }}
+      >
+        <h2
+          style={{
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 800,
+            letterSpacing: '-.4px',
+          }}
+        >
+          Календарь дедлайнов
+        </h2>
         <div style={{ flex: 1 }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <div
@@ -102,11 +123,27 @@ export function CalendarView() {
               background: 'var(--glass)',
             }}
           >
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+            <svg
+              width="17"
+              height="17"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+            >
               <path d="M15 18l-6-6 6-6" />
             </svg>
           </div>
-          <div style={{ minWidth: 150, textAlign: 'center', fontSize: 15, fontWeight: 700 }}>{label}</div>
+          <div
+            style={{
+              minWidth: 150,
+              textAlign: 'center',
+              fontSize: 15,
+              fontWeight: 700,
+            }}
+          >
+            {label}
+          </div>
           <div
             onClick={() => shiftCalMonth(1)}
             title="Следующий месяц"
@@ -122,14 +159,24 @@ export function CalendarView() {
               background: 'var(--glass)',
             }}
           >
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+            <svg
+              width="17"
+              height="17"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+            >
               <path d="M9 18l6-6-6-6" />
             </svg>
           </div>
           <button
             onClick={() => {
               const p = TODAY.split('-');
-              setCalMonth({ y: parseInt(p[0], 10), m0: parseInt(p[1], 10) - 1 });
+              setCalMonth({
+                y: parseInt(p[0], 10),
+                m0: parseInt(p[1], 10) - 1,
+              });
             }}
             style={{
               height: 32,
@@ -160,15 +207,33 @@ export function CalendarView() {
           overflow: 'hidden',
         }}
       >
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', borderBottom: '1px solid var(--hover)' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(7,1fr)',
+            borderBottom: '1px solid var(--hover)',
+          }}
+        >
           {DOWS.map((d) => (
-            <div key={d} style={{ padding: 9, textAlign: 'center', fontSize: 12, fontWeight: 700, color: 'var(--text-soft)' }}>
+            <div
+              key={d}
+              style={{
+                padding: 9,
+                textAlign: 'center',
+                fontSize: 12,
+                fontWeight: 700,
+                color: 'var(--text-soft)',
+              }}
+            >
               {d}
             </div>
           ))}
         </div>
         {weeks.map((w, wi) => (
-          <div key={wi} style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)' }}>
+          <div
+            key={wi}
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)' }}
+          >
             {w.map((c) => (
               <div
                 key={c.key}
@@ -182,9 +247,14 @@ export function CalendarView() {
               >
                 {!c.empty && (
                   <>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 5 }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        marginBottom: 5,
+                      }}
+                    >
                       <span
-                        className={c.dayBg === ACCENT ? 'noinv' : undefined}
                         style={{
                           minWidth: 22,
                           height: 22,
@@ -202,12 +272,17 @@ export function CalendarView() {
                         {c.day}
                       </span>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 3,
+                      }}
+                    >
                       {c.chips.map((ct) => (
                         <div
                           key={ct.id}
                           onClick={() => openPanel(ct.id)}
-                          className="noinv"
                           title={ct.name}
                           style={{
                             fontSize: 11,
@@ -220,14 +295,22 @@ export function CalendarView() {
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
-                            boxShadow: 'inset 0 0 0 1px var(--hover), inset 0 1px 0 var(--glass-edge)',
+                            boxShadow:
+                              'inset 0 0 0 1px var(--hover), inset 0 1px 0 var(--glass-edge)',
                           }}
                         >
                           {ct.name}
                         </div>
                       ))}
                       {c.more > 0 && (
-                        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-faint)', padding: '1px 7px' }}>
+                        <div
+                          style={{
+                            fontSize: 11,
+                            fontWeight: 600,
+                            color: 'var(--text-faint)',
+                            padding: '1px 7px',
+                          }}
+                        >
                           +{c.more} ещё
                         </div>
                       )}

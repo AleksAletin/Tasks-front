@@ -20,7 +20,15 @@ export function Coachmarks() {
 
   return (
     <>
-      <div onClick={coachSkip} style={{ position: 'fixed', inset: 0, zIndex: 150, background: 'rgba(20,22,28,0.5)' }} />
+      <div
+        onClick={coachSkip}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 150,
+          background: 'rgba(20,22,28,0.5)',
+        }}
+      />
       <div
         style={{
           position: 'fixed',
@@ -35,14 +43,21 @@ export function Coachmarks() {
           WebkitBackdropFilter: 'blur(34px) saturate(185%)',
           border: '1px solid var(--glass)',
           borderRadius: 16,
-          boxShadow: '0 30px 70px var(--shadow-lg), inset 0 1px 0 var(--glass-hi)',
+          boxShadow:
+            '0 30px 70px var(--shadow-lg), inset 0 1px 0 var(--glass-hi)',
           padding: 18,
           animation: 'popIn .18s ease',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 9 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 9,
+            marginBottom: 9,
+          }}
+        >
           <div
-            className="noinv"
             style={{
               width: 26,
               height: 26,
@@ -58,11 +73,30 @@ export function Coachmarks() {
           >
             {coachStep + 1}
           </div>
-          <div style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-.2px' }}>{data.title}</div>
+          <div
+            style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-.2px' }}
+          >
+            {data.title}
+          </div>
         </div>
-        <div style={{ fontSize: 13, color: 'var(--text-mut)', lineHeight: 1.5, marginBottom: 15 }}>{data.body}</div>
+        <div
+          style={{
+            fontSize: 13,
+            color: 'var(--text-mut)',
+            lineHeight: 1.5,
+            marginBottom: 15,
+          }}
+        >
+          {data.body}
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-faint)' }}>
+          <span
+            style={{
+              fontSize: 12,
+              fontWeight: 700,
+              color: 'var(--text-faint)',
+            }}
+          >
             {coachStep + 1} / {COACH.length}
           </span>
           <div style={{ flex: 1 }} />
@@ -83,7 +117,6 @@ export function Coachmarks() {
           </button>
           <button
             onClick={coachNext}
-            className="noinv"
             style={{
               height: 32,
               padding: '0 16px',

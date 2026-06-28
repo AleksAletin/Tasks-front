@@ -28,15 +28,37 @@ import { Coachmarks } from './Coachmarks';
 
 const ACCENT = '#4263d8';
 
-type TabKey = 'table' | 'timeline' | 'parity' | 'alerts' | 'import' | 'calendar';
+type TabKey =
+  | 'table'
+  | 'timeline'
+  | 'parity'
+  | 'alerts'
+  | 'import'
+  | 'calendar';
 
 const TABS: { key: TabKey; label: string; d: string }[] = [
   { key: 'table', label: 'Таблица', d: 'M3 5h18v14H3zM3 10h18M9 5v14' },
   { key: 'timeline', label: 'Таймлайн', d: 'M4 7h10M8 12h12M4 17h8' },
-  { key: 'parity', label: 'Паритет', d: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z' },
-  { key: 'alerts', label: 'Что горит', d: 'M12 2c1 4-2 5-2 8a4 4 0 0 0 8 0c0-2-1-3-1-3 3 2 4 5 4 7a7 7 0 0 1-14 0c0-4 4-6 5-9z' },
-  { key: 'import', label: 'Импорт', d: 'M12 3v12M8 11l4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2' },
-  { key: 'calendar', label: 'Календарь', d: 'M3 5h18v16H3zM3 9h18M8 3v4M16 3v4' },
+  {
+    key: 'parity',
+    label: 'Паритет',
+    d: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z',
+  },
+  {
+    key: 'alerts',
+    label: 'Что горит',
+    d: 'M12 2c1 4-2 5-2 8a4 4 0 0 0 8 0c0-2-1-3-1-3 3 2 4 5 4 7a7 7 0 0 1-14 0c0-4 4-6 5-9z',
+  },
+  {
+    key: 'import',
+    label: 'Импорт',
+    d: 'M12 3v12M8 11l4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2',
+  },
+  {
+    key: 'calendar',
+    label: 'Календарь',
+    d: 'M3 5h18v16H3zM3 9h18M8 3v4M16 3v4',
+  },
 ];
 
 // Opt-in backend data source (brief): when set, the board hydrates from GET /board on
@@ -77,10 +99,16 @@ export function BoardApp() {
     ]).then((results) => {
       const [board, prefs] = results;
       if (board.status === 'rejected') {
-        console.error('[board] backend load failed, using local data', board.reason);
+        console.error(
+          '[board] backend load failed, using local data',
+          board.reason,
+        );
       }
       if (prefs.status === 'rejected') {
-        console.error('[prefs] backend load failed, using local data', prefs.reason);
+        console.error(
+          '[prefs] backend load failed, using local data',
+          prefs.reason,
+        );
       }
       if (!cancelled) {
         disposeSync = startBackendSync();
@@ -112,11 +140,20 @@ export function BoardApp() {
         return;
       }
       const el = document.activeElement;
-      const typing = el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || (el as HTMLElement).isContentEditable);
+      const typing =
+        el &&
+        (el.tagName === 'INPUT' ||
+          el.tagName === 'TEXTAREA' ||
+          (el as HTMLElement).isContentEditable);
       if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
       if (e.key === '?') {
         startCoach();
-      } else if (e.key === 'd' || e.key === 'D' || e.key === 'в' || e.key === 'В') {
+      } else if (
+        e.key === 'd' ||
+        e.key === 'D' ||
+        e.key === 'в' ||
+        e.key === 'В'
+      ) {
         toggleDark();
       }
     };
@@ -136,7 +173,10 @@ export function BoardApp() {
   // Dark theme: switch the design-token palette at the document root (real dark
   // tokens — theme.css resolves :root[data-theme='dark']; no filter:invert).
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    document.documentElement.setAttribute(
+      'data-theme',
+      dark ? 'dark' : 'light',
+    );
   }, [dark]);
 
   if (loadingBoard) return <BoardLoading />;
@@ -145,10 +185,23 @@ export function BoardApp() {
 
   return (
     <div
-      style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', fontSize: 14 }}
+      style={{
+        display: 'flex',
+        height: '100vh',
+        width: '100vw',
+        overflow: 'hidden',
+        fontSize: 14,
+      }}
     >
       <Sidebar />
-      <main style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+      <main
+        style={{
+          flex: 1,
+          minWidth: 0,
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <Topbar />
         {!settingsScreen && screen === 'board' && <BoardHeader />}
         <div style={{ flex: 1, overflow: 'auto', position: 'relative' }}>
@@ -163,9 +216,13 @@ export function BoardApp() {
                 </>
               )}
               {screen === 'board' && boardTab === 'parity' && <ParityView />}
-              {screen === 'board' && boardTab === 'timeline' && <TimelineView />}
+              {screen === 'board' && boardTab === 'timeline' && (
+                <TimelineView />
+              )}
               {screen === 'board' && boardTab === 'alerts' && <AlertsView />}
-              {screen === 'board' && boardTab === 'calendar' && <CalendarView />}
+              {screen === 'board' && boardTab === 'calendar' && (
+                <CalendarView />
+              )}
               {screen === 'board' && boardTab === 'import' && <ImportWizard />}
               {screen === 'dashboard' && <DashboardScreen />}
               {screen === 'users' && <UsersScreen />}
@@ -229,7 +286,9 @@ function BoardHeader() {
   const viewer = useBoard((s) => s.viewer);
   const boardTab = useBoard((s) => s.boardTab);
   const setBoardTab = useBoard((s) => s.setBoardTab);
-  const sourceLabel = ytrack ? 'источник правды · YouTrack' : 'источник правды · Work';
+  const sourceLabel = ytrack
+    ? 'источник правды · YouTrack'
+    : 'источник правды · Work';
 
   return (
     <div
@@ -244,11 +303,37 @@ function BoardHeader() {
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, letterSpacing: '-.4px' }}>Переезд на Work</h1>
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="2.2" style={{ cursor: 'pointer' }}>
+        <h1
+          style={{
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 800,
+            letterSpacing: '-.4px',
+          }}
+        >
+          Переезд на Work
+        </h1>
+        <svg
+          width="17"
+          height="17"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="var(--text-faint)"
+          strokeWidth="2.2"
+          style={{ cursor: 'pointer' }}
+        >
           <path d="M6 9l6 6 6-6" />
         </svg>
-        <span style={{ fontSize: 12, fontWeight: 600, color: '#a86b3f', background: 'var(--amber-tint)', padding: '3px 9px', borderRadius: 6 }}>
+        <span
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            color: '#a86b3f',
+            background: 'var(--amber-tint)',
+            padding: '3px 9px',
+            borderRadius: 6,
+          }}
+        >
           {sourceLabel}
         </span>
         {viewer && (
@@ -265,7 +350,14 @@ function BoardHeader() {
               borderRadius: 6,
             }}
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" />
               <circle cx="12" cy="12" r="3" />
             </svg>
@@ -274,7 +366,9 @@ function BoardHeader() {
         )}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginTop: 12 }}>
+      <div
+        style={{ display: 'flex', alignItems: 'center', gap: 2, marginTop: 12 }}
+      >
         {TABS.map((tab) => {
           const active = boardTab === tab.key;
           return (
@@ -297,7 +391,14 @@ function BoardHeader() {
               }}
             >
               <span style={{ display: 'flex' }}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d={tab.d} />
                 </svg>
               </span>
@@ -331,8 +432,15 @@ function Toolbar() {
   const groupBy = useBoard((s) => s.groupBy);
   const openTool = useBoard((s) => s.openTool);
 
-  const fActiveN = Object.keys(filterStatus).filter((k) => filterStatus[k]).length + (filterOwner ? 1 : 0);
-  const sortNames: Record<string, string> = { name: 'Названию', due: 'Сроку', priority: 'Приоритету', status: 'Статусу' };
+  const fActiveN =
+    Object.keys(filterStatus).filter((k) => filterStatus[k]).length +
+    (filterOwner ? 1 : 0);
+  const sortNames: Record<string, string> = {
+    name: 'Названию',
+    due: 'Сроку',
+    priority: 'Приоритету',
+    status: 'Статусу',
+  };
   const groupNames: Record<string, string> = {
     role: 'Роли',
     status: 'Статусу',
@@ -351,7 +459,12 @@ function Toolbar() {
     openTool({ kind, x, y });
   };
 
-  const btns: { label: string; active: boolean; d: string; kind: 'filter' | 'sort' | 'group' }[] = [
+  const btns: {
+    label: string;
+    active: boolean;
+    d: string;
+    kind: 'filter' | 'sort' | 'group';
+  }[] = [
     {
       label: fActiveN > 0 ? 'Фильтр · ' + fActiveN : 'Фильтр',
       active: fActiveN > 0,
@@ -365,7 +478,9 @@ function Toolbar() {
       kind: 'sort',
     },
     {
-      label: groupActive ? 'Группировка · ' + groupNames[groupBy] : 'Группировать',
+      label: groupActive
+        ? 'Группировка · ' + groupNames[groupBy]
+        : 'Группировать',
       active: groupActive,
       d: 'M4 6h16M4 12h16M4 18h10',
       kind: 'group',
@@ -405,7 +520,15 @@ function Toolbar() {
               gap: 7,
             }}
           >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" style={{ position: 'relative' }}>
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              style={{ position: 'relative' }}
+            >
               <path d="M12 5v14M5 12h14" />
             </svg>
             Создать задачу
@@ -424,7 +547,14 @@ function Toolbar() {
               justifyContent: 'center',
             }}
           >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.6"
+            >
               <path d="M6 9l6 6 6-6" />
             </svg>
           </button>
@@ -450,7 +580,14 @@ function Toolbar() {
           }}
         >
           <span style={{ display: 'flex', color: 'var(--text-faint)' }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d={b.d} />
             </svg>
           </span>

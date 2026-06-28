@@ -49,22 +49,48 @@ export function CommandPalette() {
       { kind: 'Вид', label: 'Паритет-матрица', run: () => tab('parity') },
       { kind: 'Вид', label: 'Что горит', run: () => tab('alerts') },
       { kind: 'Вид', label: 'Импорт из Excel', run: () => tab('import') },
-      { kind: 'Экран', label: 'Дашборд и отчётность', run: () => go('dashboard') },
+      {
+        kind: 'Экран',
+        label: 'Дашборд и отчётность',
+        run: () => go('dashboard'),
+      },
       { kind: 'Экран', label: 'Пользователи и доступ', run: () => go('users') },
       { kind: 'Действие', label: 'Настройки', run: () => openSettings() },
       { kind: 'Действие', label: 'Тёмная тема', run: () => toggleDark() },
-      { kind: 'Действие', label: 'Подсказки по работе', run: () => startCoach() },
+      {
+        kind: 'Действие',
+        label: 'Подсказки по работе',
+        run: () => startCoach(),
+      },
       { kind: 'Роль', label: 'Режим: Участник', run: () => setViewer(false) },
       { kind: 'Роль', label: 'Режим: Наблюдатель', run: () => setViewer(true) },
     ];
     const tasks: CmdItem[] = groups
       .flatMap((g) => g.tasks)
-      .map((t) => ({ kind: 'Задача', label: t.name, run: () => openPanel(t.id) }));
+      .map((t) => ({
+        kind: 'Задача',
+        label: t.name,
+        run: () => openPanel(t.id),
+      }));
     const q = cmdQuery.trim().toLowerCase();
     let all = views.concat(tasks);
-    if (q) all = all.filter((i) => i.label.toLowerCase().includes(q) || i.kind.toLowerCase().includes(q));
+    if (q)
+      all = all.filter(
+        (i) =>
+          i.label.toLowerCase().includes(q) || i.kind.toLowerCase().includes(q),
+      );
     return all.slice(0, 8);
-  }, [groups, cmdQuery, setBoardTab, setScreen, openPanel, toggleDark, setViewer, openSettings, startCoach]);
+  }, [
+    groups,
+    cmdQuery,
+    setBoardTab,
+    setScreen,
+    openPanel,
+    toggleDark,
+    setViewer,
+    openSettings,
+    startCoach,
+  ]);
 
   useEffect(() => {
     if (cmdOpen) inputRef.current?.focus();
@@ -117,7 +143,8 @@ export function CommandPalette() {
           WebkitBackdropFilter: 'blur(40px) saturate(185%)',
           border: '1px solid var(--glass)',
           borderRadius: 17,
-          boxShadow: '0 40px 90px var(--shadow-lg), inset 0 1px 0 var(--glass-hi)',
+          boxShadow:
+            '0 40px 90px var(--shadow-lg), inset 0 1px 0 var(--glass-hi)',
           overflow: 'hidden',
           animation: 'popIn .15s ease',
         }}
@@ -131,7 +158,14 @@ export function CommandPalette() {
             borderBottom: '1px solid var(--hover)',
           }}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="2">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--text-faint)"
+            strokeWidth="2"
+          >
             <circle cx="11" cy="11" r="7" />
             <path d="M21 21l-4.3-4.3" />
           </svg>
@@ -140,7 +174,14 @@ export function CommandPalette() {
             value={cmdQuery}
             onChange={(e) => setCmdQuery(e.target.value)}
             placeholder="Перейти к задаче, виду, роли…"
-            style={{ flex: 1, border: 'none', background: 'transparent', fontSize: 15, outline: 'none', color: 'var(--text)' }}
+            style={{
+              flex: 1,
+              border: 'none',
+              background: 'transparent',
+              fontSize: 15,
+              outline: 'none',
+              color: 'var(--text)',
+            }}
           />
           <span
             style={{
@@ -198,14 +239,30 @@ export function CommandPalette() {
                 >
                   {it.label}
                 </span>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--line)" strokeWidth="2">
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--line)"
+                  strokeWidth="2"
+                >
                   <path d="M9 18l6-6-6-6" />
                 </svg>
               </div>
             );
           })}
           {items.length === 0 && (
-            <div style={{ padding: 26, textAlign: 'center', fontSize: 13, color: 'var(--text-faint)' }}>Ничего не найдено</div>
+            <div
+              style={{
+                padding: 26,
+                textAlign: 'center',
+                fontSize: 13,
+                color: 'var(--text-faint)',
+              }}
+            >
+              Ничего не найдено
+            </div>
           )}
         </div>
         <div

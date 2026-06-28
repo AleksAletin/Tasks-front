@@ -15,7 +15,6 @@ export function Avatar({
 }) {
   return (
     <div
-      className="noinv"
       style={{
         width: size,
         height: size,
@@ -51,7 +50,14 @@ export function AvatarEmpty({ size = 28 }: { size?: number }) {
         flexShrink: 0,
       }}
     >
-      <svg width={size / 2} height={size / 2} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <svg
+        width={size / 2}
+        height={size / 2}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      >
         <circle cx="12" cy="8" r="4" />
         <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
       </svg>
@@ -71,7 +77,6 @@ export function Pill({
 }) {
   return (
     <span
-      className="noinv"
       style={{
         fontSize: 12,
         fontWeight: 600,
@@ -102,7 +107,11 @@ export function Tip({
   className?: string;
 }) {
   return (
-    <div className={`tipwrap${className ? ' ' + className : ''}`} style={style} onClick={onClick}>
+    <div
+      className={`tipwrap${className ? ' ' + className : ''}`}
+      style={style}
+      onClick={onClick}
+    >
       {children}
       <span className="tip">{text}</span>
     </div>
@@ -133,7 +142,10 @@ export function GlassPopover({
 }) {
   return (
     <>
-      <div style={{ position: 'fixed', inset: 0, zIndex: backdropZ }} onClick={onClose} />
+      <div
+        style={{ position: 'fixed', inset: 0, zIndex: backdropZ }}
+        onClick={onClose}
+      />
       <div
         style={{
           position: 'fixed',
@@ -171,7 +183,14 @@ export function Icon({
   width?: number;
 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={width ?? 2}>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={stroke}
+      strokeWidth={width ?? 2}
+    >
       <path d={d} />
     </svg>
   );

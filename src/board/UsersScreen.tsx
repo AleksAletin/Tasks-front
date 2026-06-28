@@ -21,9 +21,29 @@ export function UsersScreen() {
 
   return (
     <div style={{ padding: '24px 28px 60px', maxWidth: 1080 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-        <h2 style={{ margin: 0, fontSize: 22, fontWeight: 800, letterSpacing: '-.4px' }}>Пользователи и доступ</h2>
-        <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-soft)' }}>{rows.length} человек</span>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          marginBottom: 20,
+        }}
+      >
+        <h2
+          style={{
+            margin: 0,
+            fontSize: 22,
+            fontWeight: 800,
+            letterSpacing: '-.4px',
+          }}
+        >
+          Пользователи и доступ
+        </h2>
+        <span
+          style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-soft)' }}
+        >
+          {rows.length} человек
+        </span>
         <div style={{ flex: 1 }} />
         <button
           onClick={openInvite}
@@ -42,7 +62,14 @@ export function UsersScreen() {
             gap: 7,
           }}
         >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+          >
             <path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
             <circle cx="9" cy="7" r="4" />
             <path d="M19 8v6M22 11h-6" />
@@ -95,9 +122,15 @@ export function UsersScreen() {
                 opacity: u.active ? 1 : 0.5,
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  minWidth: 0,
+                }}
+              >
                 <div
-                  className="noinv"
                   style={{
                     width: 36,
                     height: 36,
@@ -144,7 +177,6 @@ export function UsersScreen() {
               </div>
               <div>
                 <span
-                  className="noinv"
                   onClick={() => cycleRole(u.id)}
                   title="Сменить роль"
                   style={{
@@ -162,7 +194,15 @@ export function UsersScreen() {
                   {u.role}
                 </span>
               </div>
-              <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text-soft)' }}>{u.lastActive}</div>
+              <div
+                style={{
+                  fontSize: 12.5,
+                  fontWeight: 500,
+                  color: 'var(--text-soft)',
+                }}
+              >
+                {u.lastActive}
+              </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span
                   style={{
@@ -190,7 +230,14 @@ export function UsersScreen() {
                     color: 'var(--text-faint)',
                   }}
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                  >
                     <circle cx="5" cy="12" r="1.5" />
                     <circle cx="12" cy="12" r="1.5" />
                     <circle cx="19" cy="12" r="1.5" />
@@ -202,7 +249,8 @@ export function UsersScreen() {
         })}
       </div>
       <div style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 12 }}>
-        Клик по роли — сменить · «⋯» — деактивировать/активировать. Наблюдатель и Гость имеют доступ только на просмотр.
+        Клик по роли — сменить · «⋯» — деактивировать/активировать. Наблюдатель
+        и Гость имеют доступ только на просмотр.
       </div>
 
       {inviteOpen && <InvitePopup />}
@@ -220,7 +268,15 @@ function InvitePopup() {
 
   return (
     <>
-      <div onClick={closeInvite} style={{ position: 'fixed', inset: 0, zIndex: 95, background: 'rgba(30,32,36,.34)' }} />
+      <div
+        onClick={closeInvite}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 95,
+          background: 'rgba(30,32,36,.34)',
+        }}
+      />
       <div
         style={{
           position: 'fixed',
@@ -235,14 +291,21 @@ function InvitePopup() {
           WebkitBackdropFilter: 'blur(34px) saturate(180%)',
           border: '1px solid var(--glass)',
           borderRadius: 18,
-          boxShadow: '0 30px 70px var(--shadow-lg), inset 0 1px 0 var(--glass-hi)',
+          boxShadow:
+            '0 30px 70px var(--shadow-lg), inset 0 1px 0 var(--glass-hi)',
           padding: 24,
           animation: 'popIn .16s ease',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 11, marginBottom: 18 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 11,
+            marginBottom: 18,
+          }}
+        >
           <div
-            className="noinv"
             style={{
               width: 34,
               height: 34,
@@ -254,13 +317,29 @@ function InvitePopup() {
               justifyContent: 'center',
             }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
               <circle cx="9" cy="7" r="4" />
               <path d="M19 8v6M22 11h-6" />
             </svg>
           </div>
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, letterSpacing: '-.3px' }}>Пригласить пользователя</h2>
+          <h2
+            style={{
+              margin: 0,
+              fontSize: 18,
+              fontWeight: 800,
+              letterSpacing: '-.3px',
+            }}
+          >
+            Пригласить пользователя
+          </h2>
           <div style={{ flex: 1 }} />
           <div
             onClick={closeInvite}
@@ -275,7 +354,14 @@ function InvitePopup() {
               color: 'var(--text-faint)',
             }}
           >
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <svg
+              width="17"
+              height="17"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+            >
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
           </div>
@@ -321,14 +407,20 @@ function InvitePopup() {
         >
           Роль
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 7, marginBottom: 24 }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4,1fr)',
+            gap: 7,
+            marginBottom: 24,
+          }}
+        >
           {ROLES.map((r) => {
             const on = inviteRole === r;
             return (
               <div
                 key={r}
                 onClick={() => setInviteRole(r)}
-                className={on ? 'noinv' : undefined}
                 style={{
                   textAlign: 'center',
                   padding: '8px 0',

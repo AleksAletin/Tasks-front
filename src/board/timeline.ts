@@ -78,7 +78,10 @@ export interface TimelineData {
   rangeLabel: string;
 }
 
-export function buildTimeline(groups: Group[], tlDrag: TlDrag | null): TimelineData {
+export function buildTimeline(
+  groups: Group[],
+  tlDrag: TlDrag | null,
+): TimelineData {
   const ws = dayNum(WIN_START);
   const we = dayNum(WIN_END);
   const n = we - ws + 1;
@@ -96,7 +99,11 @@ export function buildTimeline(groups: Group[], tlDrag: TlDrag | null): TimelineD
       label: dt.getUTCDate(),
       monthFirst: dt.getUTCDate() === 1 || i === 0,
       monthLabel: MONTHS[dt.getUTCMonth()],
-      colBg: today ? 'rgba(66,99,216,0.07)' : weekend ? 'rgba(120,130,200,0.05)' : 'transparent',
+      colBg: today
+        ? 'rgba(66,99,216,0.07)'
+        : weekend
+          ? 'rgba(120,130,200,0.05)'
+          : 'transparent',
       color: today ? '#4263d8' : weekend ? 'var(--line)' : 'var(--text-soft)',
     });
   }
@@ -134,7 +141,11 @@ export function buildTimeline(groups: Group[], tlDrag: TlDrag | null): TimelineD
       if (t.phases) {
         isPhased = true;
         const cp = computePhases({ phases: t.phases, anchor: t.anchor });
-        segs = cp.segs.map((sg) => ({ color: sg.color, width: sg.days * DAY_W + 'px', short: PHASES[sg.key].label[0] }));
+        segs = cp.segs.map((sg) => ({
+          color: sg.color,
+          width: sg.days * DAY_W + 'px',
+          short: PHASES[sg.key].label[0],
+        }));
       }
       return {
         key: t.id,
@@ -146,7 +157,8 @@ export function buildTimeline(groups: Group[], tlDrag: TlDrag | null): TimelineD
         segs,
         left: left + 'px',
         width: width + 'px',
-        bg: 'linear-gradient(180deg, ' + lighten(g.color) + ', ' + g.color + ')',
+        bg:
+          'linear-gradient(180deg, ' + lighten(g.color) + ', ' + g.color + ')',
         barLabel: fmt(t.tl.start) + ' – ' + fmt(t.tl.end),
         statusBg: st.bg,
       };
@@ -171,16 +183,20 @@ export function buildTimeline(groups: Group[], tlDrag: TlDrag | null): TimelineD
     }),
   );
 
-  const resources: TlResource[] = PEOPLE.filter((p) => load[p.id].some((v) => v > 0)).map((p: Person) => ({
+  const resources: TlResource[] = PEOPLE.filter((p) =>
+    load[p.id].some((v) => v > 0),
+  ).map((p: Person) => ({
     id: p.id,
     name: p.name,
     initials: p.initials,
     color: p.color,
-    cells: load[p.id].map((v): TlResCell => ({
-      bg: v <= 0 ? 'transparent' : v === 1 ? p.color + '5e' : '#cf6b6b',
-      over: v >= 2,
-      count: v >= 2 ? String(v) : '',
-    })),
+    cells: load[p.id].map(
+      (v): TlResCell => ({
+        bg: v <= 0 ? 'transparent' : v === 1 ? p.color + '5e' : '#cf6b6b',
+        over: v >= 2,
+        count: v >= 2 ? String(v) : '',
+      }),
+    ),
   }));
 
   // bottleneck — worst concurrent load across all people/days

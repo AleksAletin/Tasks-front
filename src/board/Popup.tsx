@@ -41,12 +41,17 @@ export function Popup() {
   const updateSub = useBoard((s) => s.updateSub);
 
   if (!popup) return null;
-  const task: Task | undefined = groups.flatMap((g) => g.tasks).find((t) => t.id === popup.taskId);
-  const sub: Sub | undefined = popup.subId ? task?.subs?.find((x) => x.id === popup.subId) : undefined;
+  const task: Task | undefined = groups
+    .flatMap((g) => g.tasks)
+    .find((t) => t.id === popup.taskId);
+  const sub: Sub | undefined = popup.subId
+    ? task?.subs?.find((x) => x.id === popup.subId)
+    : undefined;
   const dueSeed = (popup.subId ? sub?.due : task?.due) ?? null;
 
   const apply = (patch: Partial<Task> & Partial<Sub>) => {
-    if (popup.taskId && popup.subId) updateSub(popup.taskId, popup.subId, patch);
+    if (popup.taskId && popup.subId)
+      updateSub(popup.taskId, popup.subId, patch);
     else if (popup.taskId) updateTask(popup.taskId, patch);
     closePopup();
   };
@@ -55,33 +60,59 @@ export function Popup() {
 
   return (
     <GlassPopover x={popup.x} y={popup.y} onClose={closePopup} minWidth={w}>
-      {popup.kind === 'phases' && task && task.phases && <PhaseEditor task={task} />}
+      {popup.kind === 'phases' && task && task.phases && (
+        <PhaseEditor task={task} />
+      )}
       {popup.kind === 'status' && (
         <Pills
-          items={STATUS_ORDER.map((k) => ({ label: STATUS[k].label, bg: STATUS[k].bg, key: k }))}
+          items={STATUS_ORDER.map((k) => ({
+            label: STATUS[k].label,
+            bg: STATUS[k].bg,
+            key: k,
+          }))}
           onPick={(k) => apply({ status: k as StatusKey })}
         />
       )}
       {popup.kind === 'priority' && (
         <Pills
-          items={PRIO_ORDER.map((k) => ({ label: PRIO[k].label, bg: PRIO[k].bg, key: k }))}
+          items={PRIO_ORDER.map((k) => ({
+            label: PRIO[k].label,
+            bg: PRIO[k].bg,
+            key: k,
+          }))}
           onPick={(k) => apply({ priority: k as PrioKey })}
         />
       )}
       {popup.kind === 'type' && (
         <Pills
-          items={TYPE_ORDER.map((k) => ({ label: TYPE[k].label, bg: TYPE[k].bg, key: k }))}
+          items={TYPE_ORDER.map((k) => ({
+            label: TYPE[k].label,
+            bg: TYPE[k].bg,
+            key: k,
+          }))}
           onPick={(k) => apply({ type: k as TypeKey })}
         />
       )}
       {popup.kind === 'source' && (
         <Pills
-          items={SOURCE_ORDER.map((k) => ({ label: SOURCE[k].label, bg: SOURCE[k].bg, key: k }))}
+          items={SOURCE_ORDER.map((k) => ({
+            label: SOURCE[k].label,
+            bg: SOURCE[k].bg,
+            key: k,
+          }))}
           onPick={(k) => apply({ source: k as SourceKey })}
         />
       )}
       {popup.kind === 'section' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, maxHeight: 280, overflowY: 'auto' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            maxHeight: 280,
+            overflowY: 'auto',
+          }}
+        >
           {SECTIONS.map((sec) => (
             <div
               key={sec}
@@ -98,14 +129,28 @@ export function Popup() {
                 gap: 8,
               }}
             >
-              <span style={{ width: 8, height: 8, borderRadius: 2, background: 'var(--line)' }} />
+              <span
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 2,
+                  background: 'var(--line)',
+                }}
+              />
               {sec}
             </div>
           ))}
         </div>
       )}
       {popup.kind === 'people' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 220 }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            minWidth: 220,
+          }}
+        >
           <div
             onClick={() => apply({ owner: null })}
             style={{
@@ -120,7 +165,14 @@ export function Popup() {
               gap: 10,
             }}
           >
-            <div style={{ width: 26, height: 26, borderRadius: '50%', border: '1.5px dashed var(--line)' }} />
+            <div
+              style={{
+                width: 26,
+                height: 26,
+                borderRadius: '50%',
+                border: '1.5px dashed var(--line)',
+              }}
+            />
             Без владельца
           </div>
           {PEOPLE.map((p) => (
@@ -140,7 +192,6 @@ export function Popup() {
               }}
             >
               <div
-                className="noinv"
                 style={{
                   width: 26,
                   height: 26,
@@ -162,7 +213,11 @@ export function Popup() {
         </div>
       )}
       {popup.kind === 'date' && task && (
-        <Calendar due={dueSeed} onPick={(d) => apply({ due: d })} onClear={() => apply({ due: null })} />
+        <Calendar
+          due={dueSeed}
+          onPick={(d) => apply({ due: d })}
+          onClear={() => apply({ due: null })}
+        />
       )}
     </GlassPopover>
   );
@@ -207,15 +262,45 @@ function PhaseEditor({ task }: { task: Task }) {
 
   return (
     <div style={{ minWidth: 324, padding: '4px 4px 2px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: 800, padding: '2px 4px 12px' }}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2">
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 7,
+          fontSize: 13,
+          fontWeight: 800,
+          padding: '2px 4px 12px',
+        }}
+      >
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke={ACCENT}
+          strokeWidth="2"
+        >
           <path d="M4 7h16M4 12h16M4 17h10" />
         </svg>
         Даты по фазам
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-        <div style={{ display: 'flex', background: 'var(--hover)', borderRadius: 8, padding: 2 }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          marginBottom: 12,
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            background: 'var(--hover)',
+            borderRadius: 8,
+            padding: 2,
+          }}
+        >
           <div
             onClick={() => phaseAnchorType(task.id, 'start')}
             style={{
@@ -247,7 +332,16 @@ function PhaseEditor({ task }: { task: Task }) {
         </div>
         <div style={{ flex: 1 }} />
         {stepBtn('−', () => phaseAnchorShift(task.id, -1))}
-        <div style={{ fontSize: 13, fontWeight: 700, minWidth: 58, textAlign: 'center' }}>{fmt(a.date)}</div>
+        <div
+          style={{
+            fontSize: 13,
+            fontWeight: 700,
+            minWidth: 58,
+            textAlign: 'center',
+          }}
+        >
+          {fmt(a.date)}
+        </div>
         {stepBtn('+', () => phaseAnchorShift(task.id, 1))}
       </div>
 
@@ -257,13 +351,29 @@ function PhaseEditor({ task }: { task: Task }) {
         return (
           <div
             key={k}
-            style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 4px', borderTop: '1px solid var(--hover)' }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 9,
+              padding: '8px 4px',
+              borderTop: '1px solid var(--hover)',
+            }}
           >
-            <span className="noinv" style={{ width: 9, height: 9, borderRadius: 3, background: PHASES[k].color, flexShrink: 0 }} />
-            <span style={{ fontSize: 12.5, fontWeight: 600, flex: 1 }}>{PHASES[k].label}</span>
+            <span
+              style={{
+                width: 9,
+                height: 9,
+                borderRadius: 3,
+                background: PHASES[k].color,
+                flexShrink: 0,
+              }}
+            />
+            <span style={{ fontSize: 12.5, fontWeight: 600, flex: 1 }}>
+              {PHASES[k].label}
+            </span>
             <div
               onClick={() => phaseRes(task.id, k)}
-              className="noinv phres"
+              className="phres"
               style={{
                 width: 26,
                 height: 26,
@@ -300,7 +410,16 @@ function PhaseEditor({ task }: { task: Task }) {
               >
                 −
               </div>
-              <div style={{ minWidth: 46, textAlign: 'center', fontSize: 12.5, fontWeight: 700 }}>{ph.days} дн</div>
+              <div
+                style={{
+                  minWidth: 46,
+                  textAlign: 'center',
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                }}
+              >
+                {ph.days} дн
+              </div>
               <div
                 onClick={() => phaseDays(task.id, k, 1)}
                 className="phstep"
@@ -340,7 +459,14 @@ function PhaseEditor({ task }: { task: Task }) {
       >
         <span style={{ color: 'var(--text-soft)' }}>Старт</span>
         <span>{fmt(cp.start)}</span>
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="2.4">
+        <svg
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="var(--text-faint)"
+          strokeWidth="2.4"
+        >
           <path d="M5 12h14M13 6l6 6-6 6" />
         </svg>
         <span style={{ color: 'var(--text-soft)' }}>Финал</span>
@@ -365,7 +491,6 @@ function Pills({
         <div
           key={it.key}
           onClick={() => onPick(it.key)}
-          className="noinv"
           style={{
             height: 34,
             borderRadius: 8,
@@ -397,7 +522,10 @@ function Calendar({
   onClear: () => void;
 }) {
   const seed = due || TODAY;
-  const [m, setM] = useState({ y: parseInt(seed.slice(0, 4), 10), m0: parseInt(seed.slice(5, 7), 10) - 1 });
+  const [m, setM] = useState({
+    y: parseInt(seed.slice(0, 4), 10),
+    m0: parseInt(seed.slice(5, 7), 10) - 1,
+  });
 
   const first = new Date(Date.UTC(m.y, m.m0, 1));
   const startW = (first.getUTCDay() + 6) % 7;
@@ -425,12 +553,35 @@ function Calendar({
 
   return (
     <div style={{ minWidth: 260, padding: 4 }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 4px 10px' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '2px 4px 10px',
+        }}
+      >
         <div
           onClick={() => nav(-1)}
-          style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 7, cursor: 'pointer', color: 'var(--text-mut)' }}
+          style={{
+            width: 28,
+            height: 28,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 7,
+            cursor: 'pointer',
+            color: 'var(--text-mut)',
+          }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+          >
             <path d="M15 18l-6-6 6-6" />
           </svg>
         </div>
@@ -439,22 +590,61 @@ function Calendar({
         </div>
         <div
           onClick={() => nav(1)}
-          style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 7, cursor: 'pointer', color: 'var(--text-mut)' }}
+          style={{
+            width: 28,
+            height: 28,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 7,
+            cursor: 'pointer',
+            color: 'var(--text-mut)',
+          }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+          >
             <path d="M9 18l6-6-6-6" />
           </svg>
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 2, marginBottom: 4 }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(7,1fr)',
+          gap: 2,
+          marginBottom: 4,
+        }}
+      >
         {DOWS.map((d) => (
-          <div key={d} style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: 'var(--text-faint)', padding: '3px 0' }}>
+          <div
+            key={d}
+            style={{
+              textAlign: 'center',
+              fontSize: 11,
+              fontWeight: 700,
+              color: 'var(--text-faint)',
+              padding: '3px 0',
+            }}
+          >
             {d}
           </div>
         ))}
       </div>
       {weeks.map((w, wi) => (
-        <div key={wi} style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 2 }}>
+        <div
+          key={wi}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(7,1fr)',
+            gap: 2,
+          }}
+        >
           {w.map((d, di) => {
             if (!d) return <div key={di} />;
             const isoDate = iso(m.y, m.m0, d);
@@ -475,7 +665,8 @@ function Calendar({
                   cursor: 'pointer',
                   background: sel ? ACCENT : 'transparent',
                   color: sel ? '#fff' : today ? ACCENT : 'var(--text-3)',
-                  boxShadow: today && !sel ? `inset 0 0 0 1.5px ${ACCENT}` : 'none',
+                  boxShadow:
+                    today && !sel ? `inset 0 0 0 1.5px ${ACCENT}` : 'none',
                 }}
               >
                 {d}
@@ -484,16 +675,44 @@ function Calendar({
           })}
         </div>
       ))}
-      <div style={{ display: 'flex', gap: 6, borderTop: '1px solid var(--surf-1)', marginTop: 8, paddingTop: 8 }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: 6,
+          borderTop: '1px solid var(--surf-1)',
+          marginTop: 8,
+          paddingTop: 8,
+        }}
+      >
         <button
           onClick={() => onPick(TODAY)}
-          style={{ flex: 1, height: 30, border: '1px solid var(--surf-2)', background: 'var(--card)', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', color: 'var(--text-3)' }}
+          style={{
+            flex: 1,
+            height: 30,
+            border: '1px solid var(--surf-2)',
+            background: 'var(--card)',
+            borderRadius: 7,
+            fontSize: 12,
+            fontWeight: 600,
+            cursor: 'pointer',
+            color: 'var(--text-3)',
+          }}
         >
           Сегодня
         </button>
         <button
           onClick={onClear}
-          style={{ flex: 1, height: 30, border: '1px solid var(--surf-2)', background: 'var(--card)', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', color: '#cf6b6b' }}
+          style={{
+            flex: 1,
+            height: 30,
+            border: '1px solid var(--surf-2)',
+            background: 'var(--card)',
+            borderRadius: 7,
+            fontSize: 12,
+            fontWeight: 600,
+            cursor: 'pointer',
+            color: '#cf6b6b',
+          }}
         >
           Очистить
         </button>

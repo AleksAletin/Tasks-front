@@ -3,7 +3,8 @@ import { useBoard } from './store';
 import { initialGroups, type Group } from './model';
 
 // Deep-clone the demo seed so each test starts from a known board.
-const seed = (): Group[] => JSON.parse(JSON.stringify(initialGroups)) as Group[];
+const seed = (): Group[] =>
+  JSON.parse(JSON.stringify(initialGroups)) as Group[];
 
 const ids = (gid: string): string[] => {
   const g = useBoard.getState().groups.find((x) => x.id === gid);
@@ -52,7 +53,10 @@ describe('moveTask', () => {
 
 describe('dropRow', () => {
   it('resolves drag + dropTarget(before) into the correct insertion', () => {
-    useBoard.setState({ drag: { id: 't3' }, dropTarget: { groupId: 'g1', taskId: 't1', before: true } });
+    useBoard.setState({
+      drag: { id: 't3' },
+      dropTarget: { groupId: 'g1', taskId: 't1', before: true },
+    });
     useBoard.getState().dropRow();
     expect(ids('g1')).toEqual(['t3', 't1', 't2']);
     // Ephemeral drag state is cleared after a drop.
@@ -61,7 +65,10 @@ describe('dropRow', () => {
   });
 
   it('resolves drop "after" a target row', () => {
-    useBoard.setState({ drag: { id: 't1' }, dropTarget: { groupId: 'g1', taskId: 't2', before: false } });
+    useBoard.setState({
+      drag: { id: 't1' },
+      dropTarget: { groupId: 'g1', taskId: 't2', before: false },
+    });
     useBoard.getState().dropRow();
     expect(ids('g1')).toEqual(['t2', 't1', 't3']);
   });
@@ -76,17 +83,32 @@ describe('dropRow', () => {
 describe('moveGroup', () => {
   it('moves a group up via the arrow direction', () => {
     useBoard.getState().moveGroup('g2', -1);
-    expect(useBoard.getState().groups.map((g) => g.id)).toEqual(['g2', 'g1', 'g3', 'g4']);
+    expect(useBoard.getState().groups.map((g) => g.id)).toEqual([
+      'g2',
+      'g1',
+      'g3',
+      'g4',
+    ]);
   });
 
   it('moves a group down via the arrow direction', () => {
     useBoard.getState().moveGroup('g1', 1);
-    expect(useBoard.getState().groups.map((g) => g.id)).toEqual(['g2', 'g1', 'g3', 'g4']);
+    expect(useBoard.getState().groups.map((g) => g.id)).toEqual([
+      'g2',
+      'g1',
+      'g3',
+      'g4',
+    ]);
   });
 
   it('ignores moves past the edges', () => {
     useBoard.getState().moveGroup('g1', -1);
-    expect(useBoard.getState().groups.map((g) => g.id)).toEqual(['g1', 'g2', 'g3', 'g4']);
+    expect(useBoard.getState().groups.map((g) => g.id)).toEqual([
+      'g1',
+      'g2',
+      'g3',
+      'g4',
+    ]);
   });
 });
 
@@ -94,7 +116,12 @@ describe('groupDrop', () => {
   it('reorders groups by splicing the dragged group before the target', () => {
     useBoard.setState({ groupDrag: { id: 'g4' } });
     useBoard.getState().groupDrop('g1');
-    expect(useBoard.getState().groups.map((g) => g.id)).toEqual(['g4', 'g1', 'g2', 'g3']);
+    expect(useBoard.getState().groups.map((g) => g.id)).toEqual([
+      'g4',
+      'g1',
+      'g2',
+      'g3',
+    ]);
     expect(useBoard.getState().groupDrag).toBeNull();
     expect(useBoard.getState().groupDropId).toBeNull();
   });
@@ -103,11 +130,18 @@ describe('groupDrop', () => {
 describe('persistence', () => {
   it('persists groups but never the ephemeral drag state', () => {
     // Set ephemeral drag fields then trigger a persisted mutation (a group move).
-    useBoard.setState({ drag: { id: 't1' }, dropTarget: { groupId: 'g1', taskId: 't2', before: true }, groupDrag: { id: 'g2' }, groupDropId: 'g1' });
+    useBoard.setState({
+      drag: { id: 't1' },
+      dropTarget: { groupId: 'g1', taskId: 't2', before: true },
+      groupDrag: { id: 'g2' },
+      groupDropId: 'g1',
+    });
     useBoard.getState().moveGroup('g1', 1);
     const raw = window.localStorage.getItem('work_board_v1');
     expect(raw).toBeTruthy();
-    const parsed = JSON.parse(raw as string) as { state: Record<string, unknown> };
+    const parsed = JSON.parse(raw as string) as {
+      state: Record<string, unknown>;
+    };
     const keys = Object.keys(parsed.state);
     expect(keys).toContain('groups');
     expect(keys).not.toContain('drag');

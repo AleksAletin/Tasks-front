@@ -35,7 +35,10 @@ export function HeaderMenus() {
     <>
       {addColMenu && (
         <>
-          <div onClick={closeAddColMenu} style={{ position: 'fixed', inset: 0, zIndex: 88 }} />
+          <div
+            onClick={closeAddColMenu}
+            style={{ position: 'fixed', inset: 0, zIndex: 88 }}
+          />
           <div
             style={{
               position: 'fixed',
@@ -48,7 +51,8 @@ export function HeaderMenus() {
               WebkitBackdropFilter: 'blur(30px) saturate(185%)',
               border: '1px solid var(--glass)',
               borderRadius: 13,
-              boxShadow: '0 16px 44px var(--shadow), inset 0 1px 0 var(--glass-hi)',
+              boxShadow:
+                '0 16px 44px var(--shadow), inset 0 1px 0 var(--glass-hi)',
               padding: 8,
               animation: 'popIn .12s ease',
             }}
@@ -57,9 +61,20 @@ export function HeaderMenus() {
               <div
                 key={ty.key}
                 onClick={() => addColumn(ty.key)}
-                onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(66,99,216,0.08)')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-                style={{ display: 'flex', alignItems: 'center', gap: 11, padding: '8px 9px', borderRadius: 9, cursor: 'pointer' }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = 'rgba(66,99,216,0.08)')
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = 'transparent')
+                }
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 11,
+                  padding: '8px 9px',
+                  borderRadius: 9,
+                  cursor: 'pointer',
+                }}
               >
                 <div
                   style={{
@@ -74,13 +89,30 @@ export function HeaderMenus() {
                     color: 'var(--text-mut)',
                   }}
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path d={ty.d} />
                   </svg>
                 </div>
                 <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text-2)' }}>{ty.label}</div>
-                  <div style={{ fontSize: 11.5, color: 'var(--text-faint)' }}>{ty.sub}</div>
+                  <div
+                    style={{
+                      fontSize: 13.5,
+                      fontWeight: 700,
+                      color: 'var(--text-2)',
+                    }}
+                  >
+                    {ty.label}
+                  </div>
+                  <div style={{ fontSize: 11.5, color: 'var(--text-faint)' }}>
+                    {ty.sub}
+                  </div>
                 </div>
               </div>
             ))}
@@ -90,7 +122,10 @@ export function HeaderMenus() {
 
       {headerMenu && (
         <>
-          <div onClick={closeHeaderMenu} style={{ position: 'fixed', inset: 0, zIndex: 88 }} />
+          <div
+            onClick={closeHeaderMenu}
+            style={{ position: 'fixed', inset: 0, zIndex: 88 }}
+          />
           <div
             style={{
               position: 'fixed',
@@ -103,7 +138,8 @@ export function HeaderMenus() {
               WebkitBackdropFilter: 'blur(30px) saturate(185%)',
               border: '1px solid var(--glass)',
               borderRadius: 13,
-              boxShadow: '0 16px 44px var(--shadow), inset 0 1px 0 var(--glass-hi)',
+              boxShadow:
+                '0 16px 44px var(--shadow), inset 0 1px 0 var(--glass-hi)',
               padding: 12,
               animation: 'popIn .12s ease',
             }}
@@ -111,13 +147,18 @@ export function HeaderMenus() {
             <input
               value={
                 headerMenu.custom
-                  ? customCols.find((c) => c.id === headerMenu.key)?.label ?? ''
-                  : colLabels[headerMenu.key] ?? BASE_LABELS[headerMenu.key] ?? ''
+                  ? (customCols.find((c) => c.id === headerMenu.key)?.label ??
+                    '')
+                  : (colLabels[headerMenu.key] ??
+                    BASE_LABELS[headerMenu.key] ??
+                    '')
               }
               onChange={(e) => setColLabel(headerMenu.key, e.target.value)}
               autoFocus
               onFocus={(e) => (e.currentTarget.style.borderColor = ACCENT)}
-              onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--scrim)')}
+              onBlur={(e) =>
+                (e.currentTarget.style.borderColor = 'var(--scrim)')
+              }
               style={{
                 width: '100%',
                 height: 34,
@@ -133,8 +174,12 @@ export function HeaderMenus() {
             {headerMenu.custom && (
               <div
                 onClick={() => deleteColumn(headerMenu.key)}
-                onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(207,107,107,0.1)')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background = 'rgba(207,107,107,0.1)')
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = 'transparent')
+                }
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -148,7 +193,14 @@ export function HeaderMenus() {
                   cursor: 'pointer',
                 }}
               >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" />
                 </svg>
                 Удалить столбец

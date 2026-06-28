@@ -33,11 +33,20 @@ export function Login() {
           WebkitBackdropFilter: 'blur(40px) saturate(180%)',
           border: '1px solid var(--glass)',
           borderRadius: 22,
-          boxShadow: '0 40px 100px var(--shadow-lg), inset 0 1px 0 var(--glass-hi)',
+          boxShadow:
+            '0 40px 100px var(--shadow-lg), inset 0 1px 0 var(--glass-hi)',
           padding: '36px 32px',
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 11, marginBottom: 26 }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 11,
+            marginBottom: 26,
+          }}
+        >
           <div
             style={{
               width: 50,
@@ -50,13 +59,20 @@ export function Login() {
               justifyContent: 'center',
               fontWeight: 800,
               fontSize: 25,
-              boxShadow: '0 10px 26px rgba(66,99,216,0.42), inset 0 1px 0 var(--glass-soft)',
+              boxShadow:
+                '0 10px 26px rgba(66,99,216,0.42), inset 0 1px 0 var(--glass-soft)',
             }}
           >
             W
           </div>
-          <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-.4px' }}>Work</div>
-          <div style={{ fontSize: 13.5, color: 'var(--text-soft)' }}>Войдите, чтобы продолжить переезд</div>
+          <div
+            style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-.4px' }}
+          >
+            Work
+          </div>
+          <div style={{ fontSize: 13.5, color: 'var(--text-soft)' }}>
+            Войдите, чтобы продолжить переезд
+          </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
           <input
@@ -110,7 +126,14 @@ export function Login() {
             Войти
           </button>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '18px 0' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            margin: '18px 0',
+          }}
+        >
           <div style={{ flex: 1, height: 1, background: 'var(--hover)' }} />
           <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>или</span>
           <div style={{ flex: 1, height: 1, background: 'var(--hover)' }} />
@@ -132,15 +155,31 @@ export function Login() {
             gap: 9,
           }}
         >
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--text-mut)" strokeWidth="2">
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--text-mut)"
+            strokeWidth="2"
+          >
             <rect x="3" y="5" width="18" height="14" rx="2" />
             <path d="m3 7 9 6 9-6" />
           </svg>
           Войти через корпоративный SSO
         </button>
-        <div style={{ textAlign: 'center', marginTop: 20, fontSize: 12.5, color: 'var(--text-faint)' }}>
+        <div
+          style={{
+            textAlign: 'center',
+            marginTop: 20,
+            fontSize: 12.5,
+            color: 'var(--text-faint)',
+          }}
+        >
           Нет доступа?{' '}
-          <span style={{ color: ACCENT, fontWeight: 600, cursor: 'pointer' }}>Запросить у админа</span>
+          <span style={{ color: ACCENT, fontWeight: 600, cursor: 'pointer' }}>
+            Запросить у админа
+          </span>
         </div>
       </div>
     </div>

@@ -35,8 +35,19 @@ export interface UserOverride {
 }
 
 export type Screen = 'board' | 'dashboard' | 'users';
-export type BoardTab = 'table' | 'timeline' | 'parity' | 'alerts' | 'import' | 'calendar';
-export type SettingsTab = 'integrations' | 'sync' | 'mapping' | 'access' | 'appearance';
+export type BoardTab =
+  | 'table'
+  | 'timeline'
+  | 'parity'
+  | 'alerts'
+  | 'import'
+  | 'calendar';
+export type SettingsTab =
+  | 'integrations'
+  | 'sync'
+  | 'mapping'
+  | 'access'
+  | 'appearance';
 
 export interface PopupState {
   kind: string;
@@ -158,7 +169,11 @@ interface BoardState {
   importMap: Record<string, string>;
 
   // ---- actions ----
-  hydrateBoard: (payload: { boards: Board[]; groups: Group[]; parity: Parity }) => void;
+  hydrateBoard: (payload: {
+    boards: Board[];
+    groups: Group[];
+    parity: Parity;
+  }) => void;
   hydratePrefs: (payload: {
     cfg: Cfg;
     integrations: { ytrack: boolean; email: boolean };
@@ -199,7 +214,10 @@ interface BoardState {
   setQuery: (v: string) => void;
   updateTask: (taskId: string, patch: Partial<Task>) => void;
   initPhases: (taskId: string) => void;
-  phaseEdit: (taskId: string, mutator: (phases: Phases, anchor: Anchor) => void) => void;
+  phaseEdit: (
+    taskId: string,
+    mutator: (phases: Phases, anchor: Anchor) => void,
+  ) => void;
   phaseDays: (taskId: string, key: PhaseKey, delta: number) => void;
   phaseRes: (taskId: string, key: PhaseKey) => void;
   phaseAnchorType: (taskId: string, type: Anchor['type']) => void;
@@ -270,7 +288,11 @@ interface BoardState {
   toggleImportTemplate: () => void;
 }
 
-const patchTask = (groups: Group[], taskId: string, patch: Partial<Task>): Group[] =>
+const patchTask = (
+  groups: Group[],
+  taskId: string,
+  patch: Partial<Task>,
+): Group[] =>
   groups.map((g) => ({
     ...g,
     tasks: g.tasks.map((t) => (t.id === taskId ? { ...t, ...patch } : t)),
@@ -373,22 +395,35 @@ export const useBoard = create<BoardState>()(
       setLoginEmail: (v) => set({ loginEmail: v }),
       toggleNav: () => set((s) => ({ navOpen: !s.navOpen })),
       setScreen: (screen) => set({ screen, settingsScreen: false }),
-      setBoardTab: (boardTab) => set({ boardTab, screen: 'board', settingsScreen: false }),
+      setBoardTab: (boardTab) =>
+        set({ boardTab, screen: 'board', settingsScreen: false }),
       openSettings: () => set({ settingsScreen: true }),
       closeSettings: () => set({ settingsScreen: false }),
       setSettingsTab: (settingsTab) => set({ settingsTab }),
       selectBoard: (activeBoardId) => set({ activeBoardId }),
       addBoard: () =>
         set((s) => {
-          const palette = ['#4263d8', '#c9b46b', '#9b8fd1', '#3fa8a0', '#cf6b6b', '#5b8def'];
+          const palette = [
+            '#4263d8',
+            '#c9b46b',
+            '#9b8fd1',
+            '#3fa8a0',
+            '#cf6b6b',
+            '#5b8def',
+          ];
           const id = 'b' + (s.boards.length + 1);
-          const board: Board = { id, name: 'Новая доска', color: palette[s.boards.length % palette.length] };
+          const board: Board = {
+            id,
+            name: 'Новая доска',
+            color: palette[s.boards.length % palette.length],
+          };
           return { boards: [...s.boards, board], activeBoardId: id };
         }),
       setViewer: (viewer) => set({ viewer }),
       toggleDark: () => set((s) => ({ dark: !s.dark })),
       setCfg: (patch) => set((s) => ({ cfg: { ...s.cfg, ...patch } })),
-      setIntegration: (k, v) => set((s) => ({ integrations: { ...s.integrations, [k]: v } })),
+      setIntegration: (k, v) =>
+        set((s) => ({ integrations: { ...s.integrations, [k]: v } })),
       setFlag: (k, v) => set({ [k]: v } as Partial<BoardState>),
       addMappingRule: () =>
         set((s) => {
@@ -402,18 +437,31 @@ export const useBoard = create<BoardState>()(
           };
           return { mappingRules: [...s.mappingRules, rule] };
         }),
-      removeMappingRule: (id) => set((s) => ({ mappingRules: s.mappingRules.filter((r) => r.id !== id) })),
+      removeMappingRule: (id) =>
+        set((s) => ({
+          mappingRules: s.mappingRules.filter((r) => r.id !== id),
+        })),
       cycleRole: (id) =>
         set((s) => {
           const base = PEOPLE.find((p) => p.id === id);
           if (base) {
             const cur = s.userOverrides[id]?.role ?? base.role;
             const next = ROLES[(ROLES.indexOf(cur) + 1) % ROLES.length];
-            return { userOverrides: { ...s.userOverrides, [id]: { ...s.userOverrides[id], role: next } } };
+            return {
+              userOverrides: {
+                ...s.userOverrides,
+                [id]: { ...s.userOverrides[id], role: next },
+              },
+            };
           }
           return {
             invites: s.invites.map((u) =>
-              u.id === id ? { ...u, role: ROLES[(ROLES.indexOf(u.role) + 1) % ROLES.length] } : u,
+              u.id === id
+                ? {
+                    ...u,
+                    role: ROLES[(ROLES.indexOf(u.role) + 1) % ROLES.length],
+                  }
+                : u,
             ),
           };
         }),
@@ -422,11 +470,21 @@ export const useBoard = create<BoardState>()(
           const base = PEOPLE.find((p) => p.id === id);
           if (base) {
             const cur = s.userOverrides[id]?.active ?? base.active;
-            return { userOverrides: { ...s.userOverrides, [id]: { ...s.userOverrides[id], active: !cur } } };
+            return {
+              userOverrides: {
+                ...s.userOverrides,
+                [id]: { ...s.userOverrides[id], active: !cur },
+              },
+            };
           }
-          return { invites: s.invites.map((u) => (u.id === id ? { ...u, active: !u.active } : u)) };
+          return {
+            invites: s.invites.map((u) =>
+              u.id === id ? { ...u, active: !u.active } : u,
+            ),
+          };
         }),
-      openInvite: () => set({ inviteOpen: true, inviteEmail: '', inviteRole: 'Участник' }),
+      openInvite: () =>
+        set({ inviteOpen: true, inviteEmail: '', inviteRole: 'Участник' }),
       closeInvite: () => set({ inviteOpen: false }),
       setInviteEmail: (inviteEmail) => set({ inviteEmail }),
       setInviteRole: (inviteRole) => set({ inviteRole }),
@@ -441,8 +499,21 @@ export const useBoard = create<BoardState>()(
               .filter(Boolean)
               .map((w) => w[0].toUpperCase() + w.slice(1))
               .join(' ') || trimmed;
-          const initials = (name.split(' ').map((w) => w[0]).join('').slice(0, 2) || '??').toUpperCase();
-          const colors = ['#5b8def', '#8b6fd6', '#3fa8a0', '#d6953f', '#cf6b6b', '#6b9b4a'];
+          const initials = (
+            name
+              .split(' ')
+              .map((w) => w[0])
+              .join('')
+              .slice(0, 2) || '??'
+          ).toUpperCase();
+          const colors = [
+            '#5b8def',
+            '#8b6fd6',
+            '#3fa8a0',
+            '#d6953f',
+            '#cf6b6b',
+            '#6b9b4a',
+          ];
           const u: Person = {
             id: 'u' + Date.now(),
             name,
@@ -453,17 +524,24 @@ export const useBoard = create<BoardState>()(
             lastActive: 'приглашён',
             active: true,
           };
-          return { invites: [...s.invites, u], inviteOpen: false, inviteEmail: '' };
+          return {
+            invites: [...s.invites, u],
+            inviteOpen: false,
+            inviteEmail: '',
+          };
         }),
       setQuery: (query) => set({ query }),
-      updateTask: (taskId, patch) => set((s) => ({ groups: patchTask(s.groups, taskId, patch) })),
+      updateTask: (taskId, patch) =>
+        set((s) => ({ groups: patchTask(s.groups, taskId, patch) })),
       // Phase-dates editor (brief §5.6, prototype openPopup 'phases' init ~1741): when a task
       // has no phases yet, seed the prototype default and store the derived tl so the gantt bar
       // (which segments by phases) renders immediately.
       initPhases: (taskId) =>
         set((s) => {
           if (s.viewer) return {};
-          const t = s.groups.flatMap((g) => g.tasks).find((x) => x.id === taskId);
+          const t = s.groups
+            .flatMap((g) => g.tasks)
+            .find((x) => x.id === taskId);
           if (!t || t.phases) return {};
           const base = t.tl ? t.tl.start : TODAY;
           const phases: Phases = {
@@ -473,20 +551,36 @@ export const useBoard = create<BoardState>()(
           };
           const anchor: Anchor = { type: 'start', date: base };
           const cp = computePhases({ phases, anchor });
-          return { groups: patchTask(s.groups, taskId, { phases, anchor, tl: { start: cp.start, end: cp.end } }) };
+          return {
+            groups: patchTask(s.groups, taskId, {
+              phases,
+              anchor,
+              tl: { start: cp.start, end: cp.end },
+            }),
+          };
         }),
       // Ported 1:1 from the prototype's phaseEdit: clone phases+anchor, run the mutator,
       // recompute via computePhases, and persist phases/anchor/tl together so the bar stays live.
       phaseEdit: (taskId, mutator) =>
         set((s) => {
           if (s.viewer) return {};
-          const t = s.groups.flatMap((g) => g.tasks).find((x) => x.id === taskId);
+          const t = s.groups
+            .flatMap((g) => g.tasks)
+            .find((x) => x.id === taskId);
           if (!t || !t.phases) return {};
           const phases: Phases = JSON.parse(JSON.stringify(t.phases));
-          const anchor: Anchor = { ...(t.anchor ?? { type: 'start', date: t.tl ? t.tl.start : TODAY }) };
+          const anchor: Anchor = {
+            ...(t.anchor ?? { type: 'start', date: t.tl ? t.tl.start : TODAY }),
+          };
           mutator(phases, anchor);
           const cp = computePhases({ phases, anchor });
-          return { groups: patchTask(s.groups, taskId, { phases, anchor, tl: { start: cp.start, end: cp.end } }) };
+          return {
+            groups: patchTask(s.groups, taskId, {
+              phases,
+              anchor,
+              tl: { start: cp.start, end: cp.end },
+            }),
+          };
         }),
       phaseDays: (taskId, key, delta) =>
         get().phaseEdit(taskId, (p) => {
@@ -512,13 +606,24 @@ export const useBoard = create<BoardState>()(
       cycleParity: (gid, col) =>
         set((s) => {
           const cur = (s.parity[gid] && s.parity[gid][col]) || 'none';
-          const next = PARITY_ORDER[(PARITY_ORDER.indexOf(cur) + 1) % PARITY_ORDER.length];
-          return { parity: { ...s.parity, [gid]: { ...s.parity[gid], [col]: next } } };
+          const next =
+            PARITY_ORDER[(PARITY_ORDER.indexOf(cur) + 1) % PARITY_ORDER.length];
+          return {
+            parity: { ...s.parity, [gid]: { ...s.parity[gid], [col]: next } },
+          };
         }),
       setParity: (gid, col, value) =>
-        set((s) => ({ parity: { ...s.parity, [gid]: { ...s.parity[gid], [col]: value } } })),
-      toggleCollapse: (gid) => set((s) => ({ collapsed: { ...s.collapsed, [gid]: !s.collapsed[gid] } })),
-      toggleExpand: (taskId) => set((s) => ({ expanded: { ...s.expanded, [taskId]: !s.expanded[taskId] } })),
+        set((s) => ({
+          parity: { ...s.parity, [gid]: { ...s.parity[gid], [col]: value } },
+        })),
+      toggleCollapse: (gid) =>
+        set((s) => ({
+          collapsed: { ...s.collapsed, [gid]: !s.collapsed[gid] },
+        })),
+      toggleExpand: (taskId) =>
+        set((s) => ({
+          expanded: { ...s.expanded, [taskId]: !s.expanded[taskId] },
+        })),
       addColumn: (type) =>
         set((s) => {
           if (s.viewer) return {};
@@ -531,23 +636,38 @@ export const useBoard = create<BoardState>()(
             people: 'Люди',
             check: 'Готово',
           };
-          const col: CustomCol = { id, label: def[type] || 'Новый столбец', type };
+          const col: CustomCol = {
+            id,
+            label: def[type] || 'Новый столбец',
+            type,
+          };
           return {
             customCols: [...s.customCols, col],
             addColMenu: null,
-            headerMenu: { key: id, x: Math.max(10, window.innerWidth - 280), y: 120, custom: true },
+            headerMenu: {
+              key: id,
+              x: Math.max(10, window.innerWidth - 280),
+              y: 120,
+              custom: true,
+            },
           };
         }),
       setColValue: (taskId, colId, value) =>
         set((s) => {
           if (s.viewer) return {};
-          return { colValues: { ...s.colValues, [taskId + '::' + colId]: value } };
+          return {
+            colValues: { ...s.colValues, [taskId + '::' + colId]: value },
+          };
         }),
       setColLabel: (id, label) =>
         set((s) => {
           if (s.viewer) return {};
           if (id.indexOf('cc') === 0) {
-            return { customCols: s.customCols.map((c) => (c.id === id ? { ...c, label } : c)) };
+            return {
+              customCols: s.customCols.map((c) =>
+                c.id === id ? { ...c, label } : c,
+              ),
+            };
           }
           return { colLabels: { ...s.colLabels, [id]: label } };
         }),
@@ -558,12 +678,23 @@ export const useBoard = create<BoardState>()(
           for (const k of Object.keys(s.colValues)) {
             if (k.split('::')[1] !== id) colValues[k] = s.colValues[k];
           }
-          return { customCols: s.customCols.filter((c) => c.id !== id), colValues, headerMenu: null };
+          return {
+            customCols: s.customCols.filter((c) => c.id !== id),
+            colValues,
+            headerMenu: null,
+          };
         }),
       openHeaderMenu: (key, custom, x, y) =>
-        set((s) => (s.viewer ? {} : { headerMenu: { key, custom, x, y }, addColMenu: null })),
+        set((s) =>
+          s.viewer
+            ? {}
+            : { headerMenu: { key, custom, x, y }, addColMenu: null },
+        ),
       closeHeaderMenu: () => set({ headerMenu: null }),
-      openAddColMenu: (x, y) => set((s) => (s.viewer ? {} : { addColMenu: { x, y }, headerMenu: null })),
+      openAddColMenu: (x, y) =>
+        set((s) =>
+          s.viewer ? {} : { addColMenu: { x, y }, headerMenu: null },
+        ),
       closeAddColMenu: () => set({ addColMenu: null }),
       addSub: (taskId, name) =>
         set((s) => {
@@ -571,10 +702,18 @@ export const useBoard = create<BoardState>()(
           const trimmed = name.trim();
           if (!trimmed) return {};
           const sid = 's' + Date.now() + Math.floor(Math.random() * 99);
-          const ns: Sub = { id: sid, name: trimmed, owner: null, status: 'plan', due: null };
+          const ns: Sub = {
+            id: sid,
+            name: trimmed,
+            owner: null,
+            status: 'plan',
+            due: null,
+          };
           const groups = s.groups.map((g) => ({
             ...g,
-            tasks: g.tasks.map((t) => (t.id === taskId ? { ...t, subs: [...(t.subs ?? []), ns] } : t)),
+            tasks: g.tasks.map((t) =>
+              t.id === taskId ? { ...t, subs: [...(t.subs ?? []), ns] } : t,
+            ),
           }));
           return { groups };
         }),
@@ -585,7 +724,12 @@ export const useBoard = create<BoardState>()(
             ...g,
             tasks: g.tasks.map((t) =>
               t.id === taskId
-                ? { ...t, subs: (t.subs ?? []).map((x) => (x.id === subId ? { ...x, ...patch } : x)) }
+                ? {
+                    ...t,
+                    subs: (t.subs ?? []).map((x) =>
+                      x.id === subId ? { ...x, ...patch } : x,
+                    ),
+                  }
                 : t,
             ),
           }));
@@ -593,7 +737,14 @@ export const useBoard = create<BoardState>()(
         }),
       startAddSub: (taskId) =>
         set((s) =>
-          s.viewer ? {} : { addingSub: taskId, subDraft: '', expanded: { ...s.expanded, [taskId]: true }, ctxMenu: null },
+          s.viewer
+            ? {}
+            : {
+                addingSub: taskId,
+                subDraft: '',
+                expanded: { ...s.expanded, [taskId]: true },
+                ctxMenu: null,
+              },
         ),
       setSubDraft: (subDraft) => set({ subDraft }),
       cancelAddSub: () => set({ addingSub: null, subDraft: '' }),
@@ -623,13 +774,20 @@ export const useBoard = create<BoardState>()(
                   ...t,
                   id: 't' + stamp + '_' + k,
                   name: t.name + ' (копия)',
-                  subs: t.subs ? t.subs.map((sub, j) => ({ ...sub, id: 's' + stamp + '_' + k + '_' + j })) : undefined,
+                  subs: t.subs
+                    ? t.subs.map((sub, j) => ({
+                        ...sub,
+                        id: 's' + stamp + '_' + k + '_' + j,
+                      }))
+                    : undefined,
                 });
               }
             }
             return { ...g, tasks };
           });
-          get().addToast('Дублировано задач: ' + idSet.size, () => set({ groups: prev }));
+          get().addToast('Дублировано задач: ' + idSet.size, () =>
+            set({ groups: prev }),
+          );
           return { groups, selectedIds: {} };
         }),
       deleteTasks: (ids) =>
@@ -637,9 +795,14 @@ export const useBoard = create<BoardState>()(
           const idSet = new Set(ids);
           if (idSet.size === 0) return {};
           const prev = s.groups;
-          const groups = s.groups.map((g) => ({ ...g, tasks: g.tasks.filter((t) => !idSet.has(t.id)) }));
+          const groups = s.groups.map((g) => ({
+            ...g,
+            tasks: g.tasks.filter((t) => !idSet.has(t.id)),
+          }));
           const panelId = s.panelId && idSet.has(s.panelId) ? null : s.panelId;
-          get().addToast('Удалено задач: ' + idSet.size, () => set({ groups: prev }));
+          get().addToast('Удалено задач: ' + idSet.size, () =>
+            set({ groups: prev }),
+          );
           return { groups, selectedIds: {}, panelId };
         }),
       setFilterStatus: (key) =>
@@ -649,18 +812,34 @@ export const useBoard = create<BoardState>()(
           else filterStatus[key] = true;
           return { filterStatus };
         }),
-      setFilterOwner: (filterOwner) => set((s) => ({ filterOwner: s.filterOwner === filterOwner ? null : filterOwner })),
+      setFilterOwner: (filterOwner) =>
+        set((s) => ({
+          filterOwner: s.filterOwner === filterOwner ? null : filterOwner,
+        })),
       clearFilters: () => set({ filterStatus: {}, filterOwner: null }),
       setSort: (by) =>
-        set((s) => (s.sortBy === by ? { sortDir: s.sortDir === 'asc' ? 'desc' : 'asc' } : { sortBy: by, sortDir: 'asc' })),
+        set((s) =>
+          s.sortBy === by
+            ? { sortDir: s.sortDir === 'asc' ? 'desc' : 'asc' }
+            : { sortBy: by, sortDir: 'asc' },
+        ),
       setGroupBy: (groupBy) => set({ groupBy }),
-      openPopup: (popup) => set({ popup, toolMenu: null, headerMenu: null, addColMenu: null }),
+      openPopup: (popup) =>
+        set({ popup, toolMenu: null, headerMenu: null, addColMenu: null }),
       closePopup: () => set({ popup: null }),
-      openTool: (toolMenu) => set({ toolMenu, popup: null, headerMenu: null, addColMenu: null }),
+      openTool: (toolMenu) =>
+        set({ toolMenu, popup: null, headerMenu: null, addColMenu: null }),
       closeTool: () => set({ toolMenu: null }),
       openPanel: (panelId) => set({ panelId }),
       closePanel: () => set({ panelId: null, popup: null }),
-      openCtx: (ctxMenu) => set({ ctxMenu, popup: null, toolMenu: null, headerMenu: null, addColMenu: null }),
+      openCtx: (ctxMenu) =>
+        set({
+          ctxMenu,
+          popup: null,
+          toolMenu: null,
+          headerMenu: null,
+          addColMenu: null,
+        }),
       closeCtx: () => set({ ctxMenu: null }),
       createTaskBelow: (id) =>
         set((s) => {
@@ -691,14 +870,23 @@ export const useBoard = create<BoardState>()(
         }),
       archiveTask: (id) =>
         set((s) => {
-          const task = s.groups.flatMap((g) => g.tasks).find((t) => t.id === id);
+          const task = s.groups
+            .flatMap((g) => g.tasks)
+            .find((t) => t.id === id);
           const prev = s.groups;
-          const groups = s.groups.map((g) => ({ ...g, tasks: g.tasks.filter((t) => t.id !== id) }));
+          const groups = s.groups.map((g) => ({
+            ...g,
+            tasks: g.tasks.filter((t) => t.id !== id),
+          }));
           const panelId = s.panelId === id ? null : s.panelId;
-          get().addToast('Задача «' + (task ? task.name : '') + '» в архиве', () => set({ groups: prev }));
+          get().addToast(
+            'Задача «' + (task ? task.name : '') + '» в архиве',
+            () => set({ groups: prev }),
+          );
           return { groups, ctxMenu: null, panelId };
         }),
-      openCmd: () => set({ cmdOpen: true, cmdQuery: '', cmdIdx: 0, ctxMenu: null }),
+      openCmd: () =>
+        set({ cmdOpen: true, cmdQuery: '', cmdIdx: 0, ctxMenu: null }),
       closeCmd: () => set({ cmdOpen: false }),
       setCmdQuery: (cmdQuery) => set({ cmdQuery, cmdIdx: 0 }),
       setCmdIdx: (cmdIdx) => set({ cmdIdx }),
@@ -716,14 +904,21 @@ export const useBoard = create<BoardState>()(
           setTimeout(() => get().dismissToast(id), 4000);
           return { toasts: [...s.toasts, { id, text, undo }] };
         }),
-      dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
+      dismissToast: (id) =>
+        set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
       setTlDrag: (tlDrag) => set({ tlDrag }),
       dragStart: (id) => set((s) => (s.viewer ? {} : { drag: { id } })),
       dragOver: (groupId, taskId, before) =>
         set((s) => {
           if (!s.drag || s.drag.id === taskId) return {};
           const cur = s.dropTarget;
-          if (cur && cur.taskId === taskId && cur.before === before && cur.groupId === groupId) return {};
+          if (
+            cur &&
+            cur.taskId === taskId &&
+            cur.before === before &&
+            cur.groupId === groupId
+          )
+            return {};
           return { dropTarget: { groupId, taskId, before } };
         }),
       dropRow: () => {
@@ -735,14 +930,18 @@ export const useBoard = create<BoardState>()(
         // Resolve the drop target (row + before/after) into an insertion index within
         // the target group, computed on the list with the dragged row removed — then
         // delegate the actual move to moveTask so the reorder lives in one place.
-        const stripped = get().groups.map((g) => ({ ...g, tasks: g.tasks.filter((t) => t.id !== drag.id) }));
+        const stripped = get().groups.map((g) => ({
+          ...g,
+          tasks: g.tasks.filter((t) => t.id !== drag.id),
+        }));
         const tg = stripped.find((g) => g.id === dropTarget.groupId);
         if (!tg) {
           set({ drag: null, dropTarget: null });
           return;
         }
         const idx = tg.tasks.findIndex((t) => t.id === dropTarget.taskId);
-        const at = idx < 0 ? tg.tasks.length : dropTarget.before ? idx : idx + 1;
+        const at =
+          idx < 0 ? tg.tasks.length : dropTarget.before ? idx : idx + 1;
         get().moveTask(drag.id, dropTarget.groupId, at);
         set({ drag: null, dropTarget: null });
       },
@@ -765,13 +964,15 @@ export const useBoard = create<BoardState>()(
           const groups = stripped.map((g) => {
             if (g.id !== toGroupId) return g;
             const tasks = g.tasks.slice();
-            const at = toIndex < 0 || toIndex > tasks.length ? tasks.length : toIndex;
+            const at =
+              toIndex < 0 || toIndex > tasks.length ? tasks.length : toIndex;
             tasks.splice(at, 0, moved as Task);
             return { ...g, tasks };
           });
           return { groups };
         }),
-      groupDragStart: (id) => set((s) => (s.viewer ? {} : { groupDrag: { id } })),
+      groupDragStart: (id) =>
+        set((s) => (s.viewer ? {} : { groupDrag: { id } })),
       groupDragOver: (id) =>
         set((s) => {
           const d = s.groupDrag;
@@ -789,7 +990,8 @@ export const useBoard = create<BoardState>()(
           const gs = s.groups.slice();
           const from = gs.findIndex((g) => g.id === d.id);
           const to = gs.findIndex((g) => g.id === targetId);
-          if (from < 0 || to < 0 || from === to) return { groupDrag: null, groupDropId: null };
+          if (from < 0 || to < 0 || from === to)
+            return { groupDrag: null, groupDropId: null };
           const m = gs.splice(from, 1)[0];
           gs.splice(to, 0, m);
           return { groups: gs, groupDrag: null, groupDropId: null };
@@ -823,13 +1025,25 @@ export const useBoard = create<BoardState>()(
           }
           return { calMonth: { y, m0 } };
         }),
-      importNext: () => set((s) => ({ importStep: Math.min(4, s.importStep + 1) })),
-      importBack: () => set((s) => ({ importStep: Math.max(1, s.importStep - 1) })),
+      importNext: () =>
+        set((s) => ({ importStep: Math.min(4, s.importStep + 1) })),
+      importBack: () =>
+        set((s) => ({ importStep: Math.max(1, s.importStep - 1) })),
       importRun: () => set({ importDone: true }),
       importReset: () =>
-        set({ screen: 'board', boardTab: 'table', settingsScreen: false, importStep: 1, importDone: false, importMap: {}, importTemplate: false }),
-      setImportField: (field, excel) => set((s) => ({ importMap: { ...s.importMap, [field]: excel } })),
-      toggleImportTemplate: () => set((s) => ({ importTemplate: !s.importTemplate })),
+        set({
+          screen: 'board',
+          boardTab: 'table',
+          settingsScreen: false,
+          importStep: 1,
+          importDone: false,
+          importMap: {},
+          importTemplate: false,
+        }),
+      setImportField: (field, excel) =>
+        set((s) => ({ importMap: { ...s.importMap, [field]: excel } })),
+      toggleImportTemplate: () =>
+        set((s) => ({ importTemplate: !s.importTemplate })),
     }),
     {
       name: 'work_board_v1',

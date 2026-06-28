@@ -1,9 +1,7 @@
 // «Что горит» derivation — ported 1:1 from the prototype's `buildAlerts` (~1993).
 // Computes flags from data: overdue, stuck, critical priority, role gates (< 100% parity),
 // and the timeline bottleneck. Each alert carries a navigation target.
-import {
-  type BoardTab,
-} from './store';
+import { type BoardTab } from './store';
 import {
   type Group,
   type Parity,
@@ -38,12 +36,18 @@ export interface AlertsData {
 
 // Parity readiness for a role — done / (total − skip) over PARITY_COLS. Mirrors ParityView.
 function readyPct(parity: Parity, gid: string): number {
-  const counted = PARITY_COLS.map((c) => parity[gid]?.[c] || 'none').filter((s) => s !== 'skip');
+  const counted = PARITY_COLS.map((c) => parity[gid]?.[c] || 'none').filter(
+    (s) => s !== 'skip',
+  );
   const done = counted.filter((s) => s === 'done').length;
   return counted.length ? Math.round((done / counted.length) * 100) : 100;
 }
 
-export function buildAlerts(groups: Group[], parity: Parity, tlDrag: TlDrag | null): AlertsData {
+export function buildAlerts(
+  groups: Group[],
+  parity: Parity,
+  tlDrag: TlDrag | null,
+): AlertsData {
   const A: Alert[] = [];
   const today = dayNum(TODAY);
 
@@ -116,5 +120,9 @@ export function buildAlerts(groups: Group[], parity: Parity, tlDrag: TlDrag | nu
 
   const order: Record<AlertSev, number> = { high: 0, mid: 1 };
   A.sort((a, b) => order[a.sev] - order[b.sev]);
-  return { list: A, count: A.length, high: A.filter((a) => a.sev === 'high').length };
+  return {
+    list: A,
+    count: A.length,
+    high: A.filter((a) => a.sev === 'high').length,
+  };
 }

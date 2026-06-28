@@ -55,7 +55,9 @@ export function ParityView() {
     });
     const counted = cells.filter((c) => c.state !== 'skip');
     const done = counted.filter((c) => c.state === 'done').length;
-    const pct = counted.length ? Math.round((done / counted.length) * 100) : 100;
+    const pct = counted.length
+      ? Math.round((done / counted.length) * 100)
+      : 100;
     const ready = pct === 100;
     return {
       id: g.id,
@@ -79,9 +81,27 @@ export function ParityView() {
 
   return (
     <div style={{ padding: '20px 22px 50px' }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 16 }}>
-        <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, letterSpacing: '-.4px' }}>Паритет-матрица</h2>
-        <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-soft)' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'baseline',
+          gap: 12,
+          marginBottom: 16,
+        }}
+      >
+        <h2
+          style={{
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 800,
+            letterSpacing: '-.4px',
+          }}
+        >
+          Паритет-матрица
+        </h2>
+        <span
+          style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-soft)' }}
+        >
           состояние «старое ↔ новое» по (роль × модуль) · клик по ячейке меняет
         </span>
       </div>
@@ -97,8 +117,23 @@ export function ParityView() {
           boxShadow: 'inset 0 1px 0 var(--glass)',
         }}
       >
-        <div style={{ display: 'grid', gridTemplateColumns: GRID, borderBottom: '1px solid var(--hover)' }}>
-          <div style={{ padding: '12px 16px', fontSize: 12, fontWeight: 700, color: 'var(--text-soft)' }}>Роль · модуль</div>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: GRID,
+            borderBottom: '1px solid var(--hover)',
+          }}
+        >
+          <div
+            style={{
+              padding: '12px 16px',
+              fontSize: 12,
+              fontWeight: 700,
+              color: 'var(--text-soft)',
+            }}
+          >
+            Роль · модуль
+          </div>
           {PARITY_COLS.map((c) => (
             <div
               key={c}
@@ -138,9 +173,32 @@ export function ParityView() {
               alignItems: 'stretch',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '0 16px' }}>
-              <span className="noinv" style={{ width: 9, height: 9, borderRadius: 3, background: r.color, flexShrink: 0 }} />
-              <span style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text-2)' }}>{r.name}</span>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 9,
+                padding: '0 16px',
+              }}
+            >
+              <span
+                style={{
+                  width: 9,
+                  height: 9,
+                  borderRadius: 3,
+                  background: r.color,
+                  flexShrink: 0,
+                }}
+              />
+              <span
+                style={{
+                  fontSize: 13.5,
+                  fontWeight: 700,
+                  color: 'var(--text-2)',
+                }}
+              >
+                {r.name}
+              </span>
             </div>
             {r.cells.map((cell) => (
               <div
@@ -168,7 +226,6 @@ export function ParityView() {
                   />
                 ) : (
                   <div
-                    className="noinv"
                     style={{
                       position: 'absolute',
                       inset: 5,
@@ -180,7 +237,6 @@ export function ParityView() {
                 )}
                 {cell.diverged && (
                   <span
-                    className="noinv"
                     style={{
                       position: 'absolute',
                       top: 8,
@@ -190,19 +246,48 @@ export function ParityView() {
                       borderRadius: '50%',
                       background: '#cf6b6b',
                       border: '1.5px solid #fff',
-                      animation: 'blinkdot 1.1s ease-in-out infinite, pulsering 1.6s ease-out infinite',
+                      animation:
+                        'blinkdot 1.1s ease-in-out infinite, pulsering 1.6s ease-out infinite',
                     }}
                   />
                 )}
               </div>
             ))}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 16px', borderLeft: '1px solid var(--hover)' }}>
-              <div style={{ flex: 1, height: 7, borderRadius: 4, background: 'var(--surf-1)', overflow: 'hidden' }}>
-                <div className="noinv" style={{ height: '100%', width: r.pct + '%', background: r.barColor }} />
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                padding: '0 16px',
+                borderLeft: '1px solid var(--hover)',
+              }}
+            >
+              <div
+                style={{
+                  flex: 1,
+                  height: 7,
+                  borderRadius: 4,
+                  background: 'var(--surf-1)',
+                  overflow: 'hidden',
+                }}
+              >
+                <div
+                  style={{
+                    height: '100%',
+                    width: r.pct + '%',
+                    background: r.barColor,
+                  }}
+                />
               </div>
               <span
                 className="mono"
-                style={{ fontSize: 12.5, fontWeight: 800, color: r.barColor, minWidth: 36, textAlign: 'right' }}
+                style={{
+                  fontSize: 12.5,
+                  fontWeight: 800,
+                  color: r.barColor,
+                  minWidth: 36,
+                  textAlign: 'right',
+                }}
               >
                 {r.pct}%
               </span>
@@ -211,28 +296,59 @@ export function ParityView() {
         ))}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginTop: 14 }}>
-        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-soft)' }}>Легенда:</span>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 18,
+          marginTop: 14,
+        }}
+      >
+        <span
+          style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-soft)' }}
+        >
+          Легенда:
+        </span>
         {legend.map((lg) => (
-          <div key={lg.label} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12.5, fontWeight: 600, color: 'var(--text-mut)' }}>
+          <div
+            key={lg.label}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 7,
+              fontSize: 12.5,
+              fontWeight: 600,
+              color: 'var(--text-mut)',
+            }}
+          >
             {lg.hatch ? (
               <span
                 style={{
                   width: 14,
                   height: 14,
                   borderRadius: 4,
-                  background: 'repeating-linear-gradient(45deg,var(--surf-2),var(--surf-2) 3px,var(--surf-1) 3px,var(--surf-1) 6px)',
+                  background:
+                    'repeating-linear-gradient(45deg,var(--surf-2),var(--surf-2) 3px,var(--surf-1) 3px,var(--surf-1) 6px)',
                 }}
               />
             ) : (
-              <span className="noinv" style={{ width: 14, height: 14, borderRadius: 4, background: lg.color }} />
+              <span
+                style={{
+                  width: 14,
+                  height: 14,
+                  borderRadius: 4,
+                  background: lg.color,
+                }}
+              />
             )}
             {lg.label}
           </div>
         ))}
       </div>
 
-      <div style={{ fontSize: 14, fontWeight: 800, margin: '26px 0 12px' }}>Гейт переключения ролей</div>
+      <div style={{ fontSize: 14, fontWeight: 800, margin: '26px 0 12px' }}>
+        Гейт переключения ролей
+      </div>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {rows.map((r) => (
           <div
@@ -250,14 +366,23 @@ export function ParityView() {
               boxShadow: 'inset 0 1px 0 var(--glass)',
             }}
           >
-            <span className="noinv" style={{ width: 9, height: 9, borderRadius: 3, background: r.color }} />
+            <span
+              style={{
+                width: 9,
+                height: 9,
+                borderRadius: 3,
+                background: r.color,
+              }}
+            />
             <span style={{ fontSize: 13.5, fontWeight: 700 }}>{r.name}</span>
-            <span className="mono" style={{ fontSize: 12, fontWeight: 800, color: r.barColor }}>
+            <span
+              className="mono"
+              style={{ fontSize: 12, fontWeight: 800, color: r.barColor }}
+            >
               {r.pct}%
             </span>
             <button
               disabled={viewer || !r.ready}
-              className="noinv"
               style={{
                 height: 32,
                 padding: '0 14px',

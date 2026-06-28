@@ -33,11 +33,16 @@ export function ToolMenu() {
   const setGroupBy = useBoard((s) => s.setGroupBy);
 
   if (!toolMenu) return null;
-  const filterN = Object.keys(filterStatus).filter((k) => filterStatus[k]).length + (filterOwner ? 1 : 0);
+  const filterN =
+    Object.keys(filterStatus).filter((k) => filterStatus[k]).length +
+    (filterOwner ? 1 : 0);
 
   return (
     <>
-      <div style={{ position: 'fixed', inset: 0, zIndex: 88 }} onClick={closeTool} />
+      <div
+        style={{ position: 'fixed', inset: 0, zIndex: 88 }}
+        onClick={closeTool}
+      />
       <div
         style={{
           position: 'fixed',
@@ -57,10 +62,24 @@ export function ToolMenu() {
       >
         {toolMenu.kind === 'filter' && (
           <>
-            <div style={{ display: 'flex', alignItems: 'center', padding: '2px 6px 8px' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '2px 6px 8px',
+              }}
+            >
               <span style={sectionLabel}>Статус</span>
               {filterN > 0 && (
-                <span onClick={clearFilters} style={{ fontSize: 11.5, fontWeight: 600, color: ACCENT, cursor: 'pointer' }}>
+                <span
+                  onClick={clearFilters}
+                  style={{
+                    fontSize: 11.5,
+                    fontWeight: 600,
+                    color: ACCENT,
+                    cursor: 'pointer',
+                  }}
+                >
                   Сбросить
                 </span>
               )}
@@ -71,7 +90,14 @@ export function ToolMenu() {
                 <div
                   key={k}
                   onClick={() => setFilterStatus(k)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '7px 8px', borderRadius: 8, cursor: 'pointer' }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 9,
+                    padding: '7px 8px',
+                    borderRadius: 8,
+                    cursor: 'pointer',
+                  }}
                 >
                   <span
                     style={{
@@ -86,18 +112,49 @@ export function ToolMenu() {
                     }}
                   >
                     {on && (
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.6">
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#fff"
+                        strokeWidth="3.6"
+                      >
                         <path d="M5 12l5 5L20 6" />
                       </svg>
                     )}
                   </span>
-                  <span className="noinv" style={{ width: 9, height: 9, borderRadius: 3, background: STATUS[k].bg }} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-3)' }}>{STATUS[k].label}</span>
+                  <span
+                    style={{
+                      width: 9,
+                      height: 9,
+                      borderRadius: 3,
+                      background: STATUS[k].bg,
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: 'var(--text-3)',
+                    }}
+                  >
+                    {STATUS[k].label}
+                  </span>
                 </div>
               );
             })}
-            <div style={{ ...sectionLabel, padding: '10px 6px 6px' }}>Владелец</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, padding: '0 4px 2px' }}>
+            <div style={{ ...sectionLabel, padding: '10px 6px 6px' }}>
+              Владелец
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 5,
+                padding: '0 4px 2px',
+              }}
+            >
               {PEOPLE.slice(0, 6).map((p) => {
                 const on = filterOwner === p.id;
                 return (
@@ -105,7 +162,6 @@ export function ToolMenu() {
                     key={p.id}
                     onClick={() => setFilterOwner(p.id)}
                     title={p.name}
-                    className="noinv"
                     style={{
                       width: 28,
                       height: 28,
@@ -118,7 +174,9 @@ export function ToolMenu() {
                       fontSize: 10,
                       fontWeight: 700,
                       cursor: 'pointer',
-                      boxShadow: on ? `0 0 0 2px #fff, 0 0 0 4px ${ACCENT}` : 'none',
+                      boxShadow: on
+                        ? `0 0 0 2px #fff, 0 0 0 4px ${ACCENT}`
+                        : 'none',
                     }}
                   >
                     {p.initials}
@@ -131,7 +189,13 @@ export function ToolMenu() {
 
         {toolMenu.kind === 'sort' && (
           <>
-            <div style={{ display: 'flex', alignItems: 'center', padding: '2px 6px 8px' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '2px 6px 8px',
+              }}
+            >
               <span style={sectionLabel}>Сортировать по</span>
             </div>
             {SORT_OPTS.map(([k, label]) => {
@@ -153,7 +217,11 @@ export function ToolMenu() {
                   }}
                 >
                   <span style={{ flex: 1 }}>{label}</span>
-                  {on && <span style={{ color: ACCENT, fontWeight: 800 }}>{sortDir === 'desc' ? '↓' : '↑'}</span>}
+                  {on && (
+                    <span style={{ color: ACCENT, fontWeight: 800 }}>
+                      {sortDir === 'desc' ? '↓' : '↑'}
+                    </span>
+                  )}
                 </div>
               );
             })}
@@ -162,7 +230,9 @@ export function ToolMenu() {
 
         {toolMenu.kind === 'group' && (
           <>
-            <div style={{ ...sectionLabel, padding: '2px 6px 8px' }}>Группировать по</div>
+            <div style={{ ...sectionLabel, padding: '2px 6px 8px' }}>
+              Группировать по
+            </div>
             {GROUP_OPTS.map(([k, label]) => {
               const on = (groupBy || 'role') === k;
               return (
@@ -183,7 +253,14 @@ export function ToolMenu() {
                 >
                   <span style={{ flex: 1 }}>{label}</span>
                   {on && (
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2.6">
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke={ACCENT}
+                      strokeWidth="2.6"
+                    >
                       <path d="M5 12l5 5L20 6" />
                     </svg>
                   )}

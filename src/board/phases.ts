@@ -27,18 +27,28 @@ export interface ComputedPhases {
   segs: PhaseSeg[];
 }
 
-export function computePhases(t: { phases: Phases; anchor?: Anchor }): ComputedPhases {
+export function computePhases(t: {
+  phases: Phases;
+  anchor?: Anchor;
+}): ComputedPhases {
   const order = PHASE_ORDER;
   const ph = t.phases;
   const total = order.reduce((a, k) => a + (ph[k].days || 0), 0);
   const a: Anchor = t.anchor || { type: 'start', date: TODAY };
-  const startDn = a.type === 'start' ? dayNum(a.date) : dayNum(a.date) - total + 1;
+  const startDn =
+    a.type === 'start' ? dayNum(a.date) : dayNum(a.date) - total + 1;
   const segs: PhaseSeg[] = [];
   let cur = startDn;
   order.forEach((k) => {
     const d = ph[k].days || 0;
     if (d <= 0) return;
-    segs.push({ key: k, color: PHASES[k].color, days: d, startDn: cur, endDn: cur + d - 1 });
+    segs.push({
+      key: k,
+      color: PHASES[k].color,
+      days: d,
+      startDn: cur,
+      endDn: cur + d - 1,
+    });
     cur += d;
   });
   const endDn = startDn + total - 1;

@@ -91,13 +91,20 @@ export function summarize(tasks: Task[]): GroupSummary {
   return { statusSegs, prioSegs, tlLabel };
 }
 
-export function buildView(p: ViewParams): { groups: ViewGroup[]; tableEmptyAll: boolean } {
+export function buildView(p: ViewParams): {
+  groups: ViewGroup[];
+  tableEmptyAll: boolean;
+} {
   const q = p.query.trim().toLowerCase();
-  const match = (t: Task) => !q || (t.name + ' ' + (t.note || '') + ' ' + t.section).toLowerCase().includes(q);
+  const match = (t: Task) =>
+    !q ||
+    (t.name + ' ' + (t.note || '') + ' ' + t.section).toLowerCase().includes(q);
   const fStat = p.filterStatus || {};
   const fActive = Object.keys(fStat).filter((k) => fStat[k]);
   const filt = (t: Task) =>
-    match(t) && (fActive.length === 0 || fStat[t.status]) && (!p.filterOwner || t.owner === p.filterOwner);
+    match(t) &&
+    (fActive.length === 0 || fStat[t.status]) &&
+    (!p.filterOwner || t.owner === p.filterOwner);
 
   const sortTasks = (arr: Task[]): Task[] => {
     if (!p.sortBy) return arr;
@@ -135,7 +142,13 @@ export function buildView(p: ViewParams): { groups: ViewGroup[]; tableEmptyAll: 
   }
   let rawGroups: RawGroup[];
   if (byRole) {
-    rawGroups = p.groups.map((g) => ({ id: g.id, name: g.name, color: g.color, tasks: g.tasks, role: true }));
+    rawGroups = p.groups.map((g) => ({
+      id: g.id,
+      name: g.name,
+      color: g.color,
+      tasks: g.tasks,
+      role: true,
+    }));
   } else {
     const fv = (t: Task) =>
       gBy === 'status'
