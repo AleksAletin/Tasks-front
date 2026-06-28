@@ -1,6 +1,6 @@
 // Board table view (brief §5.4) — grouped rows with solid status/priority cells,
 // colored left border, mini-gantt timeline, summary "battery" rows, inline-edit popups.
-import { useLayoutEffect, useMemo, useRef } from 'react';
+import { memo, useLayoutEffect, useMemo, useRef } from 'react';
 import { useBoard } from './store';
 import {
   type CustomCol,
@@ -136,7 +136,10 @@ export function TableView() {
   const allTasks = viewGroups.flatMap((g) => g.tasks);
   const allChecked =
     allTasks.length > 0 && allTasks.every((t) => selectedIds[t.id]);
-  const gridCols = GRID + customCols.map(() => ' ' + CUSTOM_COL_W).join('');
+  const gridCols = useMemo(
+    () => GRID + customCols.map(() => ' ' + CUSTOM_COL_W).join(''),
+    [customCols],
+  );
   const minWidth = 1684 + customCols.length * 160;
 
   const onHeader = (key: string, custom: boolean, e: React.MouseEvent) => {
@@ -715,7 +718,7 @@ function GroupBlock({
   );
 }
 
-function Row({
+const Row = memo(function Row({
   t,
   g,
   gridCols,
@@ -1406,7 +1409,7 @@ function Row({
       )}
     </>
   );
-}
+});
 
 function CustomCell({
   col,
