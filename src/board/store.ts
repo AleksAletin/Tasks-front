@@ -116,6 +116,11 @@ interface BoardState {
   customCols: CustomCol[];
   colValues: Record<string, unknown>;
   colLabels: Record<string, string>;
+  // Per-column widths (px) keyed by column key; missing → the column's default width.
+  colWidths: Record<string, number>;
+  // Explicit column order (column keys). Reconciled at render against the live column set,
+  // so it can be partial/stale; missing columns fall back to the default order.
+  colOrder: string[];
   cfg: Cfg;
   integrations: { ytrack: boolean; email: boolean };
   autoSync: boolean;
@@ -234,6 +239,8 @@ interface BoardState {
   setColValue: (taskId: string, colId: string, value: unknown) => void;
   setColLabel: (id: string, label: string) => void;
   deleteColumn: (id: string) => void;
+  setColWidth: (key: string, width: number) => void;
+  setColOrder: (order: string[]) => void;
   openHeaderMenu: (key: string, custom: boolean, x: number, y: number) => void;
   closeHeaderMenu: () => void;
   openAddColMenu: (x: number, y: number) => void;
@@ -350,6 +357,8 @@ export const useBoard = create<BoardState>()(
       customCols: [],
       colValues: {},
       colLabels: {},
+      colWidths: {},
+      colOrder: [],
       cfg: initialCfg,
       integrations: { ytrack: true, email: true },
       autoSync: true,
@@ -720,12 +729,23 @@ export const useBoard = create<BoardState>()(
           for (const k of Object.keys(s.colValues)) {
             if (k.split('::')[1] !== id) colValues[k] = s.colValues[k];
           }
+          const colWidths = { ...s.colWidths };
+          delete colWidths[id];
           return {
             customCols: s.customCols.filter((c) => c.id !== id),
             colValues,
+            colWidths,
+            colOrder: s.colOrder.filter((k) => k !== id),
             headerMenu: null,
           };
         }),
+      setColWidth: (key, width) =>
+        set((s) =>
+          s.viewer
+            ? {}
+            : { colWidths: { ...s.colWidths, [key]: Math.max(60, Math.round(width)) } },
+        ),
+      setColOrder: (order) => set((s) => (s.viewer ? {} : { colOrder: order })),
       openHeaderMenu: (key, custom, x, y) =>
         set((s) =>
           s.viewer
@@ -1169,6 +1189,8 @@ export const useBoard = create<BoardState>()(
         customCols: s.customCols,
         colValues: s.colValues,
         colLabels: s.colLabels,
+        colWidths: s.colWidths,
+        colOrder: s.colOrder,
         cfg: s.cfg,
         integrations: s.integrations,
         autoSync: s.autoSync,

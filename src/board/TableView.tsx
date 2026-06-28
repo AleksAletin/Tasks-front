@@ -1,6 +1,6 @@
 // Board table view (brief §5.4) — grouped rows with solid status/priority cells,
 // colored left border, mini-gantt timeline, summary "battery" rows, inline-edit popups.
-import { memo, useLayoutEffect, useMemo, useRef } from 'react';
+import { memo, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useBoard } from './store';
 import {
   type CustomCol,
@@ -23,30 +23,45 @@ import { buildView, deriveDue, type ViewGroup } from './derive';
 import { Avatar, AvatarEmpty, Pill } from './ui';
 
 const ACCENT = '#4263d8';
-// checkbox 56 · Задача 264 · Владелец 100 · Статус 138 · Срок 118 · Приоритет 138
-// · Шкала времени 184 · Примечания 172 · Обновлено 132 · Раздел 128 · Тип 116 · Источник 138
-const GRID =
-  '56px 264px 100px 138px 118px 138px 184px 172px 132px 128px 116px 138px';
-// Each custom column appends a 160px slot to the grid (brief §5.10).
-const CUSTOM_COL_W = '160px';
 const ROW_H = 40;
 // FLIP settle for reordered rows (brief §5.8) — matches the prototype's easing/duration.
 const FLIP_EASE = 'cubic-bezier(.22,.85,.25,1)';
 const FLIP_MS = 360;
+const CHECKBOX_W = 56;
+const ADDCOL_W = 44;
+const CUSTOM_COL_W = 160;
 
-const COL_LABELS: [string, string][] = [
-  ['task', 'Задача'],
-  ['owner', 'Владелец'],
-  ['status', 'Статус'],
-  ['due', 'Срок'],
-  ['priority', 'Приоритет'],
-  ['tl', 'Шкала времени'],
-  ['note', 'Примечания'],
-  ['updated', 'Обновлено'],
-  ['section', 'Раздел'],
-  ['type', 'Тип'],
-  ['source', 'Источник'],
+// Built-in columns with their default widths (px). This array's order is the default order;
+// the user can reorder (persisted colOrder) and resize (persisted colWidths) any column — both
+// are reconciled against the live column set at render, so stale/partial state is harmless.
+const BUILTIN: { key: string; label: string; w: number }[] = [
+  { key: 'task', label: 'Задача', w: 264 },
+  { key: 'owner', label: 'Владелец', w: 100 },
+  { key: 'status', label: 'Статус', w: 138 },
+  { key: 'due', label: 'Срок', w: 118 },
+  { key: 'priority', label: 'Приоритет', w: 138 },
+  { key: 'tl', label: 'Шкала времени', w: 184 },
+  { key: 'note', label: 'Примечания', w: 172 },
+  { key: 'updated', label: 'Обновлено', w: 132 },
+  { key: 'section', label: 'Раздел', w: 128 },
+  { key: 'type', label: 'Тип', w: 116 },
+  { key: 'source', label: 'Источник', w: 138 },
 ];
+const BUILTIN_KEYS = BUILTIN.map((c) => c.key);
+const DEFAULT_W: Record<string, number> = Object.fromEntries(
+  BUILTIN.map((c) => [c.key, c.w]),
+);
+const BASE_LABEL: Record<string, string> = Object.fromEntries(
+  BUILTIN.map((c) => [c.key, c.label]),
+);
+
+/** A resolved column: its key, current label, current width, and whether it is a custom column. */
+interface Col {
+  key: string;
+  label: string;
+  width: number;
+  custom: boolean;
+}
 
 export function TableView() {
   const groups = useBoard((s) => s.groups);
@@ -74,6 +89,52 @@ export function TableView() {
     [groups, activeBoardId],
   );
   const boardEmpty = boardGroups.length === 0;
+
+  const colWidths = useBoard((s) => s.colWidths);
+  const colOrder = useBoard((s) => s.colOrder);
+  const setColWidth = useBoard((s) => s.setColWidth);
+  const setColOrder = useBoard((s) => s.setColOrder);
+  const [dragCol, setDragCol] = useState<string | null>(null);
+  const [dropCol, setDropCol] = useState<string | null>(null);
+
+  // Resolve the ordered, sized column set: saved order first (minus removed columns), then any
+  // columns not yet in the saved order (new built-ins/custom) appended in their natural order.
+  const cols: Col[] = useMemo(() => {
+    const customIds = customCols.map((c) => c.id);
+    const allKeys = [...BUILTIN_KEYS, ...customIds];
+    const ordered = [
+      ...colOrder.filter((k) => allKeys.includes(k)),
+      ...allKeys.filter((k) => !colOrder.includes(k)),
+    ];
+    return ordered.map((k) => {
+      const custom = customIds.includes(k);
+      return {
+        key: k,
+        custom,
+        label: custom
+          ? (customCols.find((c) => c.id === k)?.label ?? '')
+          : (colLabels[k] ?? BASE_LABEL[k] ?? k),
+        width: colWidths[k] ?? (custom ? CUSTOM_COL_W : (DEFAULT_W[k] ?? CUSTOM_COL_W)),
+      };
+    });
+  }, [colOrder, customCols, colLabels, colWidths]);
+
+  // Row grid = checkbox + the ordered columns; the header adds the trailing «+» add-column slot.
+  const rowGrid = `${CHECKBOX_W}px ${cols.map((c) => c.width + 'px').join(' ')}`;
+  const headGrid = `${rowGrid} ${ADDCOL_W}px`;
+
+  // Drop the dragged column before/after the target (by drag direction) and persist the order.
+  const reorderCol = (fromKey: string, toKey: string) => {
+    if (fromKey === toKey) return;
+    const order = cols.map((c) => c.key);
+    const fromIdx = order.indexOf(fromKey);
+    const toIdx = order.indexOf(toKey);
+    if (fromIdx < 0 || toIdx < 0) return;
+    order.splice(fromIdx, 1);
+    const at = order.indexOf(toKey) + (fromIdx < toIdx ? 1 : 0);
+    order.splice(at, 0, fromKey);
+    setColOrder(order);
+  };
 
   // FLIP settle: after the persisted `groups` change (a row/group reorder or
   // cross-group move), glide every [data-row-id] from its previous top to its new
@@ -145,11 +206,8 @@ export function TableView() {
   const allTasks = viewGroups.flatMap((g) => g.tasks);
   const allChecked =
     allTasks.length > 0 && allTasks.every((t) => selectedIds[t.id]);
-  const gridCols = useMemo(
-    () => GRID + customCols.map(() => ' ' + CUSTOM_COL_W).join(''),
-    [customCols],
-  );
-  const minWidth = 1684 + customCols.length * 160;
+  const minWidth =
+    CHECKBOX_W + ADDCOL_W + cols.reduce((sum, c) => sum + c.width, 0);
 
   const onHeader = (key: string, custom: boolean, e: React.MouseEvent) => {
     if (viewer) return;
@@ -179,7 +237,7 @@ export function TableView() {
           top: 0,
           zIndex: 6,
           display: 'grid',
-          gridTemplateColumns: `${gridCols} 44px`,
+          gridTemplateColumns: headGrid,
           background: 'var(--glass)',
           backdropFilter: 'blur(16px) saturate(150%)',
           WebkitBackdropFilter: 'blur(16px) saturate(150%)',
@@ -225,76 +283,31 @@ export function TableView() {
             )}
           </div>
         </div>
-        {COL_LABELS.map(([key, label]) => (
-          <div
-            key={key}
-            className="colhead"
-            onClick={(e) => onHeader(key, false, e)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent:
-                key === 'task'
-                  ? 'flex-start'
-                  : key === 'updated'
-                    ? 'flex-start'
-                    : 'center',
-              paddingLeft: key === 'task' ? 6 : key === 'updated' ? 18 : 0,
-              borderRight: '1px solid var(--surf-1)',
-              cursor: viewer ? 'default' : 'pointer',
+        {cols.map((c) => (
+          <ColumnHeader
+            key={c.key}
+            col={c}
+            viewer={viewer}
+            dragging={dragCol === c.key}
+            dropTarget={!!dragCol && dragCol !== c.key && dropCol === c.key}
+            onRename={onHeader}
+            onResize={setColWidth}
+            onDragStartCol={() => setDragCol(c.key)}
+            onDragOverCol={() => {
+              if (dragCol && dragCol !== c.key && dropCol !== c.key) {
+                setDropCol(c.key);
+              }
             }}
-          >
-            {colLabels[key] ?? label}
-          </div>
-        ))}
-        {customCols.map((c) => (
-          <div
-            key={c.id}
-            className="colhead"
-            onClick={(e) => onHeader(c.id, true, e)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 5,
-              borderRight: '1px solid var(--surf-1)',
-              cursor: viewer ? 'default' : 'pointer',
-              position: 'relative',
+            onDropCol={() => {
+              if (dragCol && dragCol !== c.key) reorderCol(dragCol, c.key);
+              setDragCol(null);
+              setDropCol(null);
             }}
-          >
-            <span
-              className="colgrip"
-              style={{
-                opacity: 0,
-                transition: 'opacity .12s',
-                color: 'var(--line)',
-                display: 'flex',
-              }}
-            >
-              <svg
-                width="9"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <circle cx="9" cy="6" r="1.6" />
-                <circle cx="15" cy="6" r="1.6" />
-                <circle cx="9" cy="12" r="1.6" />
-                <circle cx="15" cy="12" r="1.6" />
-                <circle cx="9" cy="18" r="1.6" />
-                <circle cx="15" cy="18" r="1.6" />
-              </svg>
-            </span>
-            <span
-              style={{
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {c.label}
-            </span>
-          </div>
+            onDragEndCol={() => {
+              setDragCol(null);
+              setDropCol(null);
+            }}
+          />
         ))}
         {!viewer ? (
           <div
@@ -336,7 +349,8 @@ export function TableView() {
               g={g}
               gi={gi}
               total={viewGroups.length}
-              gridCols={gridCols}
+              rowGrid={rowGrid}
+              cols={cols}
               customCols={customCols}
               collapsed={!!collapsed[g.id]}
               onToggle={() => toggleCollapse(g.id)}
@@ -473,11 +487,157 @@ function BoardEmptyState({
   );
 }
 
+// One column header cell: rename on click, drag to reorder, right-edge handle to resize.
+function ColumnHeader({
+  col,
+  viewer,
+  dragging,
+  dropTarget,
+  onRename,
+  onResize,
+  onDragStartCol,
+  onDragOverCol,
+  onDropCol,
+  onDragEndCol,
+}: {
+  col: Col;
+  viewer: boolean;
+  dragging: boolean;
+  dropTarget: boolean;
+  onRename: (key: string, custom: boolean, e: React.MouseEvent) => void;
+  onResize: (key: string, width: number) => void;
+  onDragStartCol: () => void;
+  onDragOverCol: () => void;
+  onDropCol: () => void;
+  onDragEndCol: () => void;
+}) {
+  const resizedRef = useRef(false);
+  const left = col.key === 'task' || col.key === 'updated';
+  return (
+    <div
+      className="colhead"
+      draggable={!viewer}
+      onDragStart={
+        viewer
+          ? undefined
+          : (e) => {
+              // Some browsers/synthetic events leave dataTransfer null — guard, like the row DnD.
+              if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+              onDragStartCol();
+            }
+      }
+      onDragOver={
+        viewer
+          ? undefined
+          : (e) => {
+              e.preventDefault();
+              onDragOverCol();
+            }
+      }
+      onDrop={
+        viewer
+          ? undefined
+          : (e) => {
+              e.preventDefault();
+              onDropCol();
+            }
+      }
+      onDragEnd={viewer ? undefined : onDragEndCol}
+      onClick={(e) => {
+        // Suppress the rename click that would otherwise follow a resize drag.
+        if (resizedRef.current) {
+          resizedRef.current = false;
+          return;
+        }
+        onRename(col.key, col.custom, e);
+      }}
+      style={{
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: left ? 'flex-start' : 'center',
+        paddingLeft: col.key === 'task' ? 6 : col.key === 'updated' ? 18 : 0,
+        borderRight: '1px solid var(--surf-1)',
+        cursor: viewer ? 'default' : 'grab',
+        background: dropTarget ? 'var(--blue-tint)' : 'transparent',
+        opacity: dragging ? 0.4 : 1,
+        minWidth: 0,
+      }}
+    >
+      <span
+        style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          pointerEvents: 'none',
+        }}
+      >
+        {col.label}
+      </span>
+      {!viewer && (
+        <ResizeHandle
+          width={col.width}
+          onResize={(w) => onResize(col.key, w)}
+          onResized={() => (resizedRef.current = true)}
+        />
+      )}
+    </div>
+  );
+}
+
+// Thin right-edge grip: drag to resize the column live, suppressing the header's drag/click.
+function ResizeHandle({
+  width,
+  onResize,
+  onResized,
+}: {
+  width: number;
+  onResize: (width: number) => void;
+  onResized: () => void;
+}) {
+  const onDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const startX = e.clientX;
+    const startW = width;
+    let moved = false;
+    const move = (ev: MouseEvent) => {
+      moved = true;
+      onResize(startW + (ev.clientX - startX));
+    };
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+      if (moved) onResized();
+    };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+  return (
+    <span
+      onMouseDown={onDown}
+      onClick={(e) => e.stopPropagation()}
+      onDragStart={(e) => e.preventDefault()}
+      title="Потяните, чтобы изменить ширину"
+      style={{
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        height: '100%',
+        width: 9,
+        cursor: 'col-resize',
+        zIndex: 2,
+      }}
+    />
+  );
+}
+
 function GroupBlock({
   g,
   gi,
   total,
-  gridCols,
+  rowGrid,
+  cols,
   customCols,
   collapsed,
   onToggle,
@@ -488,7 +648,8 @@ function GroupBlock({
   g: ViewGroup;
   gi: number;
   total: number;
-  gridCols: string;
+  rowGrid: string;
+  cols: Col[];
   customCols: CustomCol[];
   collapsed: boolean;
   onToggle: () => void;
@@ -714,7 +875,8 @@ function GroupBlock({
               key={t.id}
               t={t}
               g={g}
-              gridCols={gridCols}
+              rowGrid={rowGrid}
+              cols={cols}
               customCols={customCols}
               selected={!!selectedIds[t.id]}
               viewer={viewer}
@@ -726,7 +888,7 @@ function GroupBlock({
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: gridCols,
+                gridTemplateColumns: rowGrid,
                 height: 34,
                 borderLeft: `3px solid ${g.color}`,
                 borderBottom: '1px solid var(--surf-1)',
@@ -734,47 +896,46 @@ function GroupBlock({
               }}
             >
               <div />
-              <div />
-              <div />
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '0 12px',
-                }}
-              >
-                <Battery segs={g.summary.statusSegs} />
-              </div>
-              <div />
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '0 12px',
-                }}
-              >
-                <Battery segs={g.summary.prioSegs} />
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: 'var(--text-faint)',
-                }}
-              >
-                {g.summary.tlLabel}
-              </div>
-              <div />
-              <div />
-              <div />
-              <div />
-              <div />
-              {customCols.map((c) => (
-                <div key={c.id} />
-              ))}
+              {cols.map((c) => {
+                if (c.key === 'status' || c.key === 'priority') {
+                  return (
+                    <div
+                      key={c.key}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '0 12px',
+                      }}
+                    >
+                      <Battery
+                        segs={
+                          c.key === 'status'
+                            ? g.summary.statusSegs
+                            : g.summary.prioSegs
+                        }
+                      />
+                    </div>
+                  );
+                }
+                if (c.key === 'tl') {
+                  return (
+                    <div
+                      key={c.key}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 11,
+                        fontWeight: 600,
+                        color: 'var(--text-faint)',
+                      }}
+                    >
+                      {g.summary.tlLabel}
+                    </div>
+                  );
+                }
+                return <div key={c.key} />;
+              })}
             </div>
           )}
 
@@ -826,7 +987,8 @@ function GroupBlock({
 const Row = memo(function Row({
   t,
   g,
-  gridCols,
+  rowGrid,
+  cols,
   customCols,
   selected,
   viewer,
@@ -834,7 +996,8 @@ const Row = memo(function Row({
 }: {
   t: Task;
   g: ViewGroup;
-  gridCols: string;
+  rowGrid: string;
+  cols: Col[];
   customCols: CustomCol[];
   selected: boolean;
   viewer: boolean;
@@ -868,6 +1031,13 @@ const Row = memo(function Row({
   const owner = personById(t.owner);
   const lastBy = personById(t.lastBy) ?? personById('p1')!;
   const due = deriveDue(t);
+
+  // Visual column order via CSS grid `order` (checkbox stays first at 0), so the cells keep their
+  // place in the JSX while the grid lays them out in the user's chosen column order.
+  const orderOf: Record<string, number> = {};
+  cols.forEach((c, i) => {
+    orderOf[c.key] = i + 1;
+  });
 
   const cellPopup = (
     kind: string,
@@ -966,7 +1136,7 @@ const Row = memo(function Row({
         style={{
           position: 'relative',
           display: 'grid',
-          gridTemplateColumns: gridCols,
+          gridTemplateColumns: rowGrid,
           height: ROW_H,
           background: dragging
             ? 'var(--glass-hi)'
@@ -1116,6 +1286,7 @@ const Row = memo(function Row({
 
         <div
           style={{
+            order: orderOf.task,
             display: 'flex',
             alignItems: 'center',
             gap: 5,
@@ -1215,6 +1386,7 @@ const Row = memo(function Row({
         <div
           onClick={(e) => cellPopup('people', undefined, e)}
           style={{
+            order: orderOf.owner,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1232,6 +1404,7 @@ const Row = memo(function Row({
         <div
           onClick={(e) => cellPopup('status', undefined, e)}
           style={{
+            order: orderOf.status,
             borderRight: '1px solid var(--surf-1)',
             cursor: viewer ? 'default' : 'pointer',
           }}
@@ -1257,6 +1430,7 @@ const Row = memo(function Row({
         <div
           onClick={(e) => cellPopup('date', 'due', e)}
           style={{
+            order: orderOf.due,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1300,6 +1474,7 @@ const Row = memo(function Row({
         <div
           onClick={(e) => cellPopup('priority', undefined, e)}
           style={{
+            order: orderOf.priority,
             borderRight: '1px solid var(--surf-1)',
             cursor: viewer ? 'default' : 'pointer',
           }}
@@ -1340,6 +1515,7 @@ const Row = memo(function Row({
         <div
           onClick={onTlClick}
           style={{
+            order: orderOf.tl,
             display: 'flex',
             alignItems: 'center',
             padding: '0 12px',
@@ -1400,6 +1576,7 @@ const Row = memo(function Row({
 
         <div
           style={{
+            order: orderOf.note,
             display: 'flex',
             alignItems: 'center',
             padding: '0 10px',
@@ -1422,6 +1599,7 @@ const Row = memo(function Row({
 
         <div
           style={{
+            order: orderOf.updated,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'flex-start',
@@ -1451,6 +1629,7 @@ const Row = memo(function Row({
         <div
           onClick={(e) => cellPopup('section', undefined, e)}
           style={{
+            order: orderOf.section,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1475,6 +1654,7 @@ const Row = memo(function Row({
         <div
           onClick={(e) => cellPopup('type', undefined, e)}
           style={{
+            order: orderOf.type,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1488,6 +1668,7 @@ const Row = memo(function Row({
         <div
           onClick={(e) => cellPopup('source', undefined, e)}
           style={{
+            order: orderOf.source,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1499,18 +1680,18 @@ const Row = memo(function Row({
         </div>
 
         {customCols.map((c) => (
-          <CustomCell key={c.id} col={c} taskId={t.id} viewer={viewer} />
+          <CustomCell
+            key={c.id}
+            col={c}
+            taskId={t.id}
+            viewer={viewer}
+            order={orderOf[c.id]}
+          />
         ))}
       </div>
 
       {expanded && (
-        <SubRows
-          t={t}
-          g={g}
-          gridCols={gridCols}
-          customCols={customCols}
-          viewer={viewer}
-        />
+        <SubRows t={t} g={g} rowGrid={rowGrid} cols={cols} viewer={viewer} />
       )}
     </>
   );
@@ -1520,10 +1701,12 @@ function CustomCell({
   col,
   taskId,
   viewer,
+  order,
 }: {
   col: CustomCol;
   taskId: string;
   viewer: boolean;
+  order: number;
 }) {
   const value = useBoard((s) => s.colValues[taskId + '::' + col.id]);
   const setColValue = useBoard((s) => s.setColValue);
@@ -1543,6 +1726,7 @@ function CustomCell({
   const wrap = (child: React.ReactNode) => (
     <div
       style={{
+        order,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -1682,14 +1866,14 @@ function CustomCell({
 function SubRows({
   t,
   g,
-  gridCols,
-  customCols,
+  rowGrid,
+  cols,
   viewer,
 }: {
   t: Task;
   g: ViewGroup;
-  gridCols: string;
-  customCols: CustomCol[];
+  rowGrid: string;
+  cols: Col[];
   viewer: boolean;
 }) {
   const subs = t.subs ?? [];
@@ -1700,10 +1884,6 @@ function SubRows({
   const cancelAddSub = useBoard((s) => s.cancelAddSub);
   const startAddSub = useBoard((s) => s.startAddSub);
 
-  // The sub-rows align under the same grid; cells past the 5th built-in column stay
-  // empty (incl. one empty slot per custom column), matching the prototype template.
-  const tail = 7 + customCols.length;
-
   return (
     <>
       {subs.map((sub) => (
@@ -1712,9 +1892,9 @@ function SubRows({
           sub={sub}
           taskId={t.id}
           g={g}
-          gridCols={gridCols}
+          rowGrid={rowGrid}
+          cols={cols}
           viewer={viewer}
-          tail={tail}
         />
       ))}
       {!viewer && addingSub && (
@@ -1795,21 +1975,26 @@ function SubRow({
   sub,
   taskId,
   g,
-  gridCols,
+  rowGrid,
+  cols,
   viewer,
-  tail,
 }: {
   sub: Sub;
   taskId: string;
   g: ViewGroup;
-  gridCols: string;
+  rowGrid: string;
+  cols: Col[];
   viewer: boolean;
-  tail: number;
 }) {
   const openPopup = useBoard((s) => s.openPopup);
   const openPanel = useBoard((s) => s.openPanel);
   const sst = STATUS[sub.status];
   const so = personById(sub.owner);
+  const orderOf: Record<string, number> = {};
+  cols.forEach((c, i) => {
+    orderOf[c.key] = i + 1;
+  });
+  const subKeys = ['task', 'owner', 'status', 'due'];
 
   let sdueLabel = '—';
   let sdueColor = 'var(--line)';
@@ -1844,7 +2029,7 @@ function SubRow({
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: gridCols,
+        gridTemplateColumns: rowGrid,
         height: 36,
         background: 'var(--glass)',
         borderBottom: '1px solid var(--surf-1)',
@@ -1855,6 +2040,7 @@ function SubRow({
       <div
         onClick={() => openPanel(taskId)}
         style={{
+          order: orderOf.task,
           display: 'flex',
           alignItems: 'center',
           gap: 8,
@@ -1891,6 +2077,7 @@ function SubRow({
       <div
         onClick={(e) => subPopup('people', undefined, e)}
         style={{
+          order: orderOf.owner,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -1914,6 +2101,7 @@ function SubRow({
       <div
         onClick={(e) => subPopup('status', undefined, e)}
         style={{
+          order: orderOf.status,
           borderRight: '1px solid var(--surf-1)',
           cursor: viewer ? 'default' : 'pointer',
         }}
@@ -1938,6 +2126,7 @@ function SubRow({
       <div
         onClick={(e) => subPopup('date', 'due', e)}
         style={{
+          order: orderOf.due,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -1951,16 +2140,17 @@ function SubRow({
       >
         {sdueLabel}
       </div>
-      {Array.from({ length: tail }).map((_, i) => (
-        <div
-          key={i}
-          style={
-            i === tail - 1
-              ? undefined
-              : { borderRight: '1px solid var(--surf-1)' }
-          }
-        />
-      ))}
+      {cols
+        .filter((c) => !subKeys.includes(c.key))
+        .map((c) => (
+          <div
+            key={c.key}
+            style={{
+              order: orderOf[c.key],
+              borderRight: '1px solid var(--surf-1)',
+            }}
+          />
+        ))}
     </div>
   );
 }
