@@ -1,5 +1,9 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import {
+  persist,
+  createJSONStorage,
+  type StateStorage,
+} from 'zustand/middleware';
 import {
   type Anchor,
   type Board,
@@ -297,6 +301,42 @@ const patchTask = (
     ...g,
     tasks: g.tasks.map((t) => (t.id === taskId ? { ...t, ...patch } : t)),
   }));
+
+// Debounced localStorage — the default persist middleware serializes the WHOLE persisted
+// blob synchronously on every mutation (each keystroke / drag tick / parity toggle). Batch
+// writes to ~400ms and flush on tab-hide so the last edit is never lost.
+const debouncedStorage: StateStorage = (() => {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let pending: [string, string] | null = null;
+  const flush = () => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = undefined;
+    }
+    if (pending) {
+      localStorage.setItem(pending[0], pending[1]);
+      pending = null;
+    }
+  };
+  if (typeof window !== 'undefined') {
+    window.addEventListener('pagehide', flush);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') flush();
+    });
+  }
+  return {
+    getItem: (name) => localStorage.getItem(name),
+    setItem: (name, value) => {
+      pending = [name, value];
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(flush, 400);
+    },
+    removeItem: (name) => {
+      pending = null;
+      localStorage.removeItem(name);
+    },
+  };
+})();
 
 export const useBoard = create<BoardState>()(
   persist(
@@ -1047,6 +1087,7 @@ export const useBoard = create<BoardState>()(
     }),
     {
       name: 'work_board_v1',
+      storage: createJSONStorage(() => debouncedStorage),
       partialize: (s) => ({
         groups: s.groups,
         collapsed: s.collapsed,

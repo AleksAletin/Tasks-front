@@ -1,5 +1,6 @@
 // Parity matrix (brief §5.14, prototype ~724 + buildParity ~1983) — role × module grid,
 // solid-color cells, click cycles state, per-role readiness % + switch gate, divergence dot.
+import { useMemo } from 'react';
 import { useBoard } from './store';
 import {
   type ParityKey,
@@ -39,39 +40,43 @@ export function ParityView() {
   const viewer = useBoard((s) => s.viewer);
   const cycleParity = useBoard((s) => s.cycleParity);
 
-  const rows: ParityRow[] = groups.map((g) => {
-    const cells: ParityCell[] = PARITY_COLS.map((c) => {
-      const stt: ParityKey = parity[g.id]?.[c] || 'none';
-      const m = PARITY_STATES[stt];
-      const diverged = PARITY_DIVERGED[g.id] === c && stt !== 'skip';
-      return {
-        col: c,
-        state: stt,
-        label: diverged ? m.label + ' · расхождение с тикетом' : m.label,
-        color: stt === 'skip' ? 'transparent' : m.color,
-        hatch: stt === 'skip',
-        diverged,
-      };
-    });
-    const counted = cells.filter((c) => c.state !== 'skip');
-    const done = counted.filter((c) => c.state === 'done').length;
-    const pct = counted.length
-      ? Math.round((done / counted.length) * 100)
-      : 100;
-    const ready = pct === 100;
-    return {
-      id: g.id,
-      name: g.name,
-      color: g.color,
-      cells,
-      pct,
-      ready,
-      barColor: ready ? '#4a9b7f' : ACCENT,
-      gateLabel: ready ? 'Переключить роль' : pct + '% готовности',
-      gateBg: ready ? '#4a9b7f' : 'var(--hover)',
-      gateFg: ready ? '#fff' : 'var(--text-faint)',
-    };
-  });
+  const rows: ParityRow[] = useMemo(
+    () =>
+      groups.map((g) => {
+        const cells: ParityCell[] = PARITY_COLS.map((c) => {
+          const stt: ParityKey = parity[g.id]?.[c] || 'none';
+          const m = PARITY_STATES[stt];
+          const diverged = PARITY_DIVERGED[g.id] === c && stt !== 'skip';
+          return {
+            col: c,
+            state: stt,
+            label: diverged ? m.label + ' · расхождение с тикетом' : m.label,
+            color: stt === 'skip' ? 'transparent' : m.color,
+            hatch: stt === 'skip',
+            diverged,
+          };
+        });
+        const counted = cells.filter((c) => c.state !== 'skip');
+        const done = counted.filter((c) => c.state === 'done').length;
+        const pct = counted.length
+          ? Math.round((done / counted.length) * 100)
+          : 100;
+        const ready = pct === 100;
+        return {
+          id: g.id,
+          name: g.name,
+          color: g.color,
+          cells,
+          pct,
+          ready,
+          barColor: ready ? '#4a9b7f' : ACCENT,
+          gateLabel: ready ? 'Переключить роль' : pct + '% готовности',
+          gateBg: ready ? '#4a9b7f' : 'var(--hover)',
+          gateFg: ready ? '#fff' : 'var(--text-faint)',
+        };
+      }),
+    [groups, parity],
+  );
 
   const legend = PARITY_ORDER.map((k) => ({
     label: PARITY_STATES[k].label,

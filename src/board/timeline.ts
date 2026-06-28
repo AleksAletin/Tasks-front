@@ -165,23 +165,8 @@ export function buildTimeline(
     }),
   }));
 
-  // resource load — each phase contributes its `res` on every day in its span
-  const load: Record<string, number[]> = {};
-  PEOPLE.forEach((p) => (load[p.id] = new Array(n).fill(0)));
-  groups.forEach((g) =>
-    g.tasks.forEach((t) => {
-      if (!t.phases) return;
-      const cp = computePhases({ phases: t.phases, anchor: t.anchor });
-      cp.segs.forEach((sg) => {
-        const res = t.phases![sg.key].res;
-        if (!res || !load[res]) return;
-        for (let d = sg.startDn; d <= sg.endDn; d++) {
-          const idx = d - ws;
-          if (idx >= 0 && idx < n) load[res][idx]++;
-        }
-      });
-    }),
-  );
+  // resource load — each phase contributes its `res` on every day in its span (shared helper)
+  const { load } = computeLoad(groups);
 
   const resources: TlResource[] = PEOPLE.filter((p) =>
     load[p.id].some((v) => v > 0),
@@ -204,7 +189,54 @@ export function buildTimeline(
     ),
   }));
 
-  // bottleneck — worst concurrent load across all people/days
+  // bottleneck — worst concurrent load across all people/days (shared helper)
+  const flag = bottleneckFromLoad(load, ws);
+
+  return {
+    days,
+    groups: tlGroups,
+    resources,
+    flag,
+    totalW: n * DAY_W + 'px',
+    totalMinW: LANE_LABEL_W + n * DAY_W + 'px',
+    todayLeftPx: LANE_LABEL_W + (dayNum(TODAY) - ws) * DAY_W + 'px',
+    rangeLabel: '15 июня — 19 июля 2026 · перетащите бар, чтобы сдвинуть даты',
+  };
+}
+
+// --- resource-load helpers (shared by the gantt band + the «что горит» bottleneck flag) ---
+// Resource load is derived from PHASES (computePhases), so it is independent of bar drag (tlDrag).
+function computeLoad(groups: Group[]): {
+  load: Record<string, number[]>;
+  ws: number;
+  n: number;
+} {
+  const ws = dayNum(WIN_START);
+  const we = dayNum(WIN_END);
+  const n = we - ws + 1;
+  const load: Record<string, number[]> = {};
+  PEOPLE.forEach((p) => (load[p.id] = new Array(n).fill(0)));
+  groups.forEach((g) =>
+    g.tasks.forEach((t) => {
+      if (!t.phases) return;
+      const cp = computePhases({ phases: t.phases, anchor: t.anchor });
+      cp.segs.forEach((sg) => {
+        const res = t.phases![sg.key].res;
+        if (!res || !load[res]) return;
+        for (let d = sg.startDn; d <= sg.endDn; d++) {
+          const idx = d - ws;
+          if (idx >= 0 && idx < n) load[res][idx]++;
+        }
+      });
+    }),
+  );
+  return { load, ws, n };
+}
+
+function bottleneckFromLoad(
+  load: Record<string, number[]>,
+  ws: number,
+): string | null {
   let worst = 0;
   let wp: string | null = null;
   let wi = -1;
@@ -217,9 +249,8 @@ export function buildTimeline(
       }
     }),
   );
-  const flag =
-    worst >= 2 && wp
-      ? (personById(wp)?.name ?? '') +
+  return worst >= 2 && wp
+    ? (personById(wp)?.name ?? '') +
         ': ' +
         worst +
         ' фазы одновременно с ' +
@@ -227,16 +258,11 @@ export function buildTimeline(
         ' → риск +' +
         (worst - 1) +
         ' дн к сроку роли'
-      : null;
+    : null;
+}
 
-  return {
-    days,
-    groups: tlGroups,
-    resources,
-    flag,
-    totalW: n * DAY_W + 'px',
-    totalMinW: LANE_LABEL_W + n * DAY_W + 'px',
-    todayLeftPx: LANE_LABEL_W + (dayNum(TODAY) - ws) * DAY_W + 'px',
-    rangeLabel: '15 июня — 19 июля 2026 · перетащите бар, чтобы сдвинуть даты',
-  };
+// Bottleneck flag only — for «что горит», without building the full gantt.
+export function computeBottleneck(groups: Group[]): string | null {
+  const { load, ws } = computeLoad(groups);
+  return bottleneckFromLoad(load, ws);
 }

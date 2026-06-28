@@ -72,7 +72,13 @@ export function TableView() {
   // layout, matching the prototype's getSnapshotBeforeUpdate/componentDidUpdate.
   const flipTops = useRef<Record<string, number>>({});
   const flipReady = useRef(false);
+  const prevGroups = useRef(groups);
   useLayoutEffect(() => {
+    // Animate only on a real reorder (groups changed). On other layout-affecting
+    // changes (filter/sort/group/collapse) just re-measure, so the NEXT reorder
+    // still flips from correct positions instead of stale ones.
+    const animate = flipReady.current && prevGroups.current !== groups;
+    prevGroups.current = groups;
     const prev = flipTops.current;
     const next: Record<string, number> = {};
     const nodes = document.querySelectorAll<HTMLElement>('[data-row-id]');
@@ -81,7 +87,7 @@ export function TableView() {
       if (!id) return;
       const top = el.getBoundingClientRect().top;
       next[id] = top;
-      if (!flipReady.current) return;
+      if (!animate) return;
       const pt = prev[id];
       if (pt == null) return;
       const dy = pt - top;
@@ -101,7 +107,16 @@ export function TableView() {
     });
     flipTops.current = next;
     flipReady.current = true;
-  }, [groups]);
+  }, [
+    groups,
+    collapsed,
+    query,
+    filterStatus,
+    filterOwner,
+    sortBy,
+    sortDir,
+    groupBy,
+  ]);
 
   const { groups: viewGroups, tableEmptyAll } = useMemo(
     () =>

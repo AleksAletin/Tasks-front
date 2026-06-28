@@ -10,8 +10,7 @@ import {
   dayNum,
   fmt,
 } from './model';
-import { buildTimeline } from './timeline';
-import type { TlDrag } from './store';
+import { computeBottleneck } from './timeline';
 
 export type AlertSev = 'high' | 'mid';
 export interface AlertTarget {
@@ -43,11 +42,7 @@ function readyPct(parity: Parity, gid: string): number {
   return counted.length ? Math.round((done / counted.length) * 100) : 100;
 }
 
-export function buildAlerts(
-  groups: Group[],
-  parity: Parity,
-  tlDrag: TlDrag | null,
-): AlertsData {
+export function buildAlerts(groups: Group[], parity: Parity): AlertsData {
   const A: Alert[] = [];
   const today = dayNum(TODAY);
 
@@ -104,15 +99,15 @@ export function buildAlerts(
     }
   });
 
-  // bottleneck — from the timeline resource load
-  const tl = buildTimeline(groups, tlDrag);
-  if (tl.flag) {
+  // bottleneck — from the resource load (independent of bar drag, so no tlDrag needed)
+  const flag = computeBottleneck(groups);
+  if (flag) {
     A.push({
       sev: 'high',
       dot: '#cf6b6b',
       catBg: 'var(--red-tint)',
       cat: 'Бутылочное горло',
-      title: tl.flag,
+      title: flag,
       sub: 'Ресурсный затык в плане',
       target: { kind: 'tab', tab: 'timeline' },
     });

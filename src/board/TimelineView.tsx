@@ -28,12 +28,22 @@ export function TimelineView() {
     }
     const sx = e.clientX;
     let moved = false;
+    // Throttle drag-state updates to one per frame — the timeline memo re-runs on tlDrag,
+    // so we cap it to ~60×/s even when mousemove fires faster.
+    let raf = 0;
+    let lastDd = 0;
     const move = (ev: MouseEvent) => {
-      const dd = Math.round((ev.clientX - sx) / DAY_W);
-      if (dd !== 0) moved = true;
-      setTlDrag({ id, dd });
+      lastDd = Math.round((ev.clientX - sx) / DAY_W);
+      if (lastDd !== 0) moved = true;
+      if (!raf) {
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          setTlDrag({ id, dd: lastDd });
+        });
+      }
     };
     const up = (ev: MouseEvent) => {
+      if (raf) cancelAnimationFrame(raf);
       document.removeEventListener('mousemove', move);
       document.removeEventListener('mouseup', up);
       const dd = Math.round((ev.clientX - sx) / DAY_W);

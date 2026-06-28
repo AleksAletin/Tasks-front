@@ -137,6 +137,8 @@ describe('persistence', () => {
       groupDropId: 'g1',
     });
     useBoard.getState().moveGroup('g1', 1);
+    // persist is debounced (see debouncedStorage); a tab-hide flushes it synchronously.
+    window.dispatchEvent(new Event('pagehide'));
     const raw = window.localStorage.getItem('work_board_v1');
     expect(raw).toBeTruthy();
     const parsed = JSON.parse(raw as string) as {

@@ -9,14 +9,10 @@ import type { Alert } from './alerts';
 export function AlertsView() {
   const groups = useBoard((s) => s.groups);
   const parity = useBoard((s) => s.parity);
-  const tlDrag = useBoard((s) => s.tlDrag);
   const openPanel = useBoard((s) => s.openPanel);
   const setBoardTab = useBoard((s) => s.setBoardTab);
 
-  const alerts = useMemo(
-    () => buildAlerts(groups, parity, tlDrag),
-    [groups, parity, tlDrag],
-  );
+  const alerts = useMemo(() => buildAlerts(groups, parity), [groups, parity]);
 
   const go = (a: Alert) => {
     if (a.target.kind === 'task' && a.target.taskId) openPanel(a.target.taskId);
