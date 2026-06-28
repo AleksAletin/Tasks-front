@@ -555,7 +555,7 @@ export const useBoard = create<BoardState>()(
             '#6b9b4a',
           ];
           const u: Person = {
-            id: 'u' + Date.now(),
+            id: 'u' + Date.now() + Math.floor(Math.random() * 99),
             name,
             initials,
             color: colors[s.invites.length % colors.length],

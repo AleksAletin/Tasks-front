@@ -132,7 +132,8 @@ export function TableView() {
     [groups, query, filterStatus, filterOwner, sortBy, sortDir, groupBy],
   );
 
-  const allTasks = groups.flatMap((g) => g.tasks);
+  // Reflect the VISIBLE (filtered/grouped) rows, not the whole board.
+  const allTasks = viewGroups.flatMap((g) => g.tasks);
   const allChecked =
     allTasks.length > 0 && allTasks.every((t) => selectedIds[t.id]);
   const gridCols = GRID + customCols.map(() => ' ' + CUSTOM_COL_W).join('');

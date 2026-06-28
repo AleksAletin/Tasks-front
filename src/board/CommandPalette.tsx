@@ -201,7 +201,7 @@ export function CommandPalette() {
             const active = i === cmdIdx;
             return (
               <div
-                key={it.kind + it.label + i}
+                key={it.kind + '::' + it.label}
                 onClick={() => run(it.run)}
                 onMouseEnter={() => setCmdIdx(i)}
                 style={{
