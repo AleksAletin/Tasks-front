@@ -230,6 +230,7 @@ interface BoardState {
   setQuery: (v: string) => void;
   updateTask: (taskId: string, patch: Partial<Task>) => void;
   setDue: (taskId: string, due: string | null) => void;
+  renameGroup: (groupId: string, name: string) => void;
   initPhases: (taskId: string) => void;
   phaseEdit: (
     taskId: string,
@@ -628,6 +629,16 @@ export const useBoard = create<BoardState>()(
           }
           return { groups: patchTask(s.groups, taskId, patch) };
         }),
+      renameGroup: (groupId, name) =>
+        set((s) =>
+          s.viewer
+            ? {}
+            : {
+                groups: s.groups.map((g) =>
+                  g.id === groupId ? { ...g, name } : g,
+                ),
+              },
+        ),
       // Phase-dates editor (brief §5.6, prototype openPopup 'phases' init ~1741): when a task
       // has no phases yet, seed the prototype default and store the derived tl so the gantt bar
       // (which segments by phases) renders immediately.

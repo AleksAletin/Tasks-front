@@ -712,6 +712,9 @@ function GroupBlock({
   const groupDragEnd = useBoard((s) => s.groupDragEnd);
   const moveGroup = useBoard((s) => s.moveGroup);
   const addTaskToGroup = useBoard((s) => s.addTaskToGroup);
+  const renameGroup = useBoard((s) => s.renameGroup);
+  const [editingName, setEditingName] = useState(false);
+  const [nameHover, setNameHover] = useState(false);
   const dragging = useBoard((s) => s.groupDrag?.id === g.id);
   const dropActive = useBoard(
     (s) => !!s.groupDrag && s.groupDrag.id !== g.id && s.groupDropId === g.id,
@@ -725,7 +728,7 @@ function GroupBlock({
   return (
     <div
       className="grouprow"
-      draggable={canDrag}
+      draggable={canDrag && !editingName}
       onDragStart={canDrag ? () => groupDragStart(g.id) : undefined}
       onDragOver={
         canDrag
@@ -818,16 +821,57 @@ function GroupBlock({
             <path d="M6 9l6 6 6-6" />
           </svg>
         </div>
-        <span
-          style={{
-            fontWeight: 700,
-            fontSize: 15,
-            color: g.color,
-            letterSpacing: '-.2px',
-          }}
-        >
-          {g.name}
-        </span>
+        {editingName ? (
+          <input
+            value={g.name}
+            autoFocus
+            onChange={(e) => renameGroup(g.id, e.target.value)}
+            onMouseDown={(e) => e.stopPropagation()}
+            onDragStart={(e) => e.preventDefault()}
+            onBlur={() => setEditingName(false)}
+            onKeyDown={(e) => {
+              e.stopPropagation();
+              if (e.key === 'Enter' || e.key === 'Escape') setEditingName(false);
+            }}
+            style={{
+              height: 26,
+              minWidth: 140,
+              border: `1px solid ${g.color}`,
+              borderRadius: 6,
+              padding: '0 8px',
+              fontSize: 15,
+              fontWeight: 700,
+              color: g.color,
+              outline: 'none',
+              background: 'var(--card)',
+              letterSpacing: '-.2px',
+            }}
+          />
+        ) : (
+          <span
+            onClick={() => {
+              if (g.isRole && !viewer) setEditingName(true);
+            }}
+            onMouseEnter={() => setNameHover(true)}
+            onMouseLeave={() => setNameHover(false)}
+            title={g.isRole && !viewer ? 'Клик — переименовать' : undefined}
+            style={{
+              fontWeight: 700,
+              fontSize: 15,
+              color: g.color,
+              letterSpacing: '-.2px',
+              cursor: g.isRole && !viewer ? 'text' : 'default',
+              borderRadius: 4,
+              padding: '0 3px',
+              background:
+                nameHover && g.isRole && !viewer
+                  ? 'var(--hover)'
+                  : 'transparent',
+            }}
+          >
+            {g.name}
+          </span>
+        )}
         <span
           style={{
             fontSize: 12,
@@ -1060,7 +1104,10 @@ const Row = memo(function Row({
   const openPopup = useBoard((s) => s.openPopup);
   const openPanel = useBoard((s) => s.openPanel);
   const openCtx = useBoard((s) => s.openCtx);
+  const updateTask = useBoard((s) => s.updateTask);
   const initPhases = useBoard((s) => s.initPhases);
+  const [editingName, setEditingName] = useState(false);
+  const [nameHover, setNameHover] = useState(false);
   const expanded = useBoard((s) => !!s.expanded[t.id]);
   const toggleExpand = useBoard((s) => s.toggleExpand);
   const dragStart = useBoard((s) => s.dragStart);
@@ -1164,7 +1211,7 @@ const Row = memo(function Row({
     <>
       <div
         data-row-id={t.id}
-        draggable={canDrag}
+        draggable={canDrag && !editingName}
         onContextMenu={onContextMenu}
         onDragStart={
           canDrag
@@ -1353,6 +1400,8 @@ const Row = memo(function Row({
         </div>
 
         <div
+          onMouseEnter={() => setNameHover(true)}
+          onMouseLeave={() => setNameHover(false)}
           style={{
             order: orderOf.task,
             display: 'flex',
@@ -1393,22 +1442,56 @@ const Row = memo(function Row({
               <path d="M6 9l6 6 6-6" />
             </svg>
           </div>
-          <span
-            onClick={(e) => {
-              e.stopPropagation();
-              openPanel(t.id);
-            }}
-            style={{
-              fontSize: 13.5,
-              fontWeight: 600,
-              color: 'var(--text-2)',
-              cursor: 'pointer',
-              ...wrapStyle('task'),
-            }}
-          >
-            {t.name}
-          </span>
-          {subs.length > 0 && (
+          {editingName ? (
+            <input
+              value={t.name}
+              autoFocus
+              onChange={(e) => updateTask(t.id, { name: e.target.value })}
+              onClick={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+              onDragStart={(e) => e.preventDefault()}
+              onBlur={() => setEditingName(false)}
+              onKeyDown={(e) => {
+                e.stopPropagation();
+                if (e.key === 'Enter' || e.key === 'Escape') setEditingName(false);
+              }}
+              style={{
+                flex: 1,
+                minWidth: 0,
+                height: 26,
+                border: `1px solid ${ACCENT}`,
+                borderRadius: 6,
+                padding: '0 8px',
+                fontSize: 13.5,
+                fontWeight: 600,
+                outline: 'none',
+                background: 'var(--card)',
+                color: 'var(--text-2)',
+              }}
+            />
+          ) : (
+            <span
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!viewer) setEditingName(true);
+              }}
+              title={viewer ? undefined : 'Клик — переименовать'}
+              style={{
+                fontSize: 13.5,
+                fontWeight: 600,
+                color: 'var(--text-2)',
+                cursor: viewer ? 'default' : 'text',
+                borderRadius: 4,
+                padding: '1px 3px',
+                background:
+                  nameHover && !viewer ? 'var(--hover)' : 'transparent',
+                ...wrapStyle('task'),
+              }}
+            >
+              {t.name}
+            </span>
+          )}
+          {subs.length > 0 && !editingName && (
             <span
               style={{
                 flexShrink: 0,
@@ -1445,6 +1528,33 @@ const Row = memo(function Row({
                 />
               </span>
               {subDone}/{subs.length}
+            </span>
+          )}
+          {nameHover && !editingName && !viewer && (
+            <span
+              onClick={(e) => {
+                e.stopPropagation();
+                openPanel(t.id);
+              }}
+              title="Открыть задачу"
+              style={{
+                flexShrink: 0,
+                display: 'flex',
+                marginLeft: 'auto',
+                cursor: 'pointer',
+                color: 'var(--text-faint)',
+              }}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M15 3h6v6M10 14L21 3M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5" />
+              </svg>
             </span>
           )}
         </div>
