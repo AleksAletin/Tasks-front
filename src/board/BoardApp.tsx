@@ -65,6 +65,32 @@ const TABS: { key: TabKey; label: string; d: string }[] = [
 // startup; otherwise the built-in localStorage demo board is used (default, unchanged).
 const USE_BACKEND = import.meta.env.VITE_USE_BACKEND === 'true';
 
+// Cold-start resilience: on a fresh full-stack (docker) the frontend's nginx serves index.html
+// before the API has finished booting (migrate + seed), so the first /board + /prefs fetch can
+// 502 / connection-refuse and the SPA would silently keep demo data until a manual reload. Retry
+// network/5xx failures with exponential backoff (~8s total) so it hydrates on its own. 4xx (e.g.
+// auth) is NOT retried. The caller still falls back to local data if every attempt fails.
+async function hydrateWithRetry<T>(
+  fn: () => Promise<T>,
+  attempts = 7,
+  baseMs = 500,
+): Promise<T> {
+  let lastErr: unknown;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastErr = e;
+      const status = (e as { response?: { status?: number } })?.response?.status;
+      if (status !== undefined && status < 500) throw e; // client error → don't retry
+      if (i < attempts - 1) {
+        await new Promise((r) => setTimeout(r, baseMs * Math.pow(1.6, i)));
+      }
+    }
+  }
+  throw lastErr;
+}
+
 export function BoardApp() {
   const authed = useBoard((s) => s.authed);
   const dark = useBoard((s) => s.dark);
@@ -90,10 +116,10 @@ export function BoardApp() {
     let cancelled = false;
     let disposeSync: (() => void) | null = null;
     void Promise.allSettled([
-      fetchBoard().then((payload) => {
+      hydrateWithRetry(fetchBoard).then((payload) => {
         if (!cancelled) useBoard.getState().hydrateBoard(payload);
       }),
-      fetchPrefs().then((payload) => {
+      hydrateWithRetry(fetchPrefs).then((payload) => {
         if (!cancelled) useBoard.getState().hydratePrefs(payload);
       }),
     ]).then((results) => {
