@@ -11,12 +11,9 @@ import {
   CUSTOM_STATES,
   PEOPLE,
   PHASES,
-  PRIO,
-  SOURCE,
-  STATUS,
   TODAY,
-  TYPE,
   dayNum,
+  findLabel,
   fmt,
   pctIn,
   personById,
@@ -58,6 +55,7 @@ export function TableView() {
   const viewer = useBoard((s) => s.viewer);
   const customCols = useBoard((s) => s.customCols);
   const colLabels = useBoard((s) => s.colLabels);
+  const labels = useBoard((s) => s.labels);
   const toggleCollapse = useBoard((s) => s.toggleCollapse);
   const toggleSelect = useBoard((s) => s.toggleSelect);
   const openHeaderMenu = useBoard((s) => s.openHeaderMenu);
@@ -189,7 +187,20 @@ export function TableView() {
         sortDir,
         groupBy,
       }),
-    [boardGroups, query, filterStatus, filterOwner, sortBy, sortDir, groupBy],
+    // `labels` is a deliberate dep: buildView reads the (editable) registry for grouping +
+    // summary colors/order through the live mirror, not a closed-over value, so the linter
+    // sees it as unnecessary — but it must recompute when a label changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      boardGroups,
+      query,
+      filterStatus,
+      filterOwner,
+      sortBy,
+      sortDir,
+      groupBy,
+      labels,
+    ],
   );
 
   // Reflect the VISIBLE (filtered/grouped) rows, not the whole board.
@@ -1122,14 +1133,15 @@ const Row = memo(function Row({
     (s) => s.dropTarget?.taskId === t.id && s.dropTarget.before === false,
   );
   const colWrap = useBoard((s) => s.colWrap);
+  const labels = useBoard((s) => s.labels);
 
   // Row drag only when grouping by role and not viewing (brief §5.8); it must not
   // interfere with the cell click/popover/context-menu handlers (those stopPropagation).
   const canDrag = g.isRole && !viewer;
-  const st = STATUS[t.status];
-  const pr = t.priority ? PRIO[t.priority] : null;
-  const ty = TYPE[t.type];
-  const so = SOURCE[t.source];
+  const st = findLabel(labels.status, t.status);
+  const pr = t.priority ? findLabel(labels.priority, t.priority) : null;
+  const ty = findLabel(labels.type, t.type);
+  const so = findLabel(labels.source, t.source);
   const owner = personById(t.owner);
   // No fallback to a real person: imported/edited tasks may have an empty lastBy — show an
   // empty avatar rather than misleadingly attributing the change to «АК» (p1).
@@ -1158,6 +1170,13 @@ const Row = memo(function Row({
     const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
     let x = r.left;
     const y = r.bottom + 5;
+    // The status/priority/type/source pickers carry the label editor, so they're wider —
+    // size the clamp to match (Popup uses 252) or a right-edge cell would clip the editor.
+    const labelKind =
+      kind === 'status' ||
+      kind === 'priority' ||
+      kind === 'type' ||
+      kind === 'source';
     const w =
       kind === 'date'
         ? 280
@@ -1165,7 +1184,9 @@ const Row = memo(function Row({
           ? 340
           : kind === 'note'
             ? 320
-            : Math.max(r.width, 180);
+            : labelKind
+              ? 252
+              : Math.max(r.width, 180);
     if (x + w > window.innerWidth - 10) x = window.innerWidth - 10 - w;
     openPopup({ kind, taskId: t.id, field, x, y });
   };
@@ -2168,7 +2189,8 @@ function SubRow({
 }) {
   const openPopup = useBoard((s) => s.openPopup);
   const openPanel = useBoard((s) => s.openPanel);
-  const sst = STATUS[sub.status];
+  const labels = useBoard((s) => s.labels);
+  const sst = findLabel(labels.status, sub.status);
   const so = personById(sub.owner);
   const orderOf: Record<string, number> = {};
   cols.forEach((c, i) => {
@@ -2200,7 +2222,9 @@ function SubRow({
     const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
     let x = r.left;
     const y = r.bottom + 5;
-    const w = kind === 'date' ? 280 : Math.max(r.width, 180);
+    // 'status' carries the label editor (wider) — size the clamp to the Popup's width.
+    const w =
+      kind === 'date' ? 280 : kind === 'status' ? 252 : Math.max(r.width, 180);
     if (x + w > window.innerWidth - 10) x = window.innerWidth - 10 - w;
     openPopup({ kind, taskId, subId: sub.id, field, x, y });
   };

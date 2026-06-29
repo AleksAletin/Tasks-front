@@ -3,7 +3,7 @@
 // status, +N overflow, and month navigation (← / → / Сегодня). calMonth lives in the store.
 import { useMemo } from 'react';
 import { useBoard } from './store';
-import { DOWS, MONTHS_FULL, STATUS, TODAY, iso, type Task } from './model';
+import { DOWS, MONTHS_FULL, TODAY, findLabel, iso, type Task } from './model';
 
 const ACCENT = '#4263d8';
 
@@ -34,6 +34,7 @@ export function CalendarView() {
   const shiftCalMonth = useBoard((s) => s.shiftCalMonth);
   const setCalMonth = useBoard((s) => s.setCalMonth);
   const openPanel = useBoard((s) => s.openPanel);
+  const labels = useBoard((s) => s.labels);
 
   const allTasks = useMemo<Task[]>(
     () => groups.flatMap((g) => g.tasks),
@@ -70,7 +71,11 @@ export function CalendarView() {
           const dayTasks = allTasks.filter((t) => t.due === isoStr);
           const chips = dayTasks
             .slice(0, 3)
-            .map((t) => ({ id: t.id, name: t.name, bg: STATUS[t.status].bg }));
+            .map((t) => ({
+              id: t.id,
+              name: t.name,
+              bg: findLabel(labels.status, t.status).bg,
+            }));
           const more = Math.max(0, dayTasks.length - 3);
           const today = isoStr === TODAY;
           return {
@@ -87,7 +92,7 @@ export function CalendarView() {
       );
     }
     return out;
-  }, [calMonth, allTasks]);
+  }, [calMonth, allTasks, labels]);
 
   const label = MONTHS_FULL[calMonth.m0] + ' ' + calMonth.y;
 

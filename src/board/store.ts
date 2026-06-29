@@ -11,6 +11,8 @@ import {
   type ColType,
   type CustomCol,
   type Group,
+  type LabelDef,
+  type LabelField,
   type MappingRule,
   type Parity,
   type ParityKey,
@@ -20,12 +22,15 @@ import {
   type Sub,
   type Task,
   COACH,
+  LABEL_PALETTE,
   PARITY_ORDER,
   PEOPLE,
   ROLES,
   TODAY,
   dayNum,
+  normalizeLabels,
   resolveColOrder,
+  setLiveLabels,
   initialBoards,
   initialCfg,
   initialGroups,
@@ -119,6 +124,8 @@ interface BoardState {
   customCols: CustomCol[];
   colValues: Record<string, unknown>;
   colLabels: Record<string, string>;
+  // Editable pill-label sets for status/priority/type/source (shared via /prefs).
+  labels: Record<LabelField, LabelDef[]>;
   // Per-column widths (px) keyed by column key; missing → the column's default width.
   colWidths: Record<string, number>;
   // Explicit column order (column keys). Reconciled at render against the live column set,
@@ -202,6 +209,7 @@ interface BoardState {
     customCols: CustomCol[];
     colValues: Record<string, unknown>;
     colLabels: Record<string, string>;
+    labels?: Record<LabelField, LabelDef[]>;
   }) => void;
   login: () => void;
   setLoginEmail: (v: string) => void;
@@ -231,6 +239,9 @@ interface BoardState {
   updateTask: (taskId: string, patch: Partial<Task>) => void;
   setDue: (taskId: string, due: string | null) => void;
   renameGroup: (groupId: string, name: string) => void;
+  addLabel: (field: LabelField) => void;
+  editLabel: (field: LabelField, key: string, patch: Partial<LabelDef>) => void;
+  removeLabel: (field: LabelField, key: string) => void;
   initPhases: (taskId: string) => void;
   phaseEdit: (
     taskId: string,
@@ -363,6 +374,20 @@ const debouncedStorage: StateStorage = (() => {
   };
 })();
 
+// Stable, unique key for a newly added label within a field (c5, c6, …). Avoids
+// Date.now()/random so persisted task values reference deterministic keys.
+function freshLabelKey(defs: LabelDef[]): string {
+  let n = defs.length + 1;
+  const taken = (k: string) => defs.some((d) => d.key === k);
+  while (taken(`c${n}`)) n++;
+  return `c${n}`;
+}
+
+// Seed the label registry from the defaults and prime the live mirror (read by the
+// non-React derivation modules) before the store exists.
+const initialLabels = normalizeLabels(null);
+setLiveLabels(initialLabels);
+
 export const useBoard = create<BoardState>()(
   persist(
     (set, get) => ({
@@ -373,6 +398,7 @@ export const useBoard = create<BoardState>()(
       customCols: [],
       colValues: {},
       colLabels: {},
+      labels: initialLabels,
       colWidths: {},
       colOrder: [],
       colWrap: {},
@@ -447,7 +473,10 @@ export const useBoard = create<BoardState>()(
       // Replace the SHARED prefs slices with a payload from the backend (GET /prefs). Used only on
       // the VITE_USE_BACKEND path; the board (boards/groups/parity) and personal UI prefs are not
       // touched. A flat set() of all 11 slices, mirroring hydrateBoard.
-      hydratePrefs: (payload) =>
+      hydratePrefs: (payload) => {
+        // A fresh /prefs row stores LabelsJson "{}" → normalize fills from defaults.
+        const labels = normalizeLabels(payload.labels);
+        setLiveLabels(labels);
         set({
           cfg: payload.cfg,
           integrations: payload.integrations,
@@ -460,7 +489,9 @@ export const useBoard = create<BoardState>()(
           customCols: payload.customCols,
           colValues: payload.colValues,
           colLabels: payload.colLabels,
-        }),
+          labels,
+        });
+      },
       login: () => set({ authed: true }),
       setLoginEmail: (v) => set({ loginEmail: v }),
       toggleNav: () => set((s) => ({ navOpen: !s.navOpen })),
@@ -639,6 +670,51 @@ export const useBoard = create<BoardState>()(
                 ),
               },
         ),
+      // Editable label registry (status/priority/type/source). Each mutation pushes the
+      // new set into the live mirror (so derive.ts / timeline.ts see it) and updates the
+      // `labels` ref so the /prefs sync flushes it to the backend.
+      addLabel: (field) =>
+        set((s) => {
+          if (s.viewer) return {};
+          const defs = s.labels[field];
+          const next = {
+            ...s.labels,
+            [field]: [
+              ...defs,
+              {
+                key: freshLabelKey(defs),
+                label: 'Новая метка',
+                bg: LABEL_PALETTE[defs.length % LABEL_PALETTE.length],
+              },
+            ],
+          };
+          setLiveLabels(next);
+          return { labels: next };
+        }),
+      editLabel: (field, key, patch) =>
+        set((s) => {
+          if (s.viewer) return {};
+          const next = {
+            ...s.labels,
+            [field]: s.labels[field].map((l) =>
+              l.key === key ? { ...l, ...patch } : l,
+            ),
+          };
+          setLiveLabels(next);
+          return { labels: next };
+        }),
+      removeLabel: (field, key) =>
+        set((s) => {
+          if (s.viewer) return {};
+          const defs = s.labels[field];
+          if (defs.length <= 1) return {}; // keep at least one option
+          const next = {
+            ...s.labels,
+            [field]: defs.filter((l) => l.key !== key),
+          };
+          setLiveLabels(next);
+          return { labels: next };
+        }),
       // Phase-dates editor (brief §5.6, prototype openPopup 'phases' init ~1741): when a task
       // has no phases yet, seed the prototype default and store the derived tl so the gantt bar
       // (which segments by phases) renders immediately.
@@ -1337,6 +1413,7 @@ export const useBoard = create<BoardState>()(
         customCols: s.customCols,
         colValues: s.colValues,
         colLabels: s.colLabels,
+        labels: s.labels,
         colWidths: s.colWidths,
         colOrder: s.colOrder,
         colWrap: s.colWrap,
@@ -1358,6 +1435,15 @@ export const useBoard = create<BoardState>()(
         userOverrides: s.userOverrides,
         invites: s.invites,
       }),
+      // localStorage rehydration bypasses the actions, so re-prime the live label mirror
+      // (and backfill any missing field) from the persisted set.
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          const labels = normalizeLabels(state.labels);
+          state.labels = labels;
+          setLiveLabels(labels);
+        }
+      },
     },
   ),
 );

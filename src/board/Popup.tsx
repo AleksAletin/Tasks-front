@@ -1,8 +1,10 @@
 // Inline-edit popover (brief §5.5, prototype ~1183 + buildPopup ~2037).
 // Driven by `popup` state: status/priority/type/source pills, section list, people picker, calendar.
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { useBoard } from './store';
 import {
+  type LabelDef,
+  type LabelField,
   type PrioKey,
   type SourceKey,
   type StatusKey,
@@ -10,20 +12,13 @@ import {
   type Task,
   type TypeKey,
   DOWS,
+  LABEL_PALETTE,
   MONTHS_FULL,
   PEOPLE,
   PHASE_ORDER,
   PHASES,
-  PRIO,
-  PRIO_ORDER,
   SECTIONS,
-  SOURCE,
-  SOURCE_ORDER,
-  STATUS,
-  STATUS_ORDER,
   TODAY,
-  TYPE,
-  TYPE_ORDER,
   fmt,
   iso,
   personById,
@@ -57,6 +52,11 @@ export function Popup() {
     closePopup();
   };
 
+  const isLabelKind =
+    popup.kind === 'status' ||
+    popup.kind === 'priority' ||
+    popup.kind === 'type' ||
+    popup.kind === 'source';
   const w =
     popup.kind === 'date'
       ? 280
@@ -64,7 +64,9 @@ export function Popup() {
         ? 340
         : popup.kind === 'note'
           ? 320
-          : 200;
+          : isLabelKind
+            ? 252
+            : 200;
 
   return (
     <GlassPopover x={popup.x} y={popup.y} onClose={closePopup} minWidth={w}>
@@ -72,42 +74,26 @@ export function Popup() {
         <PhaseEditor task={task} />
       )}
       {popup.kind === 'status' && (
-        <Pills
-          items={STATUS_ORDER.map((k) => ({
-            label: STATUS[k].label,
-            bg: STATUS[k].bg,
-            key: k,
-          }))}
+        <LabelPicker
+          field="status"
           onPick={(k) => apply({ status: k as StatusKey })}
         />
       )}
       {popup.kind === 'priority' && (
-        <Pills
-          items={PRIO_ORDER.map((k) => ({
-            label: PRIO[k].label,
-            bg: PRIO[k].bg,
-            key: k,
-          }))}
+        <LabelPicker
+          field="priority"
           onPick={(k) => apply({ priority: k as PrioKey })}
         />
       )}
       {popup.kind === 'type' && (
-        <Pills
-          items={TYPE_ORDER.map((k) => ({
-            label: TYPE[k].label,
-            bg: TYPE[k].bg,
-            key: k,
-          }))}
+        <LabelPicker
+          field="type"
           onPick={(k) => apply({ type: k as TypeKey })}
         />
       )}
       {popup.kind === 'source' && (
-        <Pills
-          items={SOURCE_ORDER.map((k) => ({
-            label: SOURCE[k].label,
-            bg: SOURCE[k].bg,
-            key: k,
-          }))}
+        <LabelPicker
+          field="source"
           onPick={(k) => apply({ source: k as SourceKey })}
         />
       )}
@@ -546,23 +532,83 @@ function PhaseEditor({ task }: { task: Task }) {
   );
 }
 
-function Pills({
-  items,
+// Editable pill picker for the four label fields (status/priority/type/source).
+// Normal mode: click a pill to assign it. Edit mode (toggle «Изменить метки»): recolor
+// (swatch → palette), rename (input), remove (✕), and «+ Добавить метку» — all writing
+// through the store registry, which syncs to the backend via /prefs.
+function LabelPicker({
+  field,
   onPick,
 }: {
-  items: { label: string; bg: string; key: string }[];
+  field: LabelField;
   onPick: (key: string) => void;
 }) {
+  const labels = useBoard((s) => s.labels[field]);
+  const addLabel = useBoard((s) => s.addLabel);
+  const editLabel = useBoard((s) => s.editLabel);
+  const removeLabel = useBoard((s) => s.removeLabel);
+  const [editing, setEditing] = useState(false);
+
+  if (editing) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {labels.map((l) => (
+          <LabelEditRow
+            key={l.key}
+            def={l}
+            canRemove={labels.length > 1}
+            onChange={(patch) => editLabel(field, l.key, patch)}
+            onRemove={() => removeLabel(field, l.key)}
+          />
+        ))}
+        <div
+          onClick={() => addLabel(field)}
+          style={{
+            height: 32,
+            borderRadius: 8,
+            border: '1px dashed var(--line)',
+            color: 'var(--text-soft)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 12.5,
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          + Добавить метку
+        </div>
+        <div
+          onClick={() => setEditing(false)}
+          style={{
+            height: 30,
+            borderRadius: 8,
+            background: ACCENT,
+            color: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 12.5,
+            fontWeight: 700,
+            cursor: 'pointer',
+          }}
+        >
+          Готово
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-      {items.map((it) => (
+      {labels.map((l) => (
         <div
-          key={it.key}
-          onClick={() => onPick(it.key)}
+          key={l.key}
+          onClick={() => onPick(l.key)}
           style={{
             height: 34,
             borderRadius: 8,
-            background: it.bg,
+            background: l.bg,
             color: '#fff',
             display: 'flex',
             alignItems: 'center',
@@ -573,9 +619,130 @@ function Pills({
             boxShadow: 'inset 0 0 0 1px var(--hover)',
           }}
         >
-          {it.label}
+          {l.label}
         </div>
       ))}
+      <div
+        onClick={() => setEditing(true)}
+        style={{
+          marginTop: 2,
+          height: 28,
+          borderRadius: 7,
+          color: 'var(--text-soft)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 6,
+          fontSize: 12,
+          fontWeight: 600,
+          cursor: 'pointer',
+        }}
+      >
+        <svg
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+        </svg>
+        Изменить метки
+      </div>
+    </div>
+  );
+}
+
+function LabelEditRow({
+  def,
+  canRemove,
+  onChange,
+  onRemove,
+}: {
+  def: LabelDef;
+  canRemove: boolean;
+  onChange: (patch: Partial<LabelDef>) => void;
+  onRemove: () => void;
+}) {
+  const [showPalette, setShowPalette] = useState(false);
+  const swatch = (c: string, ring: boolean): CSSProperties => ({
+    width: 20,
+    height: 20,
+    flexShrink: 0,
+    borderRadius: 6,
+    background: c,
+    cursor: 'pointer',
+    boxShadow: ring
+      ? '0 0 0 2px var(--text), inset 0 0 0 2px var(--card)'
+      : 'inset 0 0 0 1px var(--hover)',
+  });
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+        <div
+          onClick={() => setShowPalette((v) => !v)}
+          title="Цвет"
+          style={swatch(def.bg, false)}
+        />
+        <input
+          value={def.label}
+          onChange={(e) => onChange({ label: e.target.value })}
+          onKeyDown={(e) => e.stopPropagation()}
+          placeholder="Название"
+          style={{
+            flex: 1,
+            minWidth: 0,
+            height: 30,
+            border: '1px solid var(--scrim)',
+            borderRadius: 7,
+            padding: '0 9px',
+            fontSize: 13,
+            outline: 'none',
+            background: 'var(--card)',
+            color: 'var(--text)',
+          }}
+        />
+        <div
+          onClick={canRemove ? onRemove : undefined}
+          title={canRemove ? 'Удалить' : 'Нужна хотя бы одна метка'}
+          style={{
+            width: 24,
+            height: 24,
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 6,
+            color: canRemove ? 'var(--text-faint)' : 'var(--line)',
+            cursor: canRemove ? 'pointer' : 'not-allowed',
+            fontSize: 15,
+          }}
+        >
+          ✕
+        </div>
+      </div>
+      {showPalette && (
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 6,
+            padding: '2px 0 4px 27px',
+          }}
+        >
+          {LABEL_PALETTE.map((c) => (
+            <div
+              key={c}
+              onClick={() => {
+                onChange({ bg: c });
+                setShowPalette(false);
+              }}
+              style={swatch(c, c === def.bg)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

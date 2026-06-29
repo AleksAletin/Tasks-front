@@ -1,5 +1,12 @@
 import { apiClient } from './client';
-import type { Cfg, CustomCol, MappingRule, Person } from '../board/model';
+import type {
+  Cfg,
+  CustomCol,
+  LabelDef,
+  LabelField,
+  MappingRule,
+  Person,
+} from '../board/model';
 import type { UserOverride } from '../board/store';
 
 /**
@@ -20,6 +27,7 @@ export interface PrefsPayload {
   customCols: CustomCol[];
   colValues: Record<string, unknown>;
   colLabels: Record<string, string>;
+  labels: Record<LabelField, LabelDef[]>;
 }
 
 /**

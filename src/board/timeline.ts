@@ -6,13 +6,13 @@ import {
   MONTHS,
   PEOPLE,
   PHASES,
-  STATUS,
   TODAY,
   WIN_START,
   WIN_END,
   dayNum,
   fmt,
   isoFromDate,
+  labelOf,
   lighten,
   personById,
 } from './model';
@@ -155,7 +155,7 @@ export function buildTimeline(
       const b = dayNum(t.tl.end) + dd;
       const left = (a - ws) * DAY_W;
       const width = (b - a + 1) * DAY_W;
-      const st = STATUS[t.status];
+      const st = labelOf('status', t.status);
       let isPhased = false;
       let segs: TlSeg[] = [];
       if (t.phases) {

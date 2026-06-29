@@ -1,6 +1,6 @@
 // Toolbar popover (brief §5.9, prototype ~1119) — Filter / Sort / Group, glass menu.
 import { useBoard } from './store';
-import { PEOPLE, STATUS, STATUS_ORDER } from './model';
+import { PEOPLE } from './model';
 
 const ACCENT = '#4263d8';
 
@@ -31,6 +31,7 @@ export function ToolMenu() {
   const clearFilters = useBoard((s) => s.clearFilters);
   const setSort = useBoard((s) => s.setSort);
   const setGroupBy = useBoard((s) => s.setGroupBy);
+  const labels = useBoard((s) => s.labels);
 
   if (!toolMenu) return null;
   const filterN =
@@ -84,12 +85,12 @@ export function ToolMenu() {
                 </span>
               )}
             </div>
-            {STATUS_ORDER.map((k) => {
-              const on = !!filterStatus[k];
+            {labels.status.map((l) => {
+              const on = !!filterStatus[l.key];
               return (
                 <div
-                  key={k}
-                  onClick={() => setFilterStatus(k)}
+                  key={l.key}
+                  onClick={() => setFilterStatus(l.key)}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -129,7 +130,7 @@ export function ToolMenu() {
                       width: 9,
                       height: 9,
                       borderRadius: 3,
-                      background: STATUS[k].bg,
+                      background: l.bg,
                     }}
                   />
                   <span
@@ -139,7 +140,7 @@ export function ToolMenu() {
                       color: 'var(--text-3)',
                     }}
                   >
-                    {STATUS[k].label}
+                    {l.label}
                   </span>
                 </div>
               );

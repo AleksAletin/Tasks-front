@@ -170,6 +170,86 @@ export const SOURCE: Record<SourceKey, { label: string; bg: string }> = {
 };
 export const SOURCE_ORDER: SourceKey[] = ['ours', 'contour'];
 
+// ---- editable label registry (status / priority / type / source) ----
+// These four pill-fields are user-editable (rename, recolor, add, remove) via the
+// picker editor. The hardcoded STATUS/PRIO/TYPE/SOURCE maps above remain the DEFAULTS;
+// the live values live in the board store (`labels`, synced via /prefs). Every render
+// site looks a value up through `findLabel` so unknown/added keys resolve gracefully.
+export type LabelField = 'status' | 'priority' | 'type' | 'source';
+export interface LabelDef {
+  key: string;
+  label: string;
+  bg: string;
+}
+
+export const DEFAULT_LABELS: Record<LabelField, LabelDef[]> = {
+  status: STATUS_ORDER.map((k) => ({ key: k, label: STATUS[k].label, bg: STATUS[k].bg })),
+  priority: PRIO_ORDER.map((k) => ({ key: k, label: PRIO[k].label, bg: PRIO[k].bg })),
+  type: TYPE_ORDER.map((k) => ({ key: k, label: TYPE[k].label, bg: TYPE[k].bg })),
+  source: SOURCE_ORDER.map((k) => ({ key: k, label: SOURCE[k].label, bg: SOURCE[k].bg })),
+};
+
+// Preset swatches offered by the color picker (the design palette + the two neutral tokens).
+export const LABEL_PALETTE: string[] = [
+  '#cf6b6b',
+  '#cf9248',
+  '#d6953f',
+  '#4a9b7f',
+  '#3fa8a0',
+  '#4263d8',
+  '#4e5499',
+  '#5b8def',
+  '#7d83c4',
+  '#8b6fd6',
+  '#6b9b4a',
+  'var(--text-faint)',
+];
+
+// Resolve a stored key (status/priority/…) against the live label set, with a neutral
+// fallback so a value whose label was deleted still renders (shows the raw key).
+export function findLabel(
+  defs: LabelDef[] | undefined,
+  key: string | null | undefined,
+): LabelDef {
+  const d = defs?.find((l) => l.key === key);
+  return d ?? { key: key ?? '', label: key || '—', bg: 'var(--text-faint)' };
+}
+
+// Fill any missing/empty field from the defaults — used when hydrating a fresh /prefs
+// row (LabelsJson defaults to "{}") so the pickers are never empty.
+export function normalizeLabels(
+  raw: Partial<Record<LabelField, LabelDef[]>> | null | undefined,
+): Record<LabelField, LabelDef[]> {
+  const fields: LabelField[] = ['status', 'priority', 'type', 'source'];
+  const out = {} as Record<LabelField, LabelDef[]>;
+  for (const f of fields) {
+    const arr = raw?.[f];
+    out[f] =
+      Array.isArray(arr) && arr.length
+        ? arr.map((l) => ({ key: l.key, label: l.label, bg: l.bg }))
+        : DEFAULT_LABELS[f].map((l) => ({ ...l }));
+  }
+  return out;
+}
+
+// Live registry mirror for the non-React derivation modules (derive.ts, timeline.ts)
+// which compute outside a component and can't read the zustand store. The board store
+// calls setLiveLabels on init / hydrate / every label edit to keep this in sync.
+// React components should instead read `labels` from the store (reactive) + findLabel.
+let LIVE_LABELS: Record<LabelField, LabelDef[]> = normalizeLabels(null);
+export function setLiveLabels(l: Record<LabelField, LabelDef[]>): void {
+  LIVE_LABELS = l;
+}
+export function labelsOf(field: LabelField): LabelDef[] {
+  return LIVE_LABELS[field];
+}
+export function labelOf(
+  field: LabelField,
+  key: string | null | undefined,
+): LabelDef {
+  return findLabel(LIVE_LABELS[field], key);
+}
+
 export const PHASES: Record<PhaseKey, { label: string; color: string }> = {
   analysis: { label: 'Аналитика', color: '#7d83c4' },
   dev: { label: 'Разработка', color: '#5b8def' },

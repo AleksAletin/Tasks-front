@@ -1,31 +1,25 @@
 // Board view derivation — grouping / filtering / sorting / summary, ported 1:1 from
 // the prototype's renderVals() + summarize() + deriveTask() data shaping.
 import {
-  type PrioKey,
-  type SourceKey,
-  type StatusKey,
-  type TypeKey,
   type Group,
+  type LabelField,
   type Task,
-  PRIO,
-  PRIO_ORDER,
   SECTIONS,
-  SOURCE,
-  SOURCE_ORDER,
-  STATUS,
-  STATUS_ORDER,
   TODAY,
-  TYPE,
-  TYPE_ORDER,
   dayNum,
   fmt,
+  labelOf,
+  labelsOf,
   personById,
 } from './model';
 
 const ACCENT = '#4263d8';
 
-const PRW: Record<string, number> = { crit: 0, high: 1, mid: 2, low: 3 };
-const STW: Record<string, number> = { done: 0, work: 1, stuck: 2, plan: 3 };
+// Sort weight = the label's position in its (editable) registry order; unknown → last.
+const ordIdx = (field: LabelField, key: string | null | undefined): number => {
+  const i = labelsOf(field).findIndex((l) => l.key === key);
+  return i < 0 ? 999 : i;
+};
 
 export interface ViewGroup {
   id: string;
@@ -65,23 +59,27 @@ const allTasks = (groups: Group[]): Task[] => groups.flatMap((g) => g.tasks);
 export function summarize(tasks: Task[]): GroupSummary {
   const total = tasks.length || 1;
   const sc: Record<string, number> = {};
-  STATUS_ORDER.forEach((k) => (sc[k] = 0));
-  tasks.forEach((t) => sc[t.status]++);
-  const statusSegs = STATUS_ORDER.filter((k) => sc[k]).map((k) => ({
-    bg: STATUS[k].bg,
-    pct: (sc[k] / total) * 100 + '%',
-  }));
+  labelsOf('status').forEach((l) => (sc[l.key] = 0));
+  tasks.forEach((t) => (sc[t.status] = (sc[t.status] ?? 0) + 1));
+  const statusSegs = labelsOf('status')
+    .filter((l) => sc[l.key])
+    .map((l) => ({
+      bg: l.bg,
+      pct: (sc[l.key] / total) * 100 + '%',
+    }));
 
   const pc: Record<string, number> = {};
-  PRIO_ORDER.forEach((k) => (pc[k] = 0));
+  labelsOf('priority').forEach((l) => (pc[l.key] = 0));
   tasks.forEach((t) => {
-    if (t.priority) pc[t.priority]++;
+    if (t.priority) pc[t.priority] = (pc[t.priority] ?? 0) + 1;
   });
   const ptot = tasks.filter((t) => t.priority).length || 1;
-  const prioSegs = PRIO_ORDER.filter((k) => pc[k]).map((k) => ({
-    bg: PRIO[k].bg,
-    pct: (pc[k] / ptot) * 100 + '%',
-  }));
+  const prioSegs = labelsOf('priority')
+    .filter((l) => pc[l.key])
+    .map((l) => ({
+      bg: l.bg,
+      pct: (pc[l.key] / ptot) * 100 + '%',
+    }));
 
   const ds = tasks.filter((t) => t.tl);
   let tlLabel = '';
@@ -122,9 +120,9 @@ export function buildView(p: ViewParams): {
       case 'due':
         return t.due || '9999-99-99';
       case 'priority':
-        return t.priority == null ? 9 : PRW[t.priority];
+        return t.priority == null ? 999 : ordIdx('priority', t.priority);
       case 'status':
-        return STW[t.status] ?? 9;
+        return ordIdx('status', t.status);
       case 'owner':
         return (personById(t.owner)?.name || 'яяяя').toLowerCase();
       case 'section':
@@ -194,46 +192,46 @@ export function buildView(p: ViewParams): {
     });
     const ord: string[] | null =
       gBy === 'status'
-        ? STATUS_ORDER
+        ? labelsOf('status').map((l) => l.key)
         : gBy === 'priority'
-          ? [...PRIO_ORDER, 'none']
+          ? [...labelsOf('priority').map((l) => l.key), 'none']
           : gBy === 'section'
             ? SECTIONS
             : gBy === 'type'
-              ? TYPE_ORDER
+              ? labelsOf('type').map((l) => l.key)
               : gBy === 'source'
-                ? SOURCE_ORDER
+                ? labelsOf('source').map((l) => l.key)
                 : null;
     const keys = ord ? ord.filter((k) => buckets[k]) : Object.keys(buckets);
     const nm = (k: string) =>
       gBy === 'status'
-        ? STATUS[k as StatusKey]?.label || k
+        ? labelOf('status', k).label
         : gBy === 'priority'
           ? k === 'none'
             ? 'Без приоритета'
-            : PRIO[k as PrioKey]?.label || k
+            : labelOf('priority', k).label
           : gBy === 'owner'
             ? k === 'none'
               ? 'Без владельца'
               : personById(k)?.name || k
             : gBy === 'type'
-              ? TYPE[k as TypeKey]?.label || k
+              ? labelOf('type', k).label
               : gBy === 'source'
-                ? SOURCE[k as SourceKey]?.label || k
+                ? labelOf('source', k).label
                 : k;
     const cl = (k: string) =>
       gBy === 'status'
-        ? STATUS[k as StatusKey]?.bg || 'var(--text-faint)'
+        ? labelOf('status', k).bg
         : gBy === 'priority'
           ? k === 'none'
             ? 'var(--line)'
-            : PRIO[k as PrioKey]?.bg || 'var(--text-faint)'
+            : labelOf('priority', k).bg
           : gBy === 'owner'
             ? personById(k)?.color || 'var(--text-faint)'
             : gBy === 'type'
-              ? TYPE[k as TypeKey]?.bg || 'var(--text-faint)'
+              ? labelOf('type', k).bg
               : gBy === 'source'
-                ? SOURCE[k as SourceKey]?.bg || 'var(--text-faint)'
+                ? labelOf('source', k).bg
                 : ACCENT;
     rawGroups = keys.map((k) => ({
       id: 'grp_' + gBy + '_' + k,

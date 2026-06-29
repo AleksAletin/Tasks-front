@@ -48,6 +48,7 @@ function prefsSnapshot() {
     customCols: s.customCols,
     colValues: s.colValues,
     colLabels: s.colLabels,
+    labels: s.labels,
   };
 }
 
@@ -92,7 +93,8 @@ export function startBackendSync(): () => void {
       state.invites !== prev.invites ||
       state.customCols !== prev.customCols ||
       state.colValues !== prev.colValues ||
-      state.colLabels !== prev.colLabels
+      state.colLabels !== prev.colLabels ||
+      state.labels !== prev.labels
     ) {
       if (prefsTimer) clearTimeout(prefsTimer);
       prefsTimer = setTimeout(() => {

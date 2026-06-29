@@ -6,12 +6,9 @@ import { useEffect, useState } from 'react';
 import { useBoard } from './store';
 import {
   type Task,
-  PRIO,
-  SOURCE,
-  STATUS,
   TODAY,
-  TYPE,
   dayNum,
+  findLabel,
   fmt,
   personById,
 } from './model';
@@ -34,6 +31,7 @@ export function TaskPanel() {
   const viewer = useBoard((s) => s.viewer);
   const closePanel = useBoard((s) => s.closePanel);
   const openPopup = useBoard((s) => s.openPopup);
+  const labels = useBoard((s) => s.labels);
   const [tab, setTab] = useState<FeedTab>('updates');
 
   useEffect(() => {
@@ -58,10 +56,10 @@ export function TaskPanel() {
   if (!task) return null;
   const t = task;
 
-  const st = STATUS[t.status];
-  const pr = t.priority ? PRIO[t.priority] : null;
-  const ty = TYPE[t.type];
-  const so = SOURCE[t.source];
+  const st = findLabel(labels.status, t.status);
+  const pr = t.priority ? findLabel(labels.priority, t.priority) : null;
+  const ty = findLabel(labels.type, t.type);
+  const so = findLabel(labels.source, t.source);
   const owner = personById(t.owner);
   const lastBy = personById(t.lastBy) ?? personById('p1')!;
 

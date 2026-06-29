@@ -4,7 +4,7 @@
 // and a data-derived risk list. Adapts to a single column on narrow (projector / TV) viewports.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useBoard } from './store';
-import { STATUS, STATUS_ORDER, type StatusKey, type Task } from './model';
+import { type Task } from './model';
 
 const CARD: React.CSSProperties = {
   background: 'var(--glass)',
@@ -26,7 +26,7 @@ interface Milestone {
   done: boolean;
 }
 interface Segment {
-  key: StatusKey;
+  key: string;
   label: string;
   bg: string;
   val: number;
@@ -73,6 +73,7 @@ export function DashboardScreen() {
   const allGroups = useBoard((s) => s.groups);
   const activeBoardId = useBoard((s) => s.activeBoardId);
   const openPanel = useBoard((s) => s.openPanel);
+  const labels = useBoard((s) => s.labels);
   const t = useCountUp();
   const narrow = useNarrow();
 
@@ -88,33 +89,33 @@ export function DashboardScreen() {
 
   // Status distribution — shared by the battery, donut, and done%. Computed from live data.
   const dist = useMemo(() => {
-    const cnt: Record<StatusKey, number> = {
-      work: 0,
-      done: 0,
-      stuck: 0,
-      plan: 0,
-    };
+    const cnt: Record<string, number> = {};
+    labels.status.forEach((l) => {
+      cnt[l.key] = 0;
+    });
     allTasks.forEach((task) => {
-      cnt[task.status]++;
+      cnt[task.status] = (cnt[task.status] ?? 0) + 1;
     });
     const total = allTasks.length || 1;
-    const segs: Segment[] = STATUS_ORDER.filter((k) => cnt[k] > 0).map((k) => {
-      const frac = cnt[k] / total;
-      return {
-        key: k,
-        label: STATUS[k].label,
-        bg: STATUS[k].bg,
-        val: cnt[k],
-        pct: (frac * 100).toFixed(1) + '%',
-        frac,
-      };
-    });
+    const segs: Segment[] = labels.status
+      .filter((l) => cnt[l.key] > 0)
+      .map((l) => {
+        const frac = cnt[l.key] / total;
+        return {
+          key: l.key,
+          label: l.label,
+          bg: l.bg,
+          val: cnt[l.key],
+          pct: (frac * 100).toFixed(1) + '%',
+          frac,
+        };
+      });
     return {
       segs,
       total: allTasks.length,
-      donePct: Math.round((cnt.done / total) * 100),
+      donePct: Math.round(((cnt.done ?? 0) / total) * 100),
     };
-  }, [allTasks]);
+  }, [allTasks, labels]);
 
   // KPI set — exact values / labels from the prototype, animated on mount by `t`.
   const kpiNum = (n: number, dec?: boolean) => {
