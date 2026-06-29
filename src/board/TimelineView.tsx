@@ -20,8 +20,12 @@ export function TimelineView() {
   const updateTask = useBoard((s) => s.updateTask);
   const phaseAnchorShift = useBoard((s) => s.phaseAnchorShift);
   const openPanel = useBoard((s) => s.openPanel);
+  const labels = useBoard((s) => s.labels);
 
-  const tl = useMemo(() => buildTimeline(groups, tlDrag), [groups, tlDrag]);
+  // `labels` is a deliberate dep: buildTimeline reads the editable status colors through
+  // the live mirror, so the bars' status dots must restyle when a status label changes.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const tl = useMemo(() => buildTimeline(groups, tlDrag), [groups, tlDrag, labels]);
 
   // Drag a bar to shift its dates — phased tasks move via anchor, plain tasks via tl.
   // Ported 1:1 from the prototype's tlBarDown; in viewer mode a click opens the panel.

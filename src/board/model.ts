@@ -212,7 +212,9 @@ export function findLabel(
   key: string | null | undefined,
 ): LabelDef {
   const d = defs?.find((l) => l.key === key);
-  return d ?? { key: key ?? '', label: key || '—', bg: 'var(--text-faint)' };
+  // Unresolved key (e.g. a label deleted on another tab) → neutral placeholder; never
+  // surface the raw internal key in the UI.
+  return d ?? { key: key ?? '', label: '—', bg: 'var(--text-faint)' };
 }
 
 // Fill any missing/empty field from the defaults — used when hydrating a fresh /prefs

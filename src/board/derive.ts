@@ -202,7 +202,13 @@ export function buildView(p: ViewParams): {
               : gBy === 'source'
                 ? labelsOf('source').map((l) => l.key)
                 : null;
-    const keys = ord ? ord.filter((k) => buckets[k]) : Object.keys(buckets);
+    const ordered = ord ? ord.filter((k) => buckets[k]) : Object.keys(buckets);
+    // Append any bucket whose key isn't in the registry order (e.g. a task carrying a label
+    // that was deleted on another tab/device) so it still renders as its own group instead
+    // of silently dropping out of the grouped view.
+    const keys = ord
+      ? [...ordered, ...Object.keys(buckets).filter((k) => !ord.includes(k))]
+      : ordered;
     const nm = (k: string) =>
       gBy === 'status'
         ? labelOf('status', k).label

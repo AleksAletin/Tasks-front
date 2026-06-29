@@ -708,12 +708,33 @@ export const useBoard = create<BoardState>()(
           if (s.viewer) return {};
           const defs = s.labels[field];
           if (defs.length <= 1) return {}; // keep at least one option
-          const next = {
-            ...s.labels,
-            [field]: defs.filter((l) => l.key !== key),
-          };
+          const remaining = defs.filter((l) => l.key !== key);
+          const next = { ...s.labels, [field]: remaining };
+          // Reassign any task/sub still pointing at the removed key so no row is left
+          // orphaned — an orphan drops out of grouped views, undercounts the dashboard, and
+          // surfaces the raw key in its cell. Priority is nullable → null; the other three
+          // fall back to the first remaining label.
+          const fallback = field === 'priority' ? null : remaining[0].key;
+          const groups = s.groups.map((g) => ({
+            ...g,
+            tasks: g.tasks.map((t) => {
+              let nt = t;
+              if (t[field] === key) {
+                nt = { ...nt, [field]: fallback } as Task;
+              }
+              if (field === 'status' && nt.subs?.some((x) => x.status === key)) {
+                nt = {
+                  ...nt,
+                  subs: nt.subs.map((x) =>
+                    x.status === key ? ({ ...x, status: fallback } as Sub) : x,
+                  ),
+                };
+              }
+              return nt;
+            }),
+          }));
           setLiveLabels(next);
-          return { labels: next };
+          return { labels: next, groups };
         }),
       // Phase-dates editor (brief §5.6, prototype openPopup 'phases' init ~1741): when a task
       // has no phases yet, seed the prototype default and store the derived tl so the gantt bar
