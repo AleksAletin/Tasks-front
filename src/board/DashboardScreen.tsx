@@ -70,11 +70,17 @@ function useNarrow(threshold = 1040): boolean {
 }
 
 export function DashboardScreen() {
-  const groups = useBoard((s) => s.groups);
+  const allGroups = useBoard((s) => s.groups);
+  const activeBoardId = useBoard((s) => s.activeBoardId);
   const openPanel = useBoard((s) => s.openPanel);
   const t = useCountUp();
   const narrow = useNarrow();
 
+  // The dashboard reflects the active board (groups are per board).
+  const groups = useMemo(
+    () => allGroups.filter((g) => (g.boardId ?? 'b1') === activeBoardId),
+    [allGroups, activeBoardId],
+  );
   const allTasks = useMemo<Task[]>(
     () => groups.flatMap((g) => g.tasks),
     [groups],

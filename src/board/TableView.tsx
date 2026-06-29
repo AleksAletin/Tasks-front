@@ -662,6 +662,7 @@ function GroupBlock({
   const groupDrop = useBoard((s) => s.groupDrop);
   const groupDragEnd = useBoard((s) => s.groupDragEnd);
   const moveGroup = useBoard((s) => s.moveGroup);
+  const addTaskToGroup = useBoard((s) => s.addTaskToGroup);
   const dragging = useBoard((s) => s.groupDrag?.id === g.id);
   const dropActive = useBoard(
     (s) => !!s.groupDrag && s.groupDrag.id !== g.id && s.groupDropId === g.id,
@@ -952,6 +953,7 @@ function GroupBlock({
 
           {!viewer && !g.empty && (
             <div
+              onClick={() => addTaskToGroup(g.id)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -1029,7 +1031,9 @@ const Row = memo(function Row({
   const ty = TYPE[t.type];
   const so = SOURCE[t.source];
   const owner = personById(t.owner);
-  const lastBy = personById(t.lastBy) ?? personById('p1')!;
+  // No fallback to a real person: imported/edited tasks may have an empty lastBy — show an
+  // empty avatar rather than misleadingly attributing the change to «АК» (p1).
+  const lastBy = personById(t.lastBy);
   const due = deriveDue(t);
 
   // Visual column order via CSS grid `order` (checkbox stays first at 0), so the cells keep their
@@ -1608,12 +1612,16 @@ const Row = memo(function Row({
             borderRight: '1px solid var(--surf-1)',
           }}
         >
-          <Avatar
-            initials={lastBy.initials}
-            color={lastBy.color}
-            size={22}
-            font={9.5}
-          />
+          {lastBy ? (
+            <Avatar
+              initials={lastBy.initials}
+              color={lastBy.color}
+              size={22}
+              font={9.5}
+            />
+          ) : (
+            <AvatarEmpty size={22} />
+          )}
           <span
             style={{
               fontSize: 11.5,

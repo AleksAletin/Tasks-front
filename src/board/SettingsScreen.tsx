@@ -169,6 +169,7 @@ function Integrations() {
   const interval = useBoard((s) => s.cfg.syncInterval);
   const webhook = useBoard((s) => s.cfg.webhookUrl);
   const setCfg = useBoard((s) => s.setCfg);
+  const addToast = useBoard((s) => s.addToast);
 
   const badge = ytrack ? 'Подключено' : 'Отключено';
   const badgeColor = ytrack ? '#3a7d63' : 'var(--text-faint)';
@@ -252,6 +253,12 @@ function Integrations() {
                 style={{ ...monoInput, flex: 1, fontSize: 13 }}
               />
               <button
+                onClick={() => {
+                  navigator.clipboard?.writeText(webhook).then(
+                    () => addToast('Webhook URL скопирован'),
+                    () => addToast('Не удалось скопировать'),
+                  );
+                }}
                 style={{
                   height: 40,
                   padding: '0 14px',

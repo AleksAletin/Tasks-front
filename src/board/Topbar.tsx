@@ -13,6 +13,8 @@ export function Topbar() {
   const toggleDark = useBoard((s) => s.toggleDark);
   const openSettings = useBoard((s) => s.openSettings);
   const openCmd = useBoard((s) => s.openCmd);
+  const setScreen = useBoard((s) => s.setScreen);
+  const openInvite = useBoard((s) => s.openInvite);
 
   return (
     <header
@@ -240,6 +242,10 @@ export function Topbar() {
           </Tip>
         )}
         <button
+          onClick={() => {
+            setScreen('users');
+            openInvite();
+          }}
           style={{
             height: 34,
             padding: '0 13px',

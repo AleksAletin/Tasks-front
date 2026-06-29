@@ -18,7 +18,13 @@ export function CommandPalette() {
   const cmdOpen = useBoard((s) => s.cmdOpen);
   const cmdQuery = useBoard((s) => s.cmdQuery);
   const cmdIdx = useBoard((s) => s.cmdIdx);
-  const groups = useBoard((s) => s.groups);
+  const allGroups = useBoard((s) => s.groups);
+  const activeBoardId = useBoard((s) => s.activeBoardId);
+  // ⌘K task search is scoped to the active board (groups are per board).
+  const groups = useMemo(
+    () => allGroups.filter((g) => (g.boardId ?? 'b1') === activeBoardId),
+    [allGroups, activeBoardId],
+  );
   const closeCmd = useBoard((s) => s.closeCmd);
   const setCmdQuery = useBoard((s) => s.setCmdQuery);
   const setCmdIdx = useBoard((s) => s.setCmdIdx);

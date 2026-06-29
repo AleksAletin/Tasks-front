@@ -291,6 +291,7 @@ interface BoardState {
   moveGroup: (id: string, dir: number) => void;
   addGroup: () => void;
   createTask: () => void;
+  addTaskToGroup: (groupId: string) => void;
   setCalMonth: (m: CalMonth) => void;
   shiftCalMonth: (delta: number) => void;
   importNext: () => void;
@@ -1140,6 +1141,32 @@ export const useBoard = create<BoardState>()(
           return {
             groups: s.groups.map((g) =>
               g.id === firstId ? { ...g, tasks: [nt, ...g.tasks] } : g,
+            ),
+          };
+        }),
+      // Append a task to a specific group (the per-group «Добавить задача» footer row).
+      addTaskToGroup: (groupId) =>
+        set((s) => {
+          if (s.viewer) return {};
+          const stamp = Date.now();
+          const nt: Task = {
+            id: 't' + stamp + '_' + Math.floor(Math.random() * 99),
+            name: 'Новая задача',
+            owner: null,
+            status: 'plan',
+            due: null,
+            priority: null,
+            tl: null,
+            note: '',
+            lastBy: 'p1',
+            lastAgo: 'сейчас',
+            section: 'Обращения',
+            type: 'mig',
+            source: 'ours',
+          };
+          return {
+            groups: s.groups.map((g) =>
+              g.id === groupId ? { ...g, tasks: [...g.tasks, nt] } : g,
             ),
           };
         }),
