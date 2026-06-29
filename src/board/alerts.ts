@@ -7,6 +7,9 @@ import {
   type Parity,
   PARITY_COLS,
   TODAY,
+  DONE_STATUS,
+  STUCK_STATUS,
+  CRIT_PRIORITY,
   dayNum,
   fmt,
 } from './model';
@@ -48,7 +51,7 @@ export function buildAlerts(groups: Group[], parity: Parity): AlertsData {
 
   groups.forEach((g) =>
     g.tasks.forEach((t) => {
-      if (t.due && dayNum(t.due) < today && t.status !== 'done') {
+      if (t.due && dayNum(t.due) < today && t.status !== DONE_STATUS) {
         A.push({
           sev: 'high',
           dot: '#cf6b6b',
@@ -59,7 +62,7 @@ export function buildAlerts(groups: Group[], parity: Parity): AlertsData {
           target: { kind: 'task', taskId: t.id },
         });
       }
-      if (t.status === 'stuck') {
+      if (t.status === STUCK_STATUS) {
         A.push({
           sev: 'high',
           dot: '#cf6b6b',
@@ -69,7 +72,7 @@ export function buildAlerts(groups: Group[], parity: Parity): AlertsData {
           sub: (t.note || 'требует внимания') + ' · ' + g.name,
           target: { kind: 'task', taskId: t.id },
         });
-      } else if (t.priority === 'crit' && t.status !== 'done') {
+      } else if (t.priority === CRIT_PRIORITY && t.status !== DONE_STATUS) {
         A.push({
           sev: 'mid',
           dot: '#d6953f',

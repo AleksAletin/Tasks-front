@@ -126,6 +126,8 @@ interface BoardState {
   colLabels: Record<string, string>;
   // Editable pill-label sets for status/priority/type/source (shared via /prefs).
   labels: Record<LabelField, LabelDef[]>;
+  // Backend optimistic-concurrency counter for /prefs (server-managed, not persisted locally).
+  prefsVersion: number;
   // Per-column widths (px) keyed by column key; missing → the column's default width.
   colWidths: Record<string, number>;
   // Explicit column order (column keys). Reconciled at render against the live column set,
@@ -210,7 +212,9 @@ interface BoardState {
     colValues: Record<string, unknown>;
     colLabels: Record<string, string>;
     labels?: Record<LabelField, LabelDef[]>;
+    version?: number;
   }) => void;
+  setPrefsVersion: (v: number) => void;
   login: () => void;
   setLoginEmail: (v: string) => void;
   toggleNav: () => void;
@@ -399,6 +403,7 @@ export const useBoard = create<BoardState>()(
       colValues: {},
       colLabels: {},
       labels: initialLabels,
+      prefsVersion: 0,
       colWidths: {},
       colOrder: [],
       colWrap: {},
@@ -490,8 +495,10 @@ export const useBoard = create<BoardState>()(
           colValues: payload.colValues,
           colLabels: payload.colLabels,
           labels,
+          prefsVersion: payload.version ?? 0,
         });
       },
+      setPrefsVersion: (v) => set({ prefsVersion: v }),
       login: () => set({ authed: true }),
       setLoginEmail: (v) => set({ loginEmail: v }),
       toggleNav: () => set((s) => ({ navOpen: !s.navOpen })),

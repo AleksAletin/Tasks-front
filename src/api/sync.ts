@@ -1,5 +1,5 @@
 import { saveBoard } from './board';
-import { savePrefs } from './prefs';
+import { savePrefs, type PrefsPayload } from './prefs';
 import { useBoard } from '../board/store';
 
 /**
@@ -34,7 +34,7 @@ function boardSnapshot() {
 }
 
 /** Slice the SHARED prefs the backend owns, in the `/prefs` contract payload shape. */
-function prefsSnapshot() {
+function prefsSnapshot(): PrefsPayload {
   const s = useBoard.getState();
   return {
     cfg: s.cfg,
@@ -49,7 +49,71 @@ function prefsSnapshot() {
     colValues: s.colValues,
     colLabels: s.colLabels,
     labels: s.labels,
+    version: s.prefsVersion,
   };
+}
+
+// The data slices of the prefs payload (everything except the server-managed `version`). Used to
+// detect which slices this tab changed since the last sync, for the conflict merge.
+const PREFS_SLICES: (keyof PrefsPayload)[] = [
+  'cfg',
+  'integrations',
+  'autoSync',
+  'twoWay',
+  'guestLinks',
+  'mappingRules',
+  'userOverrides',
+  'invites',
+  'customCols',
+  'colValues',
+  'colLabels',
+  'labels',
+];
+
+// Prefs as of the last successful sync (or the initial hydrate). A conflict diffs the current
+// snapshot against this to find the locally-changed slices.
+let prefsBaseline: PrefsPayload | null = null;
+
+// Build the retry payload after a 409: start from the server's current state (so another tab's
+// edits are kept) and overlay only the slices THIS tab changed since the baseline (so the local
+// edit is kept too). Carries the server's version so the retry is accepted.
+function mergePrefs(
+  baseline: PrefsPayload | null,
+  local: PrefsPayload,
+  server: PrefsPayload,
+): PrefsPayload {
+  const merged: PrefsPayload = { ...server };
+  for (const k of PREFS_SLICES) {
+    if (!baseline || local[k] !== baseline[k]) {
+      (merged[k] as PrefsPayload[typeof k]) = local[k];
+    }
+  }
+  merged.version = server.version;
+  return merged;
+}
+
+// One debounced prefs write. On a stale-version 409, merge locally-changed slices over the
+// server's current state and retry once; on success, converge the local store to the merged truth.
+async function flushPrefs(): Promise<void> {
+  const snap = prefsSnapshot();
+  const res = await savePrefs(snap);
+  if (res.ok) {
+    useBoard.getState().setPrefsVersion(res.version);
+    prefsBaseline = snap;
+    return;
+  }
+  const merged = mergePrefs(prefsBaseline, snap, res.server);
+  const retry = await savePrefs(merged);
+  if (retry.ok) {
+    prefsBaseline = merged;
+    // Adopt the merged state locally so the view shows the other tab's edits and the next
+    // baseline diff is correct; then record the post-retry version.
+    useBoard.getState().hydratePrefs(merged);
+    useBoard.getState().setPrefsVersion(retry.version);
+  } else {
+    // A third writer slipped in — bail this round; the next local edit retries from fresh state.
+    console.warn('[prefs] still stale after merge; will retry on next change');
+  }
 }
 
 /**
@@ -60,6 +124,9 @@ function prefsSnapshot() {
  */
 export function startBackendSync(): () => void {
   if (unsubscribe) return stopBackendSync;
+
+  // Capture the hydrated prefs as the conflict baseline before any local edit lands.
+  prefsBaseline = prefsSnapshot();
 
   // Base zustand subscribe (this store has no subscribeWithSelector middleware): the listener
   // receives (state, prevState), and we compare the persisted slices by reference. set() produces
@@ -99,7 +166,7 @@ export function startBackendSync(): () => void {
       if (prefsTimer) clearTimeout(prefsTimer);
       prefsTimer = setTimeout(() => {
         prefsTimer = null;
-        void savePrefs(prefsSnapshot()).catch((err) => {
+        void flushPrefs().catch((err) => {
           console.error('[prefs] backend save failed', err);
         });
       }, DEBOUNCE_MS);

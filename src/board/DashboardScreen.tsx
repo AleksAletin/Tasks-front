@@ -4,7 +4,12 @@
 // and a data-derived risk list. Adapts to a single column on narrow (projector / TV) viewports.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useBoard } from './store';
-import { type Task } from './model';
+import {
+  type Task,
+  CRIT_PRIORITY,
+  DONE_STATUS,
+  STUCK_STATUS,
+} from './model';
 
 const CARD: React.CSSProperties = {
   background: 'var(--glass)',
@@ -113,7 +118,7 @@ export function DashboardScreen() {
     return {
       segs,
       total: allTasks.length,
-      donePct: Math.round(((cnt.done ?? 0) / total) * 100),
+      donePct: Math.round(((cnt[DONE_STATUS] ?? 0) / total) * 100),
     };
   }, [allTasks, labels]);
 
@@ -153,11 +158,14 @@ export function DashboardScreen() {
   const risks = useMemo(
     () =>
       allTasks
-        .filter((task) => task.status === 'stuck' || task.priority === 'crit')
+        .filter(
+          (task) =>
+            task.status === STUCK_STATUS || task.priority === CRIT_PRIORITY,
+        )
         .slice(0, 4)
         .map((task) => {
           const g = groups.find((gr) => gr.tasks.some((x) => x.id === task.id));
-          const high = task.status === 'stuck';
+          const high = task.status === STUCK_STATUS;
           return {
             id: task.id,
             title: task.name,

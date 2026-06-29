@@ -149,6 +149,13 @@ export const STATUS: Record<StatusKey, { label: string; bg: string }> = {
 };
 export const STATUS_ORDER: StatusKey[] = ['done', 'work', 'stuck', 'plan'];
 
+// Semantic anchors — the built-in keys certain heuristics key off: the completed status, the
+// blocked status, and the top (critical) priority. Editing a label's text/color keeps its key,
+// so these stay valid; deleting one of these keys simply retires that heuristic (by design).
+export const DONE_STATUS = 'done';
+export const STUCK_STATUS = 'stuck';
+export const CRIT_PRIORITY = 'crit';
+
 export const PRIO: Record<PrioKey, { label: string; bg: string }> = {
   crit: { label: 'Критичный', bg: '#cf6b6b' },
   high: { label: 'Высокий', bg: '#4e5499' },

@@ -28,7 +28,18 @@ export interface PrefsPayload {
   colValues: Record<string, unknown>;
   colLabels: Record<string, string>;
   labels: Record<LabelField, LabelDef[]>;
+  // Optimistic-concurrency counter from the backend (GET returns it; PUT echoes it back so a
+  // stale tab is rejected with 409). Server-managed — never persisted to localStorage.
+  version: number;
 }
+
+/**
+ * Outcome of a `PUT /prefs`: either applied (the new server `version`) or rejected as stale
+ * (`server` = the current server payload to merge against and retry).
+ */
+export type SavePrefsResult =
+  | { ok: true; version: number }
+  | { ok: false; server: PrefsPayload };
 
 /**
  * Fetch the shared workspace prefs (`GET /prefs`). The response is the 1:1 contract shape, so it
@@ -45,6 +56,22 @@ export async function fetchPrefs(): Promise<PrefsPayload> {
  * covers every prefs mutation. Used only when `VITE_USE_BACKEND === 'true'` (the debounced sync in
  * BoardApp); a no-op otherwise.
  */
-export async function savePrefs(payload: PrefsPayload): Promise<void> {
-  await apiClient.put('/prefs', payload);
+export async function savePrefs(
+  payload: PrefsPayload,
+): Promise<SavePrefsResult> {
+  const res = await apiClient.put<{ version?: number } | PrefsPayload>(
+    '/prefs',
+    payload,
+    // 409 = stale version (a concurrent write landed first); handle it, don't throw.
+    { validateStatus: (s) => s === 200 || s === 204 || s === 409 },
+  );
+  if (res.status === 409) {
+    return { ok: false, server: res.data as PrefsPayload };
+  }
+  const body = res.data as { version?: number } | null;
+  return {
+    ok: true,
+    version:
+      body && typeof body.version === 'number' ? body.version : payload.version,
+  };
 }
