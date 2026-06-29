@@ -10,9 +10,8 @@ import {
   DONE_STATUS,
   STUCK_STATUS,
   TODAY,
-  dayNum,
-  fmt,
 } from './model';
+import { boardMetrics, dueMilestones } from './metrics';
 
 const CARD: React.CSSProperties = {
   background: 'var(--glass)',
@@ -27,11 +26,6 @@ interface Kpi {
   value: string;
   label: string;
   sub: string;
-}
-interface Milestone {
-  date: string;
-  label: string;
-  done: boolean;
 }
 interface Segment {
   key: string;
@@ -126,77 +120,37 @@ export function DashboardScreen() {
     };
   }, [allTasks, labels]);
 
-  // Live KPI aggregates beyond the status split: overdue, open criticals, and the plan horizon
-  // (span from the earliest start/due to the latest end/due across dated tasks).
-  const kpiData = useMemo(() => {
-    const today = dayNum(TODAY);
-    let overdue = 0;
-    let critOpen = 0;
-    const starts: number[] = [];
-    const ends: number[] = [];
-    allTasks.forEach((task) => {
-      if (task.due && dayNum(task.due) < today && task.status !== DONE_STATUS) {
-        overdue++;
-      }
-      if (task.priority === CRIT_PRIORITY && task.status !== DONE_STATUS) {
-        critOpen++;
-      }
-      if (task.tl) {
-        starts.push(dayNum(task.tl.start));
-        ends.push(dayNum(task.tl.end));
-      } else if (task.due) {
-        const d = dayNum(task.due);
-        starts.push(d);
-        ends.push(d);
-      }
-    });
-    const horizon = starts.length
-      ? Math.max(...ends) - Math.min(...starts) + 1
-      : 0;
-    return { overdue, critOpen, horizon };
-  }, [allTasks]);
+  // Live KPI aggregates (done/open/overdue/criticals/horizon), derived from the board's tasks.
+  const m = useMemo(() => boardMetrics(allTasks, TODAY), [allTasks]);
 
   // KPI set — all derived live from the active board, animated on mount by `t`.
   const anim = (n: number) => Math.round(n * t);
-  const open = dist.total - dist.done;
   const kpis: Kpi[] = [
     {
-      value: anim(dist.donePct) + '%',
+      value: anim(m.donePct) + '%',
       label: 'Готово',
-      sub: `${dist.done} из ${dist.total} задач`,
+      sub: `${m.done} из ${m.total} задач`,
     },
-    { value: String(anim(open)), label: 'Осталось', sub: 'задач в работе' },
+    { value: String(anim(m.open)), label: 'Осталось', sub: 'задач в работе' },
     {
-      value: String(anim(kpiData.overdue)),
+      value: String(anim(m.overdue)),
       label: 'Просрочено',
       sub: 'по срокам',
     },
     {
-      value: String(anim(kpiData.critOpen)),
+      value: String(anim(m.critOpen)),
       label: 'Критичных',
       sub: 'высокий приоритет',
     },
     {
-      value: kpiData.horizon ? anim(kpiData.horizon) + ' дн' : '—',
+      value: m.horizon ? anim(m.horizon) + ' дн' : '—',
       label: 'Горизонт',
       sub: 'дней в плане',
     },
   ];
 
   // Веха-таймлайн — ближайшие сроки из реальных задач (хронологически); «готово» = задача завершена.
-  const milestones = useMemo<Milestone[]>(
-    () =>
-      allTasks
-        .filter((task) => task.due)
-        .sort((a, b) => dayNum(a.due!) - dayNum(b.due!))
-        .slice(0, 5)
-        .map((task) => ({
-          date: fmt(task.due),
-          label: task.name,
-          done: task.status === DONE_STATUS,
-        })),
-    [allTasks],
-  );
+  const milestones = useMemo(() => dueMilestones(allTasks), [allTasks]);
 
   // Risks — stuck or critical tasks (data-derived), capped at 4. Same shape the prototype shows.
   const risks = useMemo(

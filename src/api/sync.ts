@@ -77,7 +77,7 @@ let prefsBaseline: PrefsPayload | null = null;
 // Build the retry payload after a 409: start from the server's current state (so another tab's
 // edits are kept) and overlay only the slices THIS tab changed since the baseline (so the local
 // edit is kept too). Carries the server's version so the retry is accepted.
-function mergePrefs(
+export function mergePrefs(
   baseline: PrefsPayload | null,
   local: PrefsPayload,
   server: PrefsPayload,
