@@ -784,6 +784,13 @@ export const pct = (isoDate: string): number => {
   const v = dayNum(isoDate);
   return Math.max(0, Math.min(100, ((v - a) / (b - a)) * 100));
 };
+// Position of a date within an arbitrary [ws, we] day-window (0–100%), for board-relative gantt
+// bars (the table mini-timeline shares the Таймлайн's dynamic window instead of the fixed one).
+export const pctIn = (isoDate: string, ws: number, we: number): number => {
+  if (we <= ws) return 0;
+  const v = dayNum(isoDate);
+  return Math.max(0, Math.min(100, ((v - ws) / (we - ws)) * 100));
+};
 export const isoFromDate = (dt: Date): string =>
   iso(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate());
 export const shiftIso = (isoDate: string, dd: number): string =>

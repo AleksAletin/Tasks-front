@@ -83,7 +83,7 @@ export interface TimelineData {
 // arbitrary date ranges fit the same view as the June–July demo. Falls back to the demo window
 // (WIN_START/WIN_END) when no task has a timeline. Used by buildTimeline AND computeLoad so the bars
 // and the resource band always share one window.
-function windowFor(groups: Group[]): { ws: number; we: number } {
+export function windowFor(groups: Group[]): { ws: number; we: number } {
   let min = Infinity;
   let max = -Infinity;
   for (const g of groups) {

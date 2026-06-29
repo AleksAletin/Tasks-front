@@ -16,10 +16,11 @@ import {
   TYPE,
   dayNum,
   fmt,
-  pct,
+  pctIn,
   personById,
 } from './model';
 import { buildView, deriveDue, type ViewGroup } from './derive';
+import { windowFor } from './timeline';
 import { Avatar, AvatarEmpty, Pill } from './ui';
 
 const ACCENT = '#4263d8';
@@ -89,6 +90,9 @@ export function TableView() {
     [groups, activeBoardId],
   );
   const boardEmpty = boardGroups.length === 0;
+  // The «Шкала времени» mini-gantt shares the Таймлайн's dynamic window, so imported tasks (any
+  // date range) render proportionally instead of clamped against the fixed demo window.
+  const tlWindow = useMemo(() => windowFor(boardGroups), [boardGroups]);
 
   const colWidths = useBoard((s) => s.colWidths);
   const colOrder = useBoard((s) => s.colOrder);
@@ -352,6 +356,7 @@ export function TableView() {
               rowGrid={rowGrid}
               cols={cols}
               customCols={customCols}
+              tlWindow={tlWindow}
               collapsed={!!collapsed[g.id]}
               onToggle={() => toggleCollapse(g.id)}
               selectedIds={selectedIds}
@@ -639,6 +644,7 @@ function GroupBlock({
   rowGrid,
   cols,
   customCols,
+  tlWindow,
   collapsed,
   onToggle,
   selectedIds,
@@ -651,6 +657,7 @@ function GroupBlock({
   rowGrid: string;
   cols: Col[];
   customCols: CustomCol[];
+  tlWindow: { ws: number; we: number };
   collapsed: boolean;
   onToggle: () => void;
   selectedIds: Record<string, boolean>;
@@ -879,6 +886,7 @@ function GroupBlock({
               rowGrid={rowGrid}
               cols={cols}
               customCols={customCols}
+              tlWindow={tlWindow}
               selected={!!selectedIds[t.id]}
               viewer={viewer}
               onSelect={onSelect}
@@ -992,6 +1000,7 @@ const Row = memo(function Row({
   rowGrid,
   cols,
   customCols,
+  tlWindow,
   selected,
   viewer,
   onSelect,
@@ -1001,6 +1010,7 @@ const Row = memo(function Row({
   rowGrid: string;
   cols: Col[];
   customCols: CustomCol[];
+  tlWindow: { ws: number; we: number };
   selected: boolean;
   viewer: boolean;
   onSelect: (id: string) => void;
@@ -1087,8 +1097,8 @@ const Row = memo(function Row({
   let tlWidth = '0%';
   let tlLabel = '';
   if (t.tl) {
-    const a = pct(t.tl.start);
-    const b = pct(t.tl.end);
+    const a = pctIn(t.tl.start, tlWindow.ws, tlWindow.we);
+    const b = pctIn(t.tl.end, tlWindow.ws, tlWindow.we);
     tlLeft = a + '%';
     tlWidth = Math.max(b - a, 4) + '%';
     tlLabel = fmt(t.tl.start) + ' – ' + fmt(t.tl.end);
@@ -1538,7 +1548,7 @@ const Row = memo(function Row({
               }}
             >
               {t.phases ? (
-                <PhasedBar task={t} fallback={g.color} />
+                <PhasedBar task={t} fallback={g.color} tlWindow={tlWindow} />
               ) : (
                 <div
                   style={{
@@ -2163,11 +2173,19 @@ function SubRow({
   );
 }
 
-function PhasedBar({ task, fallback }: { task: Task; fallback: string }) {
+function PhasedBar({
+  task,
+  fallback,
+  tlWindow,
+}: {
+  task: Task;
+  fallback: string;
+  tlWindow: { ws: number; we: number };
+}) {
   // Segment the bar across the window by phase days, colored per phase.
   if (!task.tl || !task.phases) return null;
-  const a = pct(task.tl.start);
-  const b = pct(task.tl.end);
+  const a = pctIn(task.tl.start, tlWindow.ws, tlWindow.we);
+  const b = pctIn(task.tl.end, tlWindow.ws, tlWindow.we);
   const span = Math.max(b - a, 4);
   const order = ['analysis', 'dev', 'test'] as const;
   const totalDays =
