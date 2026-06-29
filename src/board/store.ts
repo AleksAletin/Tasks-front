@@ -24,6 +24,7 @@ import {
   PEOPLE,
   ROLES,
   TODAY,
+  resolveColOrder,
   initialBoards,
   initialCfg,
   initialGroups,
@@ -76,6 +77,7 @@ export interface HeaderMenu {
   x: number;
   y: number;
   custom: boolean;
+  rename?: boolean;
 }
 export interface AddColMenu {
   x: number;
@@ -121,6 +123,10 @@ interface BoardState {
   // Explicit column order (column keys). Reconciled at render against the live column set,
   // so it can be partial/stale; missing columns fall back to the default order.
   colOrder: string[];
+  // Per-column UI flags (keyed by column key) — column header menu (§5.10):
+  colWrap: Record<string, boolean>; // wrap cell text instead of ellipsis
+  colHidden: Record<string, boolean>; // hidden from the table (built-in «Удалить» = hide)
+  colCollapsed: Record<string, boolean>; // collapsed to a thin strip
   cfg: Cfg;
   integrations: { ytrack: boolean; email: boolean };
   autoSync: boolean;
@@ -235,12 +241,18 @@ interface BoardState {
   setParity: (gid: string, col: string, value: ParityKey) => void;
   toggleCollapse: (gid: string) => void;
   toggleExpand: (taskId: string) => void;
-  addColumn: (type: ColType) => void;
+  addColumn: (type: ColType, afterKey?: string) => void;
   setColValue: (taskId: string, colId: string, value: unknown) => void;
   setColLabel: (id: string, label: string) => void;
+  setColType: (id: string, type: ColType) => void;
+  duplicateColumn: (key: string) => void;
   deleteColumn: (id: string) => void;
   setColWidth: (key: string, width: number) => void;
   setColOrder: (order: string[]) => void;
+  toggleColWrap: (key: string) => void;
+  toggleColHidden: (key: string) => void;
+  toggleColCollapse: (key: string) => void;
+  sortColumn: (key: string, dir: 'asc' | 'desc') => void;
   openHeaderMenu: (key: string, custom: boolean, x: number, y: number) => void;
   closeHeaderMenu: () => void;
   openAddColMenu: (x: number, y: number) => void;
@@ -360,6 +372,9 @@ export const useBoard = create<BoardState>()(
       colLabels: {},
       colWidths: {},
       colOrder: [],
+      colWrap: {},
+      colHidden: {},
+      colCollapsed: {},
       cfg: initialCfg,
       integrations: { ytrack: true, email: true },
       autoSync: true,
@@ -676,7 +691,7 @@ export const useBoard = create<BoardState>()(
         set((s) => ({
           expanded: { ...s.expanded, [taskId]: !s.expanded[taskId] },
         })),
-      addColumn: (type) =>
+      addColumn: (type, afterKey) =>
         set((s) => {
           if (s.viewer) return {};
           const id = 'cc' + Date.now();
@@ -693,14 +708,27 @@ export const useBoard = create<BoardState>()(
             label: def[type] || 'Новый столбец',
             type,
           };
+          // Place the new column right after `afterKey` in the resolved order (else at the end).
+          const customIds = [...s.customCols.map((c) => c.id), id];
+          let order = resolveColOrder(s.colOrder, customIds).filter(
+            (k) => k !== id,
+          );
+          const at = afterKey ? order.indexOf(afterKey) : -1;
+          order =
+            at >= 0
+              ? [...order.slice(0, at + 1), id, ...order.slice(at + 1)]
+              : [...order, id];
           return {
             customCols: [...s.customCols, col],
+            colOrder: order,
             addColMenu: null,
+            // Open the new column's menu straight in rename mode so it can be named.
             headerMenu: {
               key: id,
               x: Math.max(10, window.innerWidth - 280),
               y: 120,
               custom: true,
+              rename: true,
             },
           };
         }),
@@ -747,6 +775,58 @@ export const useBoard = create<BoardState>()(
             : { colWidths: { ...s.colWidths, [key]: Math.max(60, Math.round(width)) } },
         ),
       setColOrder: (order) => set((s) => (s.viewer ? {} : { colOrder: order })),
+      setColType: (id, type) =>
+        set((s) =>
+          s.viewer
+            ? {}
+            : {
+                customCols: s.customCols.map((c) =>
+                  c.id === id ? { ...c, type } : c,
+                ),
+                headerMenu: null,
+              },
+        ),
+      duplicateColumn: (key) =>
+        set((s) => {
+          if (s.viewer) return {};
+          const src = s.customCols.find((c) => c.id === key);
+          if (!src) return {}; // only custom columns can be duplicated
+          const id = 'cc' + Date.now();
+          const col: CustomCol = { ...src, id, label: src.label + ' (копия)' };
+          const colValues = { ...s.colValues };
+          for (const k of Object.keys(s.colValues)) {
+            const [taskId, colId] = k.split('::');
+            if (colId === key) colValues[taskId + '::' + id] = s.colValues[k];
+          }
+          const customIds = [...s.customCols.map((c) => c.id), id];
+          let order = resolveColOrder(s.colOrder, customIds).filter(
+            (k2) => k2 !== id,
+          );
+          const at = order.indexOf(key);
+          order =
+            at >= 0
+              ? [...order.slice(0, at + 1), id, ...order.slice(at + 1)]
+              : [...order, id];
+          return {
+            customCols: [...s.customCols, col],
+            colValues,
+            colOrder: order,
+            headerMenu: null,
+          };
+        }),
+      toggleColWrap: (key) =>
+        set((s) => ({ colWrap: { ...s.colWrap, [key]: !s.colWrap[key] } })),
+      toggleColHidden: (key) =>
+        set((s) => ({
+          colHidden: { ...s.colHidden, [key]: !s.colHidden[key] },
+          headerMenu: null,
+        })),
+      toggleColCollapse: (key) =>
+        set((s) => ({
+          colCollapsed: { ...s.colCollapsed, [key]: !s.colCollapsed[key] },
+        })),
+      sortColumn: (key, dir) =>
+        set({ sortBy: key, sortDir: dir, headerMenu: null }),
       openHeaderMenu: (key, custom, x, y) =>
         set((s) =>
           s.viewer
@@ -1218,6 +1298,9 @@ export const useBoard = create<BoardState>()(
         colLabels: s.colLabels,
         colWidths: s.colWidths,
         colOrder: s.colOrder,
+        colWrap: s.colWrap,
+        colHidden: s.colHidden,
+        colCollapsed: s.colCollapsed,
         cfg: s.cfg,
         integrations: s.integrations,
         autoSync: s.autoSync,

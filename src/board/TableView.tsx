@@ -6,6 +6,8 @@ import {
   type CustomCol,
   type Sub,
   type Task,
+  BUILTIN_COL_LABEL,
+  BUILTIN_COL_WIDTH,
   CUSTOM_STATES,
   PEOPLE,
   PHASES,
@@ -18,6 +20,7 @@ import {
   fmt,
   pctIn,
   personById,
+  resolveColOrder,
 } from './model';
 import { buildView, deriveDue, type ViewGroup } from './derive';
 import { windowFor } from './timeline';
@@ -31,37 +34,15 @@ const FLIP_MS = 360;
 const CHECKBOX_W = 56;
 const ADDCOL_W = 44;
 const CUSTOM_COL_W = 160;
+const COLLAPSED_W = 34; // width of a collapsed column (a thin strip)
 
-// Built-in columns with their default widths (px). This array's order is the default order;
-// the user can reorder (persisted colOrder) and resize (persisted colWidths) any column — both
-// are reconciled against the live column set at render, so stale/partial state is harmless.
-const BUILTIN: { key: string; label: string; w: number }[] = [
-  { key: 'task', label: 'Задача', w: 264 },
-  { key: 'owner', label: 'Владелец', w: 100 },
-  { key: 'status', label: 'Статус', w: 138 },
-  { key: 'due', label: 'Срок', w: 118 },
-  { key: 'priority', label: 'Приоритет', w: 138 },
-  { key: 'tl', label: 'Шкала времени', w: 184 },
-  { key: 'note', label: 'Примечания', w: 172 },
-  { key: 'updated', label: 'Обновлено', w: 132 },
-  { key: 'section', label: 'Раздел', w: 128 },
-  { key: 'type', label: 'Тип', w: 116 },
-  { key: 'source', label: 'Источник', w: 138 },
-];
-const BUILTIN_KEYS = BUILTIN.map((c) => c.key);
-const DEFAULT_W: Record<string, number> = Object.fromEntries(
-  BUILTIN.map((c) => [c.key, c.w]),
-);
-const BASE_LABEL: Record<string, string> = Object.fromEntries(
-  BUILTIN.map((c) => [c.key, c.label]),
-);
-
-/** A resolved column: its key, current label, current width, and whether it is a custom column. */
+/** A resolved column: key, current label, current width, custom?, and whether it is collapsed. */
 interface Col {
   key: string;
   label: string;
   width: number;
   custom: boolean;
+  collapsed: boolean;
 }
 
 export function TableView() {
@@ -96,32 +77,37 @@ export function TableView() {
 
   const colWidths = useBoard((s) => s.colWidths);
   const colOrder = useBoard((s) => s.colOrder);
+  const colHidden = useBoard((s) => s.colHidden);
+  const colCollapsed = useBoard((s) => s.colCollapsed);
   const setColWidth = useBoard((s) => s.setColWidth);
   const setColOrder = useBoard((s) => s.setColOrder);
+  const toggleColCollapse = useBoard((s) => s.toggleColCollapse);
   const [dragCol, setDragCol] = useState<string | null>(null);
   const [dropCol, setDropCol] = useState<string | null>(null);
 
-  // Resolve the ordered, sized column set: saved order first (minus removed columns), then any
-  // columns not yet in the saved order (new built-ins/custom) appended in their natural order.
+  // Resolve the ordered, sized, visible column set (built-ins + custom): saved order reconciled
+  // against the live set, hidden columns dropped, collapsed columns shown as a thin strip.
   const cols: Col[] = useMemo(() => {
     const customIds = customCols.map((c) => c.id);
-    const allKeys = [...BUILTIN_KEYS, ...customIds];
-    const ordered = [
-      ...colOrder.filter((k) => allKeys.includes(k)),
-      ...allKeys.filter((k) => !colOrder.includes(k)),
-    ];
-    return ordered.map((k) => {
-      const custom = customIds.includes(k);
-      return {
-        key: k,
-        custom,
-        label: custom
-          ? (customCols.find((c) => c.id === k)?.label ?? '')
-          : (colLabels[k] ?? BASE_LABEL[k] ?? k),
-        width: colWidths[k] ?? (custom ? CUSTOM_COL_W : (DEFAULT_W[k] ?? CUSTOM_COL_W)),
-      };
-    });
-  }, [colOrder, customCols, colLabels, colWidths]);
+    return resolveColOrder(colOrder, customIds)
+      .filter((k) => !colHidden[k])
+      .map((k) => {
+        const custom = customIds.includes(k);
+        const isCollapsed = !!colCollapsed[k];
+        return {
+          key: k,
+          custom,
+          collapsed: isCollapsed,
+          label: custom
+            ? (customCols.find((c) => c.id === k)?.label ?? '')
+            : (colLabels[k] ?? BUILTIN_COL_LABEL[k] ?? k),
+          width: isCollapsed
+            ? COLLAPSED_W
+            : (colWidths[k] ??
+              (custom ? CUSTOM_COL_W : (BUILTIN_COL_WIDTH[k] ?? CUSTOM_COL_W))),
+        };
+      });
+  }, [colOrder, customCols, colLabels, colWidths, colHidden, colCollapsed]);
 
   // Row grid = checkbox + the ordered columns; the header adds the trailing «+» add-column slot.
   const rowGrid = `${CHECKBOX_W}px ${cols.map((c) => c.width + 'px').join(' ')}`;
@@ -294,7 +280,8 @@ export function TableView() {
             viewer={viewer}
             dragging={dragCol === c.key}
             dropTarget={!!dragCol && dragCol !== c.key && dropCol === c.key}
-            onRename={onHeader}
+            onMenu={onHeader}
+            onCollapse={toggleColCollapse}
             onResize={setColWidth}
             onDragStartCol={() => setDragCol(c.key)}
             onDragOverCol={() => {
@@ -492,13 +479,15 @@ function BoardEmptyState({
   );
 }
 
-// One column header cell: rename on click, drag to reorder, right-edge handle to resize.
+// One column header cell: a left «⋮» opens the column menu; drag to reorder; right-edge resize.
+// A collapsed column is a thin strip whose chevron expands it.
 function ColumnHeader({
   col,
   viewer,
   dragging,
   dropTarget,
-  onRename,
+  onMenu,
+  onCollapse,
   onResize,
   onDragStartCol,
   onDragOverCol,
@@ -509,7 +498,8 @@ function ColumnHeader({
   viewer: boolean;
   dragging: boolean;
   dropTarget: boolean;
-  onRename: (key: string, custom: boolean, e: React.MouseEvent) => void;
+  onMenu: (key: string, custom: boolean, e: React.MouseEvent) => void;
+  onCollapse: (key: string) => void;
   onResize: (key: string, width: number) => void;
   onDragStartCol: () => void;
   onDragOverCol: () => void;
@@ -517,11 +507,38 @@ function ColumnHeader({
   onDragEndCol: () => void;
 }) {
   const resizedRef = useRef(false);
+  const [hover, setHover] = useState(false);
   const left = col.key === 'task' || col.key === 'updated';
+
+  if (col.collapsed) {
+    return (
+      <div
+        className="colhead"
+        title={col.label + ' · развернуть'}
+        onClick={() => onCollapse(col.key)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRight: '1px solid var(--surf-1)',
+          cursor: 'pointer',
+          color: 'var(--text-faint)',
+          minWidth: 0,
+        }}
+      >
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+          <path d="M9 6l6 6-6 6" />
+        </svg>
+      </div>
+    );
+  }
+
   return (
     <div
       className="colhead"
       draggable={!viewer}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       onDragStart={
         viewer
           ? undefined
@@ -549,26 +566,51 @@ function ColumnHeader({
       }
       onDragEnd={viewer ? undefined : onDragEndCol}
       onClick={(e) => {
-        // Suppress the rename click that would otherwise follow a resize drag.
+        // Suppress the click that would otherwise follow a resize drag.
         if (resizedRef.current) {
           resizedRef.current = false;
           return;
         }
-        onRename(col.key, col.custom, e);
+        if (!viewer) onMenu(col.key, col.custom, e);
       }}
       style={{
         position: 'relative',
         display: 'flex',
         alignItems: 'center',
         justifyContent: left ? 'flex-start' : 'center',
-        paddingLeft: col.key === 'task' ? 6 : col.key === 'updated' ? 18 : 0,
+        paddingLeft: col.key === 'task' ? 4 : col.key === 'updated' ? 14 : 0,
         borderRight: '1px solid var(--surf-1)',
-        cursor: viewer ? 'default' : 'grab',
+        cursor: viewer ? 'default' : 'pointer',
         background: dropTarget ? 'var(--blue-tint)' : 'transparent',
         opacity: dragging ? 0.4 : 1,
         minWidth: 0,
       }}
     >
+      {!viewer && (
+        <span
+          onClick={(e) => {
+            e.stopPropagation();
+            onMenu(col.key, col.custom, e);
+          }}
+          title="Меню столбца"
+          style={{
+            display: 'flex',
+            flexShrink: 0,
+            width: 15,
+            justifyContent: 'center',
+            color: 'var(--text-faint)',
+            cursor: 'pointer',
+            opacity: hover ? 1 : 0,
+            transition: 'opacity .12s',
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="5" r="1.7" />
+            <circle cx="12" cy="12" r="1.7" />
+            <circle cx="12" cy="19" r="1.7" />
+          </svg>
+        </span>
+      )}
       <span
         style={{
           whiteSpace: 'nowrap',
@@ -1032,6 +1074,7 @@ const Row = memo(function Row({
   const dropAfter = useBoard(
     (s) => s.dropTarget?.taskId === t.id && s.dropTarget.before === false,
   );
+  const colWrap = useBoard((s) => s.colWrap);
 
   // Row drag only when grouping by role and not viewing (brief §5.8); it must not
   // interfere with the cell click/popover/context-menu handlers (those stopPropagation).
@@ -1052,6 +1095,11 @@ const Row = memo(function Row({
   cols.forEach((c, i) => {
     orderOf[c.key] = i + 1;
   });
+  // «Перенос текста»: wrap the cell's text (clipped to the row height) instead of ellipsis.
+  const wrapStyle = (key: string): React.CSSProperties =>
+    colWrap[key]
+      ? { whiteSpace: 'normal', overflow: 'hidden', wordBreak: 'break-word' }
+      : { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' };
 
   const cellPopup = (
     kind: string,
@@ -1348,10 +1396,8 @@ const Row = memo(function Row({
               fontSize: 13.5,
               fontWeight: 600,
               color: 'var(--text-2)',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
               cursor: 'pointer',
+              ...wrapStyle('task'),
             }}
           >
             {t.name}
@@ -1602,9 +1648,7 @@ const Row = memo(function Row({
             style={{
               fontSize: 12.5,
               color: 'var(--text-soft)',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
+              ...wrapStyle('note'),
             }}
           >
             {t.note || '—'}

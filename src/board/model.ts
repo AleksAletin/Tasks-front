@@ -330,6 +330,70 @@ export const COL_TYPES: {
   },
   { key: 'check', label: 'Чекбокс', sub: 'Да / нет', d: 'M5 12l5 5L20 6' },
 ];
+
+// ---- table column metadata (shared by TableView, the column header menu, and the store) ----
+export const BUILTIN_COL_KEYS = [
+  'task',
+  'owner',
+  'status',
+  'due',
+  'priority',
+  'tl',
+  'note',
+  'updated',
+  'section',
+  'type',
+  'source',
+];
+export const BUILTIN_COL_LABEL: Record<string, string> = {
+  task: 'Задача',
+  owner: 'Владелец',
+  status: 'Статус',
+  due: 'Срок',
+  priority: 'Приоритет',
+  tl: 'Шкала времени',
+  note: 'Примечания',
+  updated: 'Обновлено',
+  section: 'Раздел',
+  type: 'Тип',
+  source: 'Источник',
+};
+export const BUILTIN_COL_WIDTH: Record<string, number> = {
+  task: 264,
+  owner: 100,
+  status: 138,
+  due: 118,
+  priority: 138,
+  tl: 184,
+  note: 172,
+  updated: 132,
+  section: 128,
+  type: 116,
+  source: 138,
+};
+// Columns that can be grouped-by (categorical — buildView supports these groupBy keys).
+export const GROUPABLE_COLS = new Set([
+  'status',
+  'owner',
+  'section',
+  'priority',
+  'type',
+  'source',
+]);
+
+// Resolve the user's saved column order against the live column set (built-ins + custom ids): saved
+// order first (dropping removed columns), then any columns not yet in it appended in natural order.
+export function resolveColOrder(
+  savedOrder: string[],
+  customIds: string[],
+): string[] {
+  const all = [...BUILTIN_COL_KEYS, ...customIds];
+  return [
+    ...savedOrder.filter((k) => all.includes(k)),
+    ...all.filter((k) => !savedOrder.includes(k)),
+  ];
+}
+
 export const CUSTOM_STATES = [
   { label: 'Не начато', color: 'var(--text-faint)' },
   { label: 'В работе', color: '#cf9248' },

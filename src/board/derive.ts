@@ -1,16 +1,22 @@
 // Board view derivation — grouping / filtering / sorting / summary, ported 1:1 from
 // the prototype's renderVals() + summarize() + deriveTask() data shaping.
 import {
-  type Group,
   type PrioKey,
+  type SourceKey,
   type StatusKey,
+  type TypeKey,
+  type Group,
   type Task,
   PRIO,
   PRIO_ORDER,
   SECTIONS,
+  SOURCE,
+  SOURCE_ORDER,
   STATUS,
   STATUS_ORDER,
   TODAY,
+  TYPE,
+  TYPE_ORDER,
   dayNum,
   fmt,
   personById,
@@ -106,26 +112,45 @@ export function buildView(p: ViewParams): {
     (fActive.length === 0 || fStat[t.status]) &&
     (!p.filterOwner || t.owner === p.filterOwner);
 
+  // Comparable value for a column key — supports every built-in column (the column menu sorts by
+  // the column's own key; 'task' is the name). Nulls sort last in ascending order.
+  const sortVal = (t: Task, key: string): string | number => {
+    switch (key) {
+      case 'task':
+      case 'name':
+        return t.name.toLowerCase();
+      case 'due':
+        return t.due || '9999-99-99';
+      case 'priority':
+        return t.priority == null ? 9 : PRW[t.priority];
+      case 'status':
+        return STW[t.status] ?? 9;
+      case 'owner':
+        return (personById(t.owner)?.name || 'яяяя').toLowerCase();
+      case 'section':
+        return (t.section || 'яяяя').toLowerCase();
+      case 'type':
+        return t.type;
+      case 'source':
+        return t.source;
+      case 'note':
+        return (t.note || 'яяяя').toLowerCase();
+      case 'tl':
+        return t.tl ? dayNum(t.tl.start) : 9e12;
+      case 'updated':
+        return (t.lastBy || '') + (t.lastAgo || '');
+      default:
+        return t.name.toLowerCase();
+    }
+  };
   const sortTasks = (arr: Task[]): Task[] => {
     if (!p.sortBy) return arr;
     const dir = p.sortDir === 'desc' ? -1 : 1;
+    const key = p.sortBy;
     const cp = arr.slice();
     cp.sort((a, b) => {
-      let x: string | number;
-      let y: string | number;
-      if (p.sortBy === 'name') {
-        x = a.name.toLowerCase();
-        y = b.name.toLowerCase();
-      } else if (p.sortBy === 'due') {
-        x = a.due || '9999-99';
-        y = b.due || '9999-99';
-      } else if (p.sortBy === 'priority') {
-        x = a.priority == null ? 9 : PRW[a.priority];
-        y = b.priority == null ? 9 : PRW[b.priority];
-      } else {
-        x = STW[a.status] == null ? 9 : STW[a.status];
-        y = STW[b.status] == null ? 9 : STW[b.status];
-      }
+      const x = sortVal(a, key);
+      const y = sortVal(b, key);
       return x < y ? -dir : x > y ? dir : 0;
     });
     return cp;
@@ -157,7 +182,11 @@ export function buildView(p: ViewParams): {
           ? t.priority || 'none'
           : gBy === 'owner'
             ? t.owner || 'none'
-            : t.section;
+            : gBy === 'type'
+              ? t.type
+              : gBy === 'source'
+                ? t.source
+                : t.section;
     const buckets: Record<string, Task[]> = {};
     allTasks(p.groups).forEach((t) => {
       const k = fv(t);
@@ -170,7 +199,11 @@ export function buildView(p: ViewParams): {
           ? [...PRIO_ORDER, 'none']
           : gBy === 'section'
             ? SECTIONS
-            : null;
+            : gBy === 'type'
+              ? TYPE_ORDER
+              : gBy === 'source'
+                ? SOURCE_ORDER
+                : null;
     const keys = ord ? ord.filter((k) => buckets[k]) : Object.keys(buckets);
     const nm = (k: string) =>
       gBy === 'status'
@@ -183,7 +216,11 @@ export function buildView(p: ViewParams): {
             ? k === 'none'
               ? 'Без владельца'
               : personById(k)?.name || k
-            : k;
+            : gBy === 'type'
+              ? TYPE[k as TypeKey]?.label || k
+              : gBy === 'source'
+                ? SOURCE[k as SourceKey]?.label || k
+                : k;
     const cl = (k: string) =>
       gBy === 'status'
         ? STATUS[k as StatusKey]?.bg || 'var(--text-faint)'
@@ -193,7 +230,11 @@ export function buildView(p: ViewParams): {
             : PRIO[k as PrioKey]?.bg || 'var(--text-faint)'
           : gBy === 'owner'
             ? personById(k)?.color || 'var(--text-faint)'
-            : ACCENT;
+            : gBy === 'type'
+              ? TYPE[k as TypeKey]?.bg || 'var(--text-faint)'
+              : gBy === 'source'
+                ? SOURCE[k as SourceKey]?.bg || 'var(--text-faint)'
+                : ACCENT;
     rawGroups = keys.map((k) => ({
       id: 'grp_' + gBy + '_' + k,
       name: nm(k),

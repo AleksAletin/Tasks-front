@@ -467,9 +467,17 @@ function Toolbar() {
     (filterOwner ? 1 : 0);
   const sortNames: Record<string, string> = {
     name: 'Названию',
+    task: 'Названию',
+    owner: 'Владельцу',
+    status: 'Статусу',
     due: 'Сроку',
     priority: 'Приоритету',
-    status: 'Статусу',
+    tl: 'Шкале времени',
+    note: 'Примечанию',
+    updated: 'Обновлению',
+    section: 'Разделу',
+    type: 'Типу',
+    source: 'Источнику',
   };
   const groupNames: Record<string, string> = {
     role: 'Роли',
@@ -477,6 +485,8 @@ function Toolbar() {
     priority: 'Приоритету',
     owner: 'Владельцу',
     section: 'Разделу',
+    type: 'Типу',
+    source: 'Источнику',
   };
   const groupActive = !!groupBy && groupBy !== 'role';
 
