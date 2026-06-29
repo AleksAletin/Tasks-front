@@ -9,6 +9,9 @@ import {
   CRIT_PRIORITY,
   DONE_STATUS,
   STUCK_STATUS,
+  TODAY,
+  dayNum,
+  fmt,
 } from './model';
 
 const CARD: React.CSSProperties = {
@@ -118,41 +121,82 @@ export function DashboardScreen() {
     return {
       segs,
       total: allTasks.length,
+      done: cnt[DONE_STATUS] ?? 0,
       donePct: Math.round(((cnt[DONE_STATUS] ?? 0) / total) * 100),
     };
   }, [allTasks, labels]);
 
-  // KPI set — exact values / labels from the prototype, animated on mount by `t`.
-  const kpiNum = (n: number, dec?: boolean) => {
-    const v = n * t;
-    return dec ? v.toFixed(1) : String(Math.round(v));
-  };
+  // Live KPI aggregates beyond the status split: overdue, open criticals, and the plan horizon
+  // (span from the earliest start/due to the latest end/due across dated tasks).
+  const kpiData = useMemo(() => {
+    const today = dayNum(TODAY);
+    let overdue = 0;
+    let critOpen = 0;
+    const starts: number[] = [];
+    const ends: number[] = [];
+    allTasks.forEach((task) => {
+      if (task.due && dayNum(task.due) < today && task.status !== DONE_STATUS) {
+        overdue++;
+      }
+      if (task.priority === CRIT_PRIORITY && task.status !== DONE_STATUS) {
+        critOpen++;
+      }
+      if (task.tl) {
+        starts.push(dayNum(task.tl.start));
+        ends.push(dayNum(task.tl.end));
+      } else if (task.due) {
+        const d = dayNum(task.due);
+        starts.push(d);
+        ends.push(d);
+      }
+    });
+    const horizon = starts.length
+      ? Math.max(...ends) - Math.min(...starts) + 1
+      : 0;
+    return { overdue, critOpen, horizon };
+  }, [allTasks]);
+
+  // KPI set — all derived live from the active board, animated on mount by `t`.
+  const anim = (n: number) => Math.round(n * t);
+  const open = dist.total - dist.done;
   const kpis: Kpi[] = [
     {
-      value: kpiNum(62) + '%',
-      label: 'Ролей переключено',
-      sub: '8 из 13 модулей',
+      value: anim(dist.donePct) + '%',
+      label: 'Готово',
+      sub: `${dist.done} из ${dist.total} задач`,
+    },
+    { value: String(anim(open)), label: 'Осталось', sub: 'задач в работе' },
+    {
+      value: String(anim(kpiData.overdue)),
+      label: 'Просрочено',
+      sub: 'по срокам',
     },
     {
-      value: kpiNum(14) + ' дн',
-      label: 'Окно overlap',
-      sub: 'старое ↔ Work параллельно',
+      value: String(anim(kpiData.critOpen)),
+      label: 'Критичных',
+      sub: 'высокий приоритет',
     },
-    { value: kpiNum(8.4, true), label: 'Скорость', sub: 'задач / неделю' },
     {
-      value: kpiNum(91) + '%',
-      label: 'Hit-rate витрины',
-      sub: '+4 п.п. за неделю',
+      value: kpiData.horizon ? anim(kpiData.horizon) + ' дн' : '—',
+      label: 'Горизонт',
+      sub: 'дней в плане',
     },
-    { value: kpiNum(3), label: 'Escaped defects', sub: 'за текущий спринт' },
   ];
 
-  const milestones: Milestone[] = [
-    { date: '20 июн', label: 'Справочники ролей перенесены', done: true },
-    { date: '30 июн', label: 'Импорт базы клиентов завершён', done: false },
-    { date: '05 июл', label: 'Синк с YouTrack включён', done: false },
-    { date: '14 июл', label: 'Приёмка SLA и витрины', done: false },
-  ];
+  // Веха-таймлайн — ближайшие сроки из реальных задач (хронологически); «готово» = задача завершена.
+  const milestones = useMemo<Milestone[]>(
+    () =>
+      allTasks
+        .filter((task) => task.due)
+        .sort((a, b) => dayNum(a.due!) - dayNum(b.due!))
+        .slice(0, 5)
+        .map((task) => ({
+          date: fmt(task.due),
+          label: task.name,
+          done: task.status === DONE_STATUS,
+        })),
+    [allTasks],
+  );
 
   // Risks — stuck or critical tasks (data-derived), capped at 4. Same shape the prototype shows.
   const risks = useMemo(
@@ -229,7 +273,7 @@ export function DashboardScreen() {
         <span
           style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text-soft)' }}
         >
-          обновлено 14 мин назад
+          {dist.total} задач · {groups.length} групп
         </span>
       </div>
 
@@ -358,6 +402,17 @@ export function DashboardScreen() {
               Таймлайн вех
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {milestones.length === 0 && (
+                <div
+                  style={{
+                    fontSize: 13,
+                    color: 'var(--text-faint)',
+                    padding: '4px 0',
+                  }}
+                >
+                  Нет задач со сроком
+                </div>
+              )}
               {milestones.map((m, i) => (
                 <div
                   key={i}
