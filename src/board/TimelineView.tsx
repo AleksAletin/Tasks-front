@@ -18,6 +18,7 @@ export function TimelineView() {
   const viewer = useBoard((s) => s.viewer);
   const setTlDrag = useBoard((s) => s.setTlDrag);
   const updateTask = useBoard((s) => s.updateTask);
+  const phaseAnchorShift = useBoard((s) => s.phaseAnchorShift);
   const openPanel = useBoard((s) => s.openPanel);
 
   const tl = useMemo(() => buildTimeline(groups, tlDrag), [groups, tlDrag]);
@@ -54,9 +55,9 @@ export function TimelineView() {
       const dd = Math.round((ev.clientX - sx) / DAY_W);
       const t = groups.flatMap((g) => g.tasks).find((x) => x.id === id);
       if (dd !== 0 && t && t.phases && t.anchor) {
-        updateTask(id, {
-          anchor: { ...t.anchor, date: shiftIso(t.anchor.date, dd) },
-        });
+        // The bar positions by `tl`, so shifting only the anchor made it snap back and desynced
+        // anchor↔tl. phaseAnchorShift shifts the anchor AND recomputes tl from phases+anchor.
+        phaseAnchorShift(id, dd);
       } else if (dd !== 0 && t && t.tl) {
         updateTask(id, {
           tl: { start: shiftIso(t.tl.start, dd), end: shiftIso(t.tl.end, dd) },
