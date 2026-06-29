@@ -75,15 +75,35 @@ export interface TimelineData {
   totalW: string;
   totalMinW: string;
   todayLeftPx: string;
+  showToday: boolean;
   rangeLabel: string;
+}
+
+// The gantt window spans the active board's dated tasks (padded ±2d), so imported boards with
+// arbitrary date ranges fit the same view as the June–July demo. Falls back to the demo window
+// (WIN_START/WIN_END) when no task has a timeline. Used by buildTimeline AND computeLoad so the bars
+// and the resource band always share one window.
+function windowFor(groups: Group[]): { ws: number; we: number } {
+  let min = Infinity;
+  let max = -Infinity;
+  for (const g of groups) {
+    for (const t of g.tasks) {
+      if (!t.tl) continue;
+      min = Math.min(min, dayNum(t.tl.start));
+      max = Math.max(max, dayNum(t.tl.end));
+    }
+  }
+  if (!Number.isFinite(min)) {
+    return { ws: dayNum(WIN_START), we: dayNum(WIN_END) };
+  }
+  return { ws: min - 2, we: max + 2 };
 }
 
 export function buildTimeline(
   groups: Group[],
   tlDrag: TlDrag | null,
 ): TimelineData {
-  const ws = dayNum(WIN_START);
-  const we = dayNum(WIN_END);
+  const { ws, we } = windowFor(groups);
   const n = we - ws + 1;
 
   const days: TlDay[] = [];
@@ -192,6 +212,8 @@ export function buildTimeline(
   // bottleneck — worst concurrent load across all people/days (shared helper)
   const flag = bottleneckFromLoad(load, ws);
 
+  const todayDn = dayNum(TODAY);
+  const weIso = isoFromDate(new Date(we * 86400000));
   return {
     days,
     groups: tlGroups,
@@ -199,8 +221,15 @@ export function buildTimeline(
     flag,
     totalW: n * DAY_W + 'px',
     totalMinW: LANE_LABEL_W + n * DAY_W + 'px',
-    todayLeftPx: LANE_LABEL_W + (dayNum(TODAY) - ws) * DAY_W + 'px',
-    rangeLabel: '15 июня — 19 июля 2026 · перетащите бар, чтобы сдвинуть даты',
+    todayLeftPx: LANE_LABEL_W + (todayDn - ws) * DAY_W + 'px',
+    showToday: todayDn >= ws && todayDn <= we,
+    rangeLabel:
+      fmt(isoFromDate(new Date(ws * 86400000))) +
+      ' — ' +
+      fmt(weIso) +
+      ' ' +
+      weIso.slice(0, 4) +
+      ' · перетащите бар, чтобы сдвинуть даты',
   };
 }
 
@@ -211,8 +240,7 @@ function computeLoad(groups: Group[]): {
   ws: number;
   n: number;
 } {
-  const ws = dayNum(WIN_START);
-  const we = dayNum(WIN_END);
+  const { ws, we } = windowFor(groups);
   const n = we - ws + 1;
   const load: Record<string, number[]> = {};
   PEOPLE.forEach((p) => (load[p.id] = new Array(n).fill(0)));

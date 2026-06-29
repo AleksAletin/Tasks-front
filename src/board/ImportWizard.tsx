@@ -109,6 +109,32 @@ const TARGET_FIELDS: {
     required: false,
     match: ['примеч', 'коммент', 'заметк', 'опис', 'тикет', 'bac', 'задачк', 'note', 'desc'],
   },
+  // Gantt/timeline columns — optional. With Start + the three phase-end dates the import builds a
+  // phased А/Р/Т bar; with just Start (+ Срок) it builds a solid bar. Without Start there's no bar.
+  {
+    field: 'Start',
+    label: 'Начало (для ганта)',
+    required: false,
+    match: ['дата начал', 'начал', 'старт', 'start'],
+  },
+  {
+    field: 'PhaseAEnd',
+    label: 'Конец аналитики',
+    required: false,
+    match: ['окончание ан', 'оконч ан', 'аналит'],
+  },
+  {
+    field: 'PhaseDEnd',
+    label: 'Конец разработки',
+    required: false,
+    match: ['окончание раз', 'оконч раз', 'разраб'],
+  },
+  {
+    field: 'PhaseTEnd',
+    label: 'Конец тестирования',
+    required: false,
+    match: ['окончание тест', 'оконч тест', 'тестир'],
+  },
 ];
 
 function autoMatch(columns: string[], keywords: string[]): string {

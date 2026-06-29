@@ -172,18 +172,20 @@ export function TimelineView() {
                 />
               ))}
             </div>
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                bottom: 0,
-                left: tl.todayLeftPx,
-                width: 2,
-                background: '#4263d8',
-                opacity: 0.45,
-                pointerEvents: 'none',
-              }}
-            />
+            {tl.showToday && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  left: tl.todayLeftPx,
+                  width: 2,
+                  background: '#4263d8',
+                  opacity: 0.45,
+                  pointerEvents: 'none',
+                }}
+              />
+            )}
 
             {tl.groups.map((grp) => (
               <div key={grp.name}>
