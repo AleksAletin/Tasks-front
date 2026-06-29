@@ -39,6 +39,7 @@ export function Popup() {
   const closePopup = useBoard((s) => s.closePopup);
   const updateTask = useBoard((s) => s.updateTask);
   const updateSub = useBoard((s) => s.updateSub);
+  const setDue = useBoard((s) => s.setDue);
 
   if (!popup) return null;
   const task: Task | undefined = groups
@@ -56,7 +57,14 @@ export function Popup() {
     closePopup();
   };
 
-  const w = popup.kind === 'date' ? 280 : popup.kind === 'phases' ? 340 : 200;
+  const w =
+    popup.kind === 'date'
+      ? 280
+      : popup.kind === 'phases'
+        ? 340
+        : popup.kind === 'note'
+          ? 320
+          : 200;
 
   return (
     <GlassPopover x={popup.x} y={popup.y} onClose={closePopup} minWidth={w}>
@@ -215,11 +223,71 @@ export function Popup() {
       {popup.kind === 'date' && task && (
         <Calendar
           due={dueSeed}
-          onPick={(d) => apply({ due: d })}
-          onClear={() => apply({ due: null })}
+          onPick={(d) => {
+            // Task due is linked to the timeline bar (setDue moves the bar); sub due is plain.
+            if (popup.subId) updateSub(popup.taskId!, popup.subId, { due: d });
+            else setDue(popup.taskId!, d);
+            closePopup();
+          }}
+          onClear={() => {
+            if (popup.subId) updateSub(popup.taskId!, popup.subId, { due: null });
+            else setDue(popup.taskId!, null);
+            closePopup();
+          }}
+        />
+      )}
+      {popup.kind === 'note' && task && (
+        <NoteEditor
+          value={task.note}
+          onChange={(v) => updateTask(popup.taskId!, { note: v })}
+          onClose={closePopup}
         />
       )}
     </GlassPopover>
+  );
+}
+
+// Free-text note editor (the «Примечания» cell). Edits live so the cell + sync update as you type.
+function NoteEditor({
+  value,
+  onChange,
+  onClose,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  onClose: () => void;
+}) {
+  const [v, setV] = useState(value);
+  return (
+    <div style={{ minWidth: 300, padding: 4 }}>
+      <textarea
+        value={v}
+        autoFocus
+        onChange={(e) => {
+          setV(e.target.value);
+          onChange(e.target.value);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') onClose();
+        }}
+        placeholder="Примечание…"
+        style={{
+          width: '100%',
+          minHeight: 92,
+          resize: 'vertical',
+          border: '1px solid var(--scrim)',
+          borderRadius: 9,
+          padding: '9px 11px',
+          fontSize: 13,
+          lineHeight: 1.45,
+          outline: 'none',
+          background: 'var(--card)',
+          color: 'var(--text)',
+          fontFamily: 'inherit',
+          boxSizing: 'border-box',
+        }}
+      />
+    </div>
   );
 }
 

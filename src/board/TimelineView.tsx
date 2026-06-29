@@ -59,8 +59,11 @@ export function TimelineView() {
         // anchor↔tl. phaseAnchorShift shifts the anchor AND recomputes tl from phases+anchor.
         phaseAnchorShift(id, dd);
       } else if (dd !== 0 && t && t.tl) {
+        // The bar and «Срок» are linked — move the due to the bar's new end.
+        const newEnd = shiftIso(t.tl.end, dd);
         updateTask(id, {
-          tl: { start: shiftIso(t.tl.start, dd), end: shiftIso(t.tl.end, dd) },
+          tl: { start: shiftIso(t.tl.start, dd), end: newEnd },
+          due: newEnd,
         });
       } else if (!moved) {
         openPanel(id);

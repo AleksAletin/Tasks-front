@@ -1112,7 +1112,13 @@ const Row = memo(function Row({
     let x = r.left;
     const y = r.bottom + 5;
     const w =
-      kind === 'date' ? 280 : kind === 'phases' ? 340 : Math.max(r.width, 180);
+      kind === 'date'
+        ? 280
+        : kind === 'phases'
+          ? 340
+          : kind === 'note'
+            ? 320
+            : Math.max(r.width, 180);
     if (x + w > window.innerWidth - 10) x = window.innerWidth - 10 - w;
     openPopup({ kind, taskId: t.id, field, x, y });
   };
@@ -1635,12 +1641,14 @@ const Row = memo(function Row({
         </div>
 
         <div
+          onClick={(e) => cellPopup('note', undefined, e)}
           style={{
             order: orderOf.note,
             display: 'flex',
             alignItems: 'center',
             padding: '0 10px',
             borderRight: '1px solid var(--surf-1)',
+            cursor: viewer ? 'default' : 'pointer',
             minWidth: 0,
           }}
         >

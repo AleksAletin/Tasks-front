@@ -24,6 +24,7 @@ import {
   PEOPLE,
   ROLES,
   TODAY,
+  dayNum,
   resolveColOrder,
   initialBoards,
   initialCfg,
@@ -228,6 +229,7 @@ interface BoardState {
   sendInvite: (email: string, role: string) => void;
   setQuery: (v: string) => void;
   updateTask: (taskId: string, patch: Partial<Task>) => void;
+  setDue: (taskId: string, due: string | null) => void;
   initPhases: (taskId: string) => void;
   phaseEdit: (
     taskId: string,
@@ -600,6 +602,32 @@ export const useBoard = create<BoardState>()(
       setQuery: (query) => set({ query }),
       updateTask: (taskId, patch) =>
         set((s) => ({ groups: patchTask(s.groups, taskId, patch) })),
+      // The «Срок» and the timeline bar are linked: setting a due date moves the bar to end on it.
+      // A phased bar shifts (keeping its phase durations); a plain bar stretches (keeping its start).
+      // Clearing the due (null) leaves the bar. The reverse link (bar drag → due) lives in the
+      // timeline drop handler and phaseEdit.
+      setDue: (taskId, due) =>
+        set((s) => {
+          if (s.viewer) return {};
+          const t = s.groups.flatMap((g) => g.tasks).find((x) => x.id === taskId);
+          if (!t) return {};
+          let patch: Partial<Task> = { due };
+          if (due && t.tl) {
+            const delta = dayNum(due) - dayNum(t.tl.end);
+            if (t.phases && t.anchor) {
+              patch = {
+                due,
+                anchor: { ...t.anchor, date: shiftIso(t.anchor.date, delta) },
+                tl: { start: shiftIso(t.tl.start, delta), end: due },
+              };
+            } else {
+              const start =
+                dayNum(t.tl.start) <= dayNum(due) ? t.tl.start : due;
+              patch = { due, tl: { start, end: due } };
+            }
+          }
+          return { groups: patchTask(s.groups, taskId, patch) };
+        }),
       // Phase-dates editor (brief §5.6, prototype openPopup 'phases' init ~1741): when a task
       // has no phases yet, seed the prototype default and store the derived tl so the gantt bar
       // (which segments by phases) renders immediately.
@@ -646,6 +674,8 @@ export const useBoard = create<BoardState>()(
               phases,
               anchor,
               tl: { start: cp.start, end: cp.end },
+              // Keep «Срок» on the bar's end (the two are linked).
+              due: cp.end,
             }),
           };
         }),
