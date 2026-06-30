@@ -1,8 +1,9 @@
 // Settings screen (brief §5.12, prototype ~862 + buildSettings ~1647) — admin full-page section.
 // Five sections switch on settingsTab; section nav lives in the main sidebar.
-import type { CSSProperties, ReactNode } from 'react';
+import { useState, type CSSProperties, type ReactNode } from 'react';
 import { useBoard } from './store';
 import { ROLES, ROLE_COLORS, type Cfg, type LabelField } from './model';
+import { syncNow, testYouTrack } from '../api/youtrack';
 
 // Board field ↔ label-registry field, for the mapping editor's target dropdown.
 const MAP_FIELDS = ['Статус', 'Приоритет', 'Тип', 'Источник'] as const;
@@ -181,6 +182,40 @@ function Integrations() {
   const webhook = useBoard((s) => s.cfg.webhookUrl);
   const setCfg = useBoard((s) => s.setCfg);
   const addToast = useBoard((s) => s.addToast);
+  const [busy, setBusy] = useState(false);
+
+  // «Проверить соединение» → POST /sync/test (probes the configured YouTrack instance).
+  const runTest = async () => {
+    setBusy(true);
+    try {
+      const ok = await testYouTrack();
+      addToast(
+        ok ? 'YouTrack: соединение установлено' : 'YouTrack: подключиться не удалось',
+      );
+    } catch {
+      addToast('YouTrack: ошибка запроса');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  // «Синхронизировать сейчас» → POST /sync; surfaces checked/updated + any unmapped statuses.
+  const runSync = async () => {
+    setBusy(true);
+    try {
+      const r = await syncNow();
+      const base = `Синк: обновлено ${r.updated} из ${r.checked}`;
+      addToast(
+        r.unmapped.length
+          ? `${base}; без правила: ${r.unmapped.join(', ')}`
+          : base,
+      );
+    } catch {
+      addToast('Синк: ошибка запроса');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const badge = ytrack ? 'Подключено' : 'Отключено';
   const badgeColor = ytrack ? '#3a7d63' : 'var(--text-faint)';
@@ -303,6 +338,8 @@ function Integrations() {
               </div>
             </div>
             <button
+              onClick={runTest}
+              disabled={busy}
               style={{
                 height: 40,
                 padding: '0 16px',
@@ -312,7 +349,8 @@ function Integrations() {
                 borderRadius: 10,
                 fontSize: 13,
                 fontWeight: 700,
-                cursor: 'pointer',
+                cursor: busy ? 'default' : 'pointer',
+                opacity: busy ? 0.6 : 1,
                 display: 'flex',
                 alignItems: 'center',
                 gap: 7,
@@ -329,6 +367,37 @@ function Integrations() {
                 <path d="M20 6L9 17l-5-5" />
               </svg>
               Проверить соединение
+            </button>
+            <button
+              onClick={runSync}
+              disabled={busy}
+              style={{
+                height: 40,
+                padding: '0 16px',
+                border: 'none',
+                background: ACCENT,
+                color: '#fff',
+                borderRadius: 10,
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: busy ? 'default' : 'pointer',
+                opacity: busy ? 0.6 : 1,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 7,
+              }}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+              >
+                <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16" />
+              </svg>
+              Синхронизировать сейчас
             </button>
           </div>
         </div>

@@ -60,6 +60,8 @@ export interface Task {
   section: string;
   type: TypeKey;
   source: SourceKey;
+  /** Linked YouTrack issue id (e.g. "XRM-123"), or null. Set by import; the sync pulls its State. */
+  ticketId?: string | null;
   phases?: Phases;
   anchor?: Anchor;
   subs?: Sub[];

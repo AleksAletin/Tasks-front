@@ -107,7 +107,14 @@ const TARGET_FIELDS: {
     field: 'Note',
     label: 'Заметка',
     required: false,
-    match: ['примеч', 'коммент', 'заметк', 'опис', 'тикет', 'bac', 'задачк', 'note', 'desc'],
+    match: ['примеч', 'коммент', 'заметк', 'опис', 'bac', 'note', 'desc'],
+  },
+  {
+    // YouTrack issue id — links a task so the sync can pull its State (Settings → синк).
+    field: 'Ticket',
+    label: 'Тикет YouTrack',
+    required: false,
+    match: ['youtrack', 'тикет', 'ticket', 'issue', 'ключ задач', 'id задач'],
   },
   // Gantt/timeline columns — optional. With Start + the three phase-end dates the import builds a
   // phased А/Р/Т bar; with just Start (+ Срок) it builds a solid bar. Without Start there's no bar.
