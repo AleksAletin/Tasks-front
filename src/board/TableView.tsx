@@ -1551,6 +1551,37 @@ const Row = memo(function Row({
               {subDone}/{subs.length}
             </span>
           )}
+          {t.ticketId && !editingName && (
+            <span
+              title={`YouTrack: ${t.ticketId} — статус тянется синком`}
+              style={{
+                flexShrink: 0,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                fontSize: 10.5,
+                fontWeight: 700,
+                fontFamily: "'JetBrains Mono', monospace",
+                color: ACCENT,
+                background: 'var(--surf-1)',
+                padding: '2px 7px',
+                borderRadius: 9,
+              }}
+            >
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+              >
+                <path d="M9 17H7A5 5 0 0 1 7 7h2M15 7h2a5 5 0 0 1 0 10h-2M8 12h8" />
+              </svg>
+              {t.ticketId}
+            </span>
+          )}
           {nameHover && !editingName && !viewer && (
             <span
               onClick={(e) => {

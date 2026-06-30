@@ -31,6 +31,7 @@ export function TaskPanel() {
   const viewer = useBoard((s) => s.viewer);
   const closePanel = useBoard((s) => s.closePanel);
   const openPopup = useBoard((s) => s.openPopup);
+  const updateTask = useBoard((s) => s.updateTask);
   const labels = useBoard((s) => s.labels);
   const [tab, setTab] = useState<FeedTab>('updates');
 
@@ -410,6 +411,30 @@ export function TaskPanel() {
                 {so.label}
               </span>
             </div>
+
+            {fieldLabel('Тикет YouTrack')}
+            <input
+              value={t.ticketId ?? ''}
+              onChange={(e) =>
+                updateTask(t.id, { ticketId: e.target.value.trim() || null })
+              }
+              disabled={viewer}
+              placeholder="напр. XRM-123 → синк"
+              title="Привязать задачу к issue в YouTrack — синк подтянет её статус"
+              style={{
+                justifySelf: 'start',
+                width: 190,
+                height: 30,
+                border: '1px solid var(--scrim)',
+                borderRadius: 7,
+                padding: '0 10px',
+                fontSize: 13,
+                fontFamily: "'JetBrains Mono', monospace",
+                background: 'var(--card)',
+                color: 'var(--text)',
+                outline: 'none',
+              }}
+            />
           </div>
 
           <div style={{ marginTop: 24 }}>
