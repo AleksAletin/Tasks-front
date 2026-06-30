@@ -484,7 +484,14 @@ export const useBoard = create<BoardState>()(
         const labels = normalizeLabels(payload.labels);
         setLiveLabels(labels);
         set({
-          cfg: payload.cfg,
+          // Coalesce over defaults so a legacy /prefs row missing a cfg field (e.g. ytrackQuery,
+          // added later) doesn't propagate null into the store and break the next save.
+          cfg: {
+            ...initialCfg,
+            ...Object.fromEntries(
+              Object.entries(payload.cfg).filter(([, v]) => v != null),
+            ),
+          } as Cfg,
           integrations: payload.integrations,
           autoSync: payload.autoSync,
           twoWay: payload.twoWay,
