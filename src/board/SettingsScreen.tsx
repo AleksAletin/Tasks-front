@@ -204,7 +204,7 @@ function Integrations() {
     setBusy(true);
     try {
       const r = await syncNow();
-      const base = `Синк: обновлено ${r.updated} из ${r.checked}`;
+      const base = `Синк: +${r.created} новых, обновлено ${r.updated} из ${r.checked}`;
       addToast(
         r.unmapped.length
           ? `${base}; без правила: ${r.unmapped.join(', ')}`
@@ -289,6 +289,26 @@ function Integrations() {
               flex={2}
             />
             <Field label="Проект" cfgKey="ytrackProject" flex={1} />
+          </div>
+          <div>
+            <Field
+              label="Запрос синка — что тянуть из YouTrack"
+              cfgKey="ytrackQuery"
+              placeholder="project: XRM #Unresolved"
+              mono
+            />
+            <div
+              style={{
+                fontSize: 11.5,
+                color: 'var(--text-faint)',
+                marginTop: 6,
+                lineHeight: 1.5,
+              }}
+            >
+              Новые issue из запроса появляются на доске в группе «Из YouTrack»,
+              статусы — по правилам маппинга. Спринт: «Board XRM: {'{спринт}'}».
+              Пусто → берётся «project: {'{проект}'}».
+            </div>
           </div>
           <div>
             <div style={fieldLabel}>Webhook URL (входящий)</div>

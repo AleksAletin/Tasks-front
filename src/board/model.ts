@@ -90,6 +90,8 @@ export interface Cfg {
   ytrackUrl: string;
   ytrackToken: string;
   ytrackProject: string;
+  /** YouTrack query that scopes the discovery sync (new issues → board). Empty → «project: {ytrackProject}». */
+  ytrackQuery: string;
   webhookUrl: string;
   syncInterval: string;
   smtpHost: string;
@@ -913,6 +915,7 @@ export const initialCfg: Cfg = {
   ytrackUrl: 'https://youtrack.work.app',
   ytrackToken: 'perm:a1b2-c3d4-e5f6-token',
   ytrackProject: 'XRM',
+  ytrackQuery: 'project: XRM #Unresolved',
   webhookUrl: 'https://work.app/api/hooks/youtrack',
   syncInterval: '5',
   smtpHost: 'smtp.work.app',

@@ -4,6 +4,8 @@ import { apiClient } from './client';
 export interface SyncResult {
   checked: number;
   updated: number;
+  /** New board tasks created from the discovery query (project/sprint scope). */
+  created: number;
   /** YouTrack statuses seen that no «Правила маппинга» rule covers yet. */
   unmapped: string[];
 }
