@@ -884,14 +884,41 @@ export const initialBoards: Board[] = [
 ];
 
 // Seed mapping rules — the three examples from the brief (§5.12).
+// Real BackOffice (BAC) workflow: 10 YouTrack states → 4 board buckets (mirrors how the Support
+// team's own tracker collapses «Состояние» into a «Бакет»). «Отменено» is left out on purpose so
+// the sync surfaces it as unmapped rather than guessing.
 export const initialMappingRules: MappingRule[] = [
   {
-    id: 'mr1',
+    id: 'st-done',
     field: 'Статус',
     src: 'State (YouTrack)',
-    cond: 'Fixed, Verified',
+    cond: 'Готово, Выложено в prod',
     to: 'Готово',
     color: '#4a9b7f',
+  },
+  {
+    id: 'st-work',
+    field: 'Статус',
+    src: 'State (YouTrack)',
+    cond: 'Разработка, Тестирование на dev, Аналитика, Ожидает разработку, Ожидает заливку на dev, Ожидает тестирования на dev',
+    to: 'В работе',
+    color: '#c8893f',
+  },
+  {
+    id: 'st-stuck',
+    field: 'Статус',
+    src: 'State (YouTrack)',
+    cond: 'Ожидание третьей стороны',
+    to: 'Застряли',
+    color: '#cf6b6b',
+  },
+  {
+    id: 'st-plan',
+    field: 'Статус',
+    src: 'State (YouTrack)',
+    cond: 'Backlog',
+    to: 'План',
+    color: '#8a8f98',
   },
   {
     id: 'mr2',
