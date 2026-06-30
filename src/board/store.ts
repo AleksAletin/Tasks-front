@@ -231,6 +231,7 @@ interface BoardState {
   setIntegration: (k: 'ytrack' | 'email', v: boolean) => void;
   setFlag: (k: 'autoSync' | 'twoWay' | 'guestLinks', v: boolean) => void;
   addMappingRule: () => void;
+  editMappingRule: (id: string, patch: Partial<MappingRule>) => void;
   removeMappingRule: (id: string) => void;
   cycleRole: (id: string) => void;
   toggleUserActive: (id: string) => void;
@@ -545,6 +546,12 @@ export const useBoard = create<BoardState>()(
           };
           return { mappingRules: [...s.mappingRules, rule] };
         }),
+      editMappingRule: (id, patch) =>
+        set((s) => ({
+          mappingRules: s.mappingRules.map((r) =>
+            r.id === id ? { ...r, ...patch } : r,
+          ),
+        })),
       removeMappingRule: (id) =>
         set((s) => ({
           mappingRules: s.mappingRules.filter((r) => r.id !== id),

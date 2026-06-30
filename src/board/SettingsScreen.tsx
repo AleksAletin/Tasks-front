@@ -1,8 +1,19 @@
 // Settings screen (brief §5.12, prototype ~862 + buildSettings ~1647) — admin full-page section.
 // Five sections switch on settingsTab; section nav lives in the main sidebar.
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { useBoard } from './store';
-import { ROLES, ROLE_COLORS, type Cfg } from './model';
+import { ROLES, ROLE_COLORS, type Cfg, type LabelField } from './model';
+
+// Board field ↔ label-registry field, for the mapping editor's target dropdown.
+const MAP_FIELDS = ['Статус', 'Приоритет', 'Тип', 'Источник'] as const;
+const fieldToLabelField = (field: string): LabelField =>
+  field === 'Приоритет'
+    ? 'priority'
+    : field === 'Тип'
+      ? 'type'
+      : field === 'Источник'
+        ? 'source'
+        : 'status';
 
 const ACCENT = '#4263d8';
 
@@ -447,13 +458,26 @@ function Sync() {
 function Mapping() {
   const mappingRules = useBoard((s) => s.mappingRules);
   const addMappingRule = useBoard((s) => s.addMappingRule);
+  const editMappingRule = useBoard((s) => s.editMappingRule);
   const removeMappingRule = useBoard((s) => s.removeMappingRule);
+  const labels = useBoard((s) => s.labels);
   const grid = '1.1fr 1.3fr 1.6fr 1.2fr 40px';
+  const inp: CSSProperties = {
+    width: '100%',
+    border: '1px solid var(--scrim)',
+    borderRadius: 7,
+    padding: '6px 9px',
+    fontSize: 12.5,
+    background: 'var(--card)',
+    color: 'var(--text)',
+    outline: 'none',
+    boxSizing: 'border-box',
+  };
   return (
     <>
       <SectionHead
         title="Правила маппинга"
-        sub="Условия: как значения из источника превращаются в поля доски."
+        sub="«Если значение из источника = …, поставить статус доски …». Применяется к импорту и синку YouTrack."
       />
       <div
         style={{
@@ -481,73 +505,92 @@ function Mapping() {
           <div>Значение</div>
           <div />
         </div>
-        {mappingRules.map((r) => (
-          <div
-            key={r.id}
-            style={{
-              display: 'grid',
-              gridTemplateColumns: grid,
-              alignItems: 'center',
-              padding: '12px 16px',
-              borderBottom: '1px solid var(--hover)',
-              fontSize: 13,
-            }}
-          >
-            <div style={{ fontWeight: 700, color: 'var(--text-2)' }}>
-              {r.field}
-            </div>
+        {mappingRules.map((r) => {
+          const lf = fieldToLabelField(r.field);
+          const opts = labels[lf];
+          return (
             <div
+              key={r.id}
               style={{
-                color: 'var(--text-soft)',
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 12,
+                display: 'grid',
+                gridTemplateColumns: grid,
+                alignItems: 'center',
+                gap: 8,
+                padding: '10px 16px',
+                borderBottom: '1px solid var(--hover)',
+                fontSize: 13,
               }}
             >
-              {r.src}
-            </div>
-            <div style={{ color: 'var(--text-mut)' }}>
-              <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>
-                если =
-              </span>{' '}
-              <span style={{ fontWeight: 600 }}>{r.cond}</span>
-            </div>
-            <div>
-              <span
+              <select
+                value={r.field}
+                onChange={(e) => editMappingRule(r.id, { field: e.target.value })}
+                style={inp}
+              >
+                {MAP_FIELDS.map((f) => (
+                  <option key={f} value={f}>
+                    {f}
+                  </option>
+                ))}
+                {!(MAP_FIELDS as readonly string[]).includes(r.field) && (
+                  <option value={r.field}>{r.field}</option>
+                )}
+              </select>
+              <input
+                value={r.src}
+                onChange={(e) => editMappingRule(r.id, { src: e.target.value })}
+                placeholder="поле источника"
+                style={inp}
+              />
+              <input
+                value={r.cond}
+                onChange={(e) => editMappingRule(r.id, { cond: e.target.value })}
+                placeholder="значения через запятую"
+                style={{ ...inp, fontFamily: "'JetBrains Mono', monospace" }}
+              />
+              <select
+                value={r.to}
+                onChange={(e) => {
+                  const opt = opts.find((l) => l.label === e.target.value);
+                  editMappingRule(r.id, {
+                    to: e.target.value,
+                    color: opt ? opt.bg : r.color,
+                  });
+                }}
+                style={{ ...inp, fontWeight: 700, color: r.color }}
+              >
+                {opts.map((l) => (
+                  <option key={l.key} value={l.label}>
+                    {l.label}
+                  </option>
+                ))}
+                {!opts.some((l) => l.label === r.to) && (
+                  <option value={r.to}>{r.to}</option>
+                )}
+              </select>
+              <div
+                onClick={() => removeMappingRule(r.id)}
+                title="Удалить правило"
                 style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: '#fff',
-                  background: r.color,
-                  padding: '3px 10px',
-                  borderRadius: 6,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  color: 'var(--line)',
+                  cursor: 'pointer',
                 }}
               >
-                {r.to}
-              </span>
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                </svg>
+              </div>
             </div>
-            <div
-              onClick={() => removeMappingRule(r.id)}
-              title="Удалить правило"
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                color: 'var(--line)',
-                cursor: 'pointer',
-              }}
-            >
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-              </svg>
-            </div>
-          </div>
-        ))}
+          );
+        })}
         <div
           onClick={addMappingRule}
           style={{
