@@ -222,3 +222,57 @@ export function inProgress(rows: DerivedModule[]): DerivedModule[] {
     .filter((r) => r.bucket === 'В работе' || r.bucket === 'Заблокировано')
     .sort((a, b) => b.need - a.need || a.id - b.id);
 }
+
+// ---------------------------------------------------------------------------
+// Role ↔ Module membership (v1b): the bipartite edge set the whole model hangs off.
+
+/** A role in the migration scope with its module membership (the authoritative source). */
+export interface RoleRow {
+  id: number;
+  name: string;
+  /** Module ids this role has access to — one edge per entry. */
+  modules: number[];
+}
+
+/** нужность recomputed from the membership itself (brief §3: recompute, never trust a
+ * precomputed COUNT). Modules in no role simply don't appear (need 0). */
+export function computeNeeds(roles: RoleRow[]): Map<number, number> {
+  const needs = new Map<number, number>();
+  for (const role of roles) {
+    for (const id of role.modules) {
+      needs.set(id, (needs.get(id) ?? 0) + 1);
+    }
+  }
+  return needs;
+}
+
+/** Modules with `need` replaced by the value recomputed from membership. */
+export function applyMembership(modules: ModuleRow[], roles: RoleRow[]): ModuleRow[] {
+  const needs = computeNeeds(roles);
+  return modules.map((m) => ({ ...m, need: needs.get(m.id) ?? 0 }));
+}
+
+export interface RoleStats {
+  total: number;
+  core: number;
+  mid: number;
+  tail: number;
+  done: number;
+  pctDone: number;
+}
+
+/** Per-role rollup: #modules, ярус split, #готово and %готово (done = bucket «Готово»). */
+export function roleStats(role: RoleRow, byId: Map<number, DerivedModule>): RoleStats {
+  const stats: RoleStats = { total: 0, core: 0, mid: 0, tail: 0, done: 0, pctDone: 0 };
+  for (const id of role.modules) {
+    const m = byId.get(id);
+    if (!m) continue;
+    stats.total++;
+    if (m.tier === 'Ядро') stats.core++;
+    else if (m.tier === 'Средние') stats.mid++;
+    else stats.tail++;
+    if (m.bucket === 'Готово') stats.done++;
+  }
+  stats.pctDone = stats.total ? stats.done / stats.total : 0;
+  return stats;
+}

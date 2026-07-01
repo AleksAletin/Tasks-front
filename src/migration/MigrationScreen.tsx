@@ -1,10 +1,13 @@
-// «Карта и бэклог переезда» — v1a screen (brief §4.4–4.5). Renders the tested domain over the
-// Support dataset: a ranked Бэклог, the «взять следующим» build queue, the WIP list, and the
-// aggregations (воронка + Ярус×Бакет / Тип×Бакет). All numbers come from ./domain — this file is
-// presentation only.
+// «Карта и бэклог переезда» — v1 screen (brief §4.1–4.5). Renders the tested domain over the
+// Support dataset: the ranked Бэклог, the «взять следующим» build queue, the WIP list, the
+// Роль×Модуль матрица, the module/role registries with «дёрни за ниточку», and the aggregations.
+// нужность is recomputed from the role↔module membership (never trusted from a COUNT — brief §3).
+// All numbers come from ./domain — this file is presentation only.
 import { useMemo, useState } from 'react';
 import supportData from './data/support.json';
+import rolesData from './data/support-roles.json';
 import {
+  applyMembership,
   backlog,
   funnel,
   crosstab,
@@ -12,50 +15,58 @@ import {
   inProgress,
   BUCKET_ORDER,
   TIER_ORDER,
-  type ModuleRow,
   type Bucket,
-  type Tier,
   type DerivedModule,
+  type ModuleRow,
+  type RoleRow,
+  type Tier,
 } from './domain';
+import {
+  BUCKET_COLOR,
+  BucketPill,
+  CARD,
+  Filter,
+  SectionTitle,
+  TD,
+  TH,
+  TIER_COLOR,
+  TierPill,
+} from './ui';
+import { MatrixView } from './MatrixView';
+import { RegistryView } from './RegistryView';
+import { TraceView } from './TraceView';
 
 const MODULES = supportData as ModuleRow[];
+const ROLES = rolesData as RoleRow[];
 
-const BUCKET_COLOR: Record<Bucket, string> = {
-  'В работе': '#c8893f',
-  Заблокировано: '#cf6b6b',
-  'Готово к работе': '#4263d8',
-  'Нужна задача': '#d9a441',
-  'Хвост — потом': '#8a8f98',
-  Готово: '#4a9b7f',
-  'Не переносим': '#b0b4ba',
-};
-
-const TIER_COLOR: Record<Tier, string> = {
-  Ядро: '#4263d8',
-  Средние: '#c8893f',
-  Хвост: '#8a8f98',
-};
-
-const CARD: React.CSSProperties = {
-  background: 'var(--glass)',
-  backdropFilter: 'blur(20px) saturate(165%)',
-  WebkitBackdropFilter: 'blur(20px) saturate(165%)',
-  border: '1px solid var(--glass)',
-  boxShadow: 'inset 0 1px 0 var(--glass)',
-  borderRadius: 14,
-};
-
-type TabKey = 'backlog' | 'next' | 'wip' | 'agg';
+type TabKey = 'backlog' | 'next' | 'wip' | 'matrix' | 'registry' | 'trace' | 'agg';
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'backlog', label: 'Бэклог' },
   { key: 'next', label: 'Взять следующим' },
   { key: 'wip', label: 'В работе / блок' },
+  { key: 'matrix', label: 'Матрица' },
+  { key: 'registry', label: 'Реестры' },
+  { key: 'trace', label: 'Ниточка' },
   { key: 'agg', label: 'Агрегации' },
 ];
 
 export function MigrationScreen() {
-  const rows = useMemo(() => backlog(MODULES), []);
+  // нужность из членства роль→модуль; на данных Саппорта совпадает с выгрузкой 1:1 (тест).
+  const rows = useMemo(() => backlog(applyMembership(MODULES, ROLES)), []);
+  const byId = useMemo(() => new Map(rows.map((m) => [m.id, m])), [rows]);
   const [tab, setTab] = useState<TabKey>('backlog');
+
+  // «Дёрни за ниточку» selection — deep-linked from the registries.
+  const [traceRole, setTraceRole] = useState<number | null>(null);
+  const [traceModule, setTraceModule] = useState<number | null>(null);
+  const goTraceModule = (id: number) => {
+    setTraceModule(id);
+    setTab('trace');
+  };
+  const goTraceRole = (id: number) => {
+    setTraceRole(id);
+    setTab('trace');
+  };
 
   const fun = useMemo(() => funnel(rows), [rows]);
   const total = rows.length;
@@ -70,8 +81,8 @@ export function MigrationScreen() {
         Карта и бэклог переезда
       </div>
       <div style={{ fontSize: 13, color: 'var(--text-soft)', marginBottom: 18 }}>
-        Скоуп: Саппорт · 34 роли · {total} модулей. Приоритет = что разблокирует больше ролей за
-        единицу работы.
+        Скоуп: Саппорт · {ROLES.length} ролей · {total} модулей · нужность считается из членства
+        роль↔модуль. Приоритет = что разблокирует больше ролей за единицу работы.
       </div>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
@@ -99,7 +110,7 @@ export function MigrationScreen() {
         />
       </div>
 
-      <div style={{ display: 'flex', gap: 4, marginBottom: 16, borderBottom: '1px solid var(--surf-1)' }}>
+      <div style={{ display: 'flex', gap: 4, marginBottom: 16, borderBottom: '1px solid var(--surf-1)', flexWrap: 'wrap' }}>
         {TABS.map((t) => {
           const active = tab === t.key;
           return (
@@ -114,6 +125,7 @@ export function MigrationScreen() {
                 color: active ? 'var(--text-3)' : 'var(--text-soft)',
                 borderBottom: active ? '2px solid #4263d8' : '2px solid transparent',
                 marginBottom: -1,
+                whiteSpace: 'nowrap',
               }}
             >
               {t.label}
@@ -125,6 +137,27 @@ export function MigrationScreen() {
       {tab === 'backlog' && <BacklogTable rows={rows} />}
       {tab === 'next' && <QueueList rows={takeNext(rows)} showTask emptyHint="Нет модулей к взятию" />}
       {tab === 'wip' && <QueueList rows={inProgress(rows)} showState emptyHint="Нет активных модулей" />}
+      {tab === 'matrix' && <MatrixView rows={rows} roles={ROLES} byId={byId} />}
+      {tab === 'registry' && (
+        <RegistryView
+          rows={rows}
+          roles={ROLES}
+          byId={byId}
+          onTraceModule={goTraceModule}
+          onTraceRole={goTraceRole}
+        />
+      )}
+      {tab === 'trace' && (
+        <TraceView
+          rows={rows}
+          roles={ROLES}
+          byId={byId}
+          roleId={traceRole}
+          moduleId={traceModule}
+          onSelectRole={setTraceRole}
+          onSelectModule={setTraceModule}
+        />
+      )}
       {tab === 'agg' && <Aggregations rows={rows} funnelRows={fun} />}
     </div>
   );
@@ -141,54 +174,6 @@ function Kpi({ label, value, sub, tone }: { label: string; value: string; sub?: 
     </div>
   );
 }
-
-function BucketPill({ bucket }: { bucket: Bucket }) {
-  const c = BUCKET_COLOR[bucket];
-  return (
-    <span
-      style={{
-        display: 'inline-block',
-        padding: '2px 8px',
-        borderRadius: 7,
-        fontSize: 11,
-        fontWeight: 700,
-        whiteSpace: 'nowrap',
-        color: c,
-        background: c + '22',
-      }}
-    >
-      {bucket}
-    </span>
-  );
-}
-
-function TierPill({ tier }: { tier: Tier }) {
-  const c = TIER_COLOR[tier];
-  return (
-    <span style={{ fontSize: 11.5, fontWeight: 700, color: c }}>{tier}</span>
-  );
-}
-
-const TH: React.CSSProperties = {
-  textAlign: 'left',
-  padding: '8px 10px',
-  fontSize: 11,
-  fontWeight: 700,
-  letterSpacing: '.3px',
-  textTransform: 'uppercase',
-  color: 'var(--text-faint)',
-  position: 'sticky',
-  top: 0,
-  background: 'var(--bg)',
-  whiteSpace: 'nowrap',
-};
-const TD: React.CSSProperties = {
-  padding: '7px 10px',
-  fontSize: 12.5,
-  color: 'var(--text-2)',
-  borderTop: '1px solid var(--surf-1)',
-  verticalAlign: 'middle',
-};
 
 function BacklogTable({ rows }: { rows: DerivedModule[] }) {
   const [bucketF, setBucketF] = useState<Bucket | 'все'>('все');
@@ -262,42 +247,6 @@ function BacklogTable({ rows }: { rows: DerivedModule[] }) {
         </div>
       </div>
     </div>
-  );
-}
-
-function Filter<T extends string>({
-  label,
-  value,
-  onChange,
-  options,
-}: {
-  label: string;
-  value: T;
-  onChange: (v: T) => void;
-  options: T[];
-}) {
-  return (
-    <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
-      <span style={{ color: 'var(--text-faint)', fontWeight: 600 }}>{label}</span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value as T)}
-        style={{
-          fontSize: 12.5,
-          padding: '5px 8px',
-          borderRadius: 7,
-          border: '1px solid var(--surf-2)',
-          background: 'var(--bg)',
-          color: 'var(--text-2)',
-        }}
-      >
-        {options.map((o) => (
-          <option key={o} value={o}>
-            {o}
-          </option>
-        ))}
-      </select>
-    </label>
   );
 }
 
@@ -504,11 +453,5 @@ function CrosstabCard({
         </div>
       </div>
     </section>
-  );
-}
-
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-2)', marginBottom: 9 }}>{children}</div>
   );
 }
