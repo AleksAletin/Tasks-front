@@ -16,6 +16,7 @@ import { ImportWizard } from './ImportWizard';
 import { DashboardScreen } from './DashboardScreen';
 import { SettingsScreen } from './SettingsScreen';
 import { UsersScreen } from './UsersScreen';
+import { MigrationScreen } from '../migration/MigrationScreen';
 import { Popup } from './Popup';
 import { HeaderMenus } from './HeaderMenus';
 import { ToolMenu } from './ToolMenu';
@@ -252,6 +253,7 @@ export function BoardApp() {
               {screen === 'board' && boardTab === 'import' && <ImportWizard />}
               {screen === 'dashboard' && <DashboardScreen />}
               {screen === 'users' && <UsersScreen />}
+              {screen === 'migration' && <MigrationScreen />}
             </>
           )}
         </div>

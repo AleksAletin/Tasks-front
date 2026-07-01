@@ -1,6 +1,6 @@
 // Left sidebar — collapsible, boards section, dashboard/users nav (brief §5.2, prototype ~59).
 // In settings mode (settingsScreen), the boards nav is replaced by the settings section nav.
-import type { SettingsTab } from './store';
+import type { Screen, SettingsTab } from './store';
 import { useBoard } from './store';
 
 const ACCENT = '#4263d8';
@@ -47,6 +47,7 @@ export function Sidebar() {
   const dashActive = screen === 'dashboard';
   const peopleActive = screen === 'users';
   const boardActive = screen === 'board' && !settingsScreen;
+  const migrationActive = screen === 'migration';
 
   return (
     <aside
@@ -220,6 +221,7 @@ export function Sidebar() {
             boardActive={boardActive}
             dashActive={dashActive}
             peopleActive={peopleActive}
+            migrationActive={migrationActive}
             addBoard={addBoard}
             selectBoard={selectBoard}
             setScreen={setScreen}
@@ -237,6 +239,7 @@ function BoardsNav({
   boardActive,
   dashActive,
   peopleActive,
+  migrationActive,
   addBoard,
   selectBoard,
   setScreen,
@@ -247,9 +250,10 @@ function BoardsNav({
   boardActive: boolean;
   dashActive: boolean;
   peopleActive: boolean;
+  migrationActive: boolean;
   addBoard: () => void;
   selectBoard: (id: string) => void;
-  setScreen: (s: 'board' | 'dashboard' | 'users') => void;
+  setScreen: (s: Screen) => void;
 }) {
   return (
     <>
@@ -353,6 +357,24 @@ function BoardsNav({
         style={{ height: 1, background: 'var(--surf-1)', margin: '12px 6px' }}
       />
 
+      <NavItem
+        active={migrationActive}
+        label="Карта переезда"
+        navOpen={navOpen}
+        onClick={() => setScreen('migration')}
+        icon={
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M9 20l-6 2V6l6-2 6 2 6-2v16l-6 2-6-2zM9 4v16M15 6v16" />
+          </svg>
+        }
+      />
       <NavItem
         active={dashActive}
         label="Дашборд и отчётность"

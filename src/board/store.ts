@@ -45,7 +45,7 @@ export interface UserOverride {
   active?: boolean;
 }
 
-export type Screen = 'board' | 'dashboard' | 'users';
+export type Screen = 'board' | 'dashboard' | 'users' | 'migration';
 export type BoardTab =
   | 'table'
   | 'timeline'
