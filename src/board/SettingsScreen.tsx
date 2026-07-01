@@ -1,9 +1,9 @@
 // Settings screen (brief §5.12, prototype ~862 + buildSettings ~1647) — admin full-page section.
 // Five sections switch on settingsTab; section nav lives in the main sidebar.
-import { useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import { useBoard } from './store';
 import { ROLES, ROLE_COLORS, type Cfg, type LabelField } from './model';
-import { syncNow, testYouTrack } from '../api/youtrack';
+import { getSyncState, syncNow, testYouTrack } from '../api/youtrack';
 import { fetchBoard } from '../api/board';
 
 // Board field ↔ label-registry field, for the mapping editor's target dropdown.
@@ -205,6 +205,10 @@ function Integrations() {
     setBusy(true);
     try {
       const r = await syncNow();
+      if (r.disabled) {
+        addToast('Интеграция YouTrack выключена — синк пропущен');
+        return;
+      }
       // The sync mutated the board server-side (statuses + discovered tasks). Refresh the local
       // snapshot right away — otherwise the new tasks stay invisible until reload AND this tab's
       // next autosave would push the stale board back, erasing them.
@@ -213,12 +217,10 @@ function Integrations() {
       } catch {
         // non-fatal: the sync itself succeeded
       }
-      const base = `Синк: +${r.created ?? 0} новых, обновлено ${r.updated} из ${r.checked}`;
-      addToast(
-        r.unmapped.length
-          ? `${base}; без правила: ${r.unmapped.join(', ')}`
-          : base,
-      );
+      let msg = `Синк: +${r.created ?? 0} новых, обновлено ${r.updated} из ${r.checked}`;
+      if (r.unmapped.length) msg += `; без правила: ${r.unmapped.join(', ')}`;
+      if (r.warning) msg += `; ⚠ ${r.warning}`;
+      addToast(msg);
     } catch {
       addToast('Синк: ошибка запроса');
     } finally {
@@ -559,6 +561,36 @@ function Mapping() {
   const editMappingRule = useBoard((s) => s.editMappingRule);
   const removeMappingRule = useBoard((s) => s.removeMappingRule);
   const labels = useBoard((s) => s.labels);
+  const addToast = useBoard((s) => s.addToast);
+
+  // YouTrack statuses the last sync saw that no rule covers — persisted server-side, so they
+  // survive the sync toast. Silently absent in standalone (no backend) mode.
+  const [unmapped, setUnmapped] = useState<string[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    getSyncState().then(
+      (s) => {
+        if (!cancelled) setUnmapped(s.unmapped);
+      },
+      () => {},
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // «+ правило» next to an unmapped status: create a rule prefilled with that status as the
+  // condition — the user only picks the target board status.
+  const addRuleFor = (status: string) => {
+    addMappingRule();
+    const rules = useBoard.getState().mappingRules;
+    const last = rules[rules.length - 1];
+    if (last) {
+      editMappingRule(last.id, { field: 'Статус', cond: status });
+    }
+    setUnmapped((u) => u.filter((s) => s !== status));
+    addToast(`Правило для «${status}» добавлено — выберите статус доски`);
+  };
   const grid = '1.1fr 1.3fr 1.6fr 1.2fr 40px';
   const inp: CSSProperties = {
     width: '100%',
@@ -577,6 +609,49 @@ function Mapping() {
         title="Правила маппинга"
         sub="«Если значение из источника = …, поставить статус доски …». Применяется к импорту и синку YouTrack."
       />
+      {unmapped.length > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            gap: 8,
+            marginBottom: 14,
+            padding: '10px 14px',
+            borderRadius: 12,
+            border: '1px solid #d9a44155',
+            background: '#d9a44114',
+            fontSize: 12.5,
+          }}
+        >
+          <span style={{ fontWeight: 700, color: '#b8862f' }}>
+            ⚠ Статусы YouTrack без правила:
+          </span>
+          {unmapped.map((s) => (
+            <button
+              key={s}
+              onClick={() => addRuleFor(s)}
+              title="Добавить правило с этим статусом"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                padding: '3px 10px',
+                borderRadius: 8,
+                border: '1px solid #d9a44166',
+                background: 'var(--card)',
+                color: 'var(--text)',
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              {s}
+              <span style={{ fontWeight: 800, color: '#b8862f' }}>+</span>
+            </button>
+          ))}
+        </div>
+      )}
       <div
         style={{
           background: 'var(--glass)',
