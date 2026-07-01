@@ -179,7 +179,7 @@ const TH: React.CSSProperties = {
   color: 'var(--text-faint)',
   position: 'sticky',
   top: 0,
-  background: 'var(--surf-0)',
+  background: 'var(--bg)',
   whiteSpace: 'nowrap',
 };
 const TD: React.CSSProperties = {
@@ -287,7 +287,7 @@ function Filter<T extends string>({
           padding: '5px 8px',
           borderRadius: 7,
           border: '1px solid var(--surf-2)',
-          background: 'var(--surf-0)',
+          background: 'var(--bg)',
           color: 'var(--text-2)',
         }}
       >

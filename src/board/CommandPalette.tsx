@@ -57,6 +57,11 @@ export function CommandPalette() {
       { kind: 'Вид', label: 'Импорт из Excel', run: () => tab('import') },
       {
         kind: 'Экран',
+        label: 'Карта и бэклог переезда',
+        run: () => go('migration'),
+      },
+      {
+        kind: 'Экран',
         label: 'Дашборд и отчётность',
         run: () => go('dashboard'),
       },

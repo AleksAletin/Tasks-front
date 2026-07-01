@@ -171,6 +171,9 @@ export function BoardApp() {
         el &&
         (el.tagName === 'INPUT' ||
           el.tagName === 'TEXTAREA' ||
+          // Native selects eat letter keys for option lookup (e.g. «в» → «В работе» in the
+          // backlog filters) — that must not toggle the dark theme.
+          el.tagName === 'SELECT' ||
           (el as HTMLElement).isContentEditable);
       if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
       if (e.key === '?') {

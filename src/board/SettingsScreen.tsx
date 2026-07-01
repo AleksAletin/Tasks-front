@@ -4,6 +4,7 @@ import { useState, type CSSProperties, type ReactNode } from 'react';
 import { useBoard } from './store';
 import { ROLES, ROLE_COLORS, type Cfg, type LabelField } from './model';
 import { syncNow, testYouTrack } from '../api/youtrack';
+import { fetchBoard } from '../api/board';
 
 // Board field ↔ label-registry field, for the mapping editor's target dropdown.
 const MAP_FIELDS = ['Статус', 'Приоритет', 'Тип', 'Источник'] as const;
@@ -204,7 +205,15 @@ function Integrations() {
     setBusy(true);
     try {
       const r = await syncNow();
-      const base = `Синк: +${r.created} новых, обновлено ${r.updated} из ${r.checked}`;
+      // The sync mutated the board server-side (statuses + discovered tasks). Refresh the local
+      // snapshot right away — otherwise the new tasks stay invisible until reload AND this tab's
+      // next autosave would push the stale board back, erasing them.
+      try {
+        useBoard.getState().hydrateBoard(await fetchBoard());
+      } catch {
+        // non-fatal: the sync itself succeeded
+      }
+      const base = `Синк: +${r.created ?? 0} новых, обновлено ${r.updated} из ${r.checked}`;
       addToast(
         r.unmapped.length
           ? `${base}; без правила: ${r.unmapped.join(', ')}`
