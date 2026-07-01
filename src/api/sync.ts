@@ -1,4 +1,5 @@
-import { saveBoard } from './board';
+import { saveBoard, type BoardPayload } from './board';
+import { mergeBoards } from './boardMerge';
 import { savePrefs, type PrefsPayload } from './prefs';
 import { useBoard } from '../board/store';
 
@@ -28,9 +29,41 @@ let boardTimer: ReturnType<typeof setTimeout> | null = null;
 let prefsTimer: ReturnType<typeof setTimeout> | null = null;
 
 /** Slice the persisted board data the backend owns, in the contract payload shape. */
-function boardSnapshot() {
+function boardSnapshot(): BoardPayload {
   const s = useBoard.getState();
-  return { boards: s.boards, groups: s.groups, parity: s.parity };
+  return {
+    boards: s.boards,
+    groups: s.groups,
+    parity: s.parity,
+    version: s.boardVersion,
+  };
+}
+
+// Board as of the last successful sync (or the initial hydrate). A 409 diffs the current snapshot
+// against this to find what THIS tab changed — see mergeBoards.
+let boardBaseline: BoardPayload | null = null;
+
+// One debounced board write. On a stale-version 409 (another tab or the YouTrack sync moved the
+// board first), merge the local per-entity changes over the server's current board and retry once;
+// on success, converge the local store to the merged truth.
+async function flushBoard(): Promise<void> {
+  const snap = boardSnapshot();
+  const res = await saveBoard(snap);
+  if (res.ok) {
+    useBoard.getState().setBoardVersion(res.version);
+    boardBaseline = snap;
+    return;
+  }
+  const merged = mergeBoards(boardBaseline, snap, res.server);
+  const retry = await saveBoard(merged);
+  if (retry.ok) {
+    boardBaseline = merged;
+    // Adopt the merged board locally so the view shows the other writer's work (e.g. statuses the
+    // sync pulled) and the next baseline diff is correct.
+    useBoard.getState().hydrateBoard({ ...merged, version: retry.version });
+  } else {
+    console.warn('[board] still stale after merge; will retry on next change');
+  }
 }
 
 /** Slice the SHARED prefs the backend owns, in the `/prefs` contract payload shape. */
@@ -125,8 +158,9 @@ async function flushPrefs(): Promise<void> {
 export function startBackendSync(): () => void {
   if (unsubscribe) return stopBackendSync;
 
-  // Capture the hydrated prefs as the conflict baseline before any local edit lands.
+  // Capture the hydrated state as the conflict baselines before any local edit lands.
   prefsBaseline = prefsSnapshot();
+  boardBaseline = boardSnapshot();
 
   // Base zustand subscribe (this store has no subscribeWithSelector middleware): the listener
   // receives (state, prevState), and we compare the persisted slices by reference. set() produces
@@ -142,7 +176,7 @@ export function startBackendSync(): () => void {
       if (boardTimer) clearTimeout(boardTimer);
       boardTimer = setTimeout(() => {
         boardTimer = null;
-        void saveBoard(boardSnapshot()).catch((err) => {
+        void flushBoard().catch((err) => {
           console.error('[board] backend save failed', err);
         });
       }, DEBOUNCE_MS);

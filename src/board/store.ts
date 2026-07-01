@@ -128,6 +128,8 @@ interface BoardState {
   labels: Record<LabelField, LabelDef[]>;
   // Backend optimistic-concurrency counter for /prefs (server-managed, not persisted locally).
   prefsVersion: number;
+  /** /board optimistic-concurrency version (server-managed, never persisted) — see prefsVersion. */
+  boardVersion: number;
   // Per-column widths (px) keyed by column key; missing → the column's default width.
   colWidths: Record<string, number>;
   // Explicit column order (column keys). Reconciled at render against the live column set,
@@ -198,7 +200,9 @@ interface BoardState {
     boards: Board[];
     groups: Group[];
     parity: Parity;
+    version?: number;
   }) => void;
+  setBoardVersion: (v: number) => void;
   hydratePrefs: (payload: {
     cfg: Cfg;
     integrations: { ytrack: boolean; email: boolean };
@@ -405,6 +409,7 @@ export const useBoard = create<BoardState>()(
       colLabels: {},
       labels: initialLabels,
       prefsVersion: 0,
+      boardVersion: 0,
       colWidths: {},
       colOrder: [],
       colWrap: {},
@@ -467,11 +472,12 @@ export const useBoard = create<BoardState>()(
 
       // Replace the board data with a payload from the backend (GET /board). Used only on
       // the VITE_USE_BACKEND path; keeps activeBoardId valid against the incoming boards.
-      hydrateBoard: ({ boards, groups, parity }) =>
+      hydrateBoard: ({ boards, groups, parity, version }) =>
         set((s) => ({
           boards,
           groups,
           parity,
+          ...(version !== undefined ? { boardVersion: version } : {}),
           activeBoardId: boards.some((b) => b.id === s.activeBoardId)
             ? s.activeBoardId
             : (boards[0]?.id ?? s.activeBoardId),
@@ -507,6 +513,7 @@ export const useBoard = create<BoardState>()(
         });
       },
       setPrefsVersion: (v) => set({ prefsVersion: v }),
+      setBoardVersion: (v) => set({ boardVersion: v }),
       login: () => set({ authed: true }),
       setLoginEmail: (v) => set({ loginEmail: v }),
       toggleNav: () => set((s) => ({ navOpen: !s.navOpen })),
