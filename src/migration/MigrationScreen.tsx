@@ -3,10 +3,11 @@
 // the «взять следующим»/WIP queues, Новинки, the Роль×Модуль матрица, the registries with «дёрни
 // за ниточку», and the aggregations incl. the вердикт funnel (перенос × новинки). нужность is
 // recomputed from the role↔module membership. All numbers come from ./domain.
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import supportData from './data/support.json';
 import rolesData from './data/support-roles.json';
 import noveltiesData from './data/support-novelties.json';
+import { fetchMigration } from '../api/migration';
 import {
   applyMembership,
   funnel,
@@ -41,12 +42,35 @@ import { NoveltyView } from './NoveltyView';
 import { MatrixView } from './MatrixView';
 import { RegistryView } from './RegistryView';
 import { TraceView } from './TraceView';
+import { ImportMasterView } from './ImportMasterView';
 
-const MODULES = supportData as ModuleRow[];
-const ROLES = rolesData as RoleRow[];
-const NOVELTIES = noveltiesData as NoveltyRow[];
+// Bundled demo snapshot (extracted from the MASTER of 2026-07-02) — the fallback until a dataset
+// is imported server-side, and the standalone (no-backend) mode's data.
+const BUNDLED = {
+  modules: supportData as ModuleRow[],
+  roles: rolesData as RoleRow[],
+  novelties: noveltiesData as NoveltyRow[],
+};
 
-type TabKey = 'backlog' | 'next' | 'wip' | 'novelties' | 'matrix' | 'registry' | 'trace' | 'agg';
+interface Dataset {
+  modules: ModuleRow[];
+  roles: RoleRow[];
+  novelties: NoveltyRow[];
+  updatedAt: string | null;
+  sourceFile: string | null;
+  server: boolean;
+}
+
+type TabKey =
+  | 'backlog'
+  | 'next'
+  | 'wip'
+  | 'novelties'
+  | 'matrix'
+  | 'registry'
+  | 'trace'
+  | 'agg'
+  | 'import';
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'backlog', label: '🎯 Бэклог' },
   { key: 'next', label: 'Взять следующим' },
@@ -56,16 +80,43 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: 'registry', label: 'Реестры' },
   { key: 'trace', label: 'Ниточка' },
   { key: 'agg', label: 'Агрегации' },
+  { key: 'import', label: 'Импорт' },
 ];
 
 export function MigrationScreen() {
+  // Server dataset when imported; bundled snapshot otherwise (standalone / empty backend).
+  const [data, setData] = useState<Dataset>({
+    ...BUNDLED,
+    updatedAt: null,
+    sourceFile: null,
+    server: false,
+  });
+  const loadServer = () => {
+    fetchMigration().then(
+      (d) => {
+        if (d.modules.length > 0) {
+          setData({
+            modules: d.modules,
+            roles: d.roles,
+            novelties: d.novelties,
+            updatedAt: d.updatedAt,
+            sourceFile: d.sourceFile,
+            server: true,
+          });
+        }
+      },
+      () => {}, // no backend → bundled snapshot stays
+    );
+  };
+  useEffect(loadServer, []);
+
   // нужность из членства роль↔модуль + мастер-модель (новинки → вердикт → волны В1–В7 → Score).
   const rows = useMemo(
-    () => masterDerive(applyMembership(MODULES, ROLES), NOVELTIES, ROLES),
-    [],
+    () => masterDerive(applyMembership(data.modules, data.roles), data.novelties, data.roles),
+    [data],
   );
   const byId = useMemo(() => new Map(rows.map((m) => [m.id, m])), [rows]);
-  const dash = useMemo(() => masterDashboard(rows, NOVELTIES, ROLES), [rows]);
+  const dash = useMemo(() => masterDashboard(rows, data.novelties, data.roles), [rows, data]);
   const [tab, setTab] = useState<TabKey>('backlog');
 
   // «Дёрни за ниточку» selection — deep-linked from the registries and новинки.
@@ -91,8 +142,8 @@ export function MigrationScreen() {
         Карта и бэклог переезда
       </div>
       <div style={{ fontSize: 13, color: 'var(--text-soft)', marginBottom: 18 }}>
-        Скоуп: Саппорт · {ROLES.length} ролей · {total} модулей · два бэклога: перенос + новинки.
-        Целевая роль — {dashTargetName(ROLES)} · нужность из членства роль↔модуль.
+        Скоуп: Саппорт · {data.roles.length} ролей · {total} модулей · два бэклога: перенос + новинки.
+        Целевая роль — {dashTargetName(data.roles)} · нужность из членства роль↔модуль.
       </div>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
@@ -155,15 +206,15 @@ export function MigrationScreen() {
       {tab === 'next' && <QueueList rows={takeNext(rows)} showTask emptyHint="Нет модулей к взятию" />}
       {tab === 'wip' && <QueueList rows={inProgress(rows)} showState emptyHint="Нет активных модулей" />}
       {tab === 'novelties' && (
-        <NoveltyView novelties={NOVELTIES} byId={byId} onTraceModule={goTraceModule} />
+        <NoveltyView novelties={data.novelties} byId={byId} onTraceModule={goTraceModule} />
       )}
-      {tab === 'matrix' && <MatrixView rows={rows} roles={ROLES} byId={byId} />}
+      {tab === 'matrix' && <MatrixView rows={rows} roles={data.roles} byId={byId} />}
       {tab === 'registry' && (
         <RegistryView
           rows={rows}
-          roles={ROLES}
+          roles={data.roles}
           byId={byId}
-          novelties={NOVELTIES}
+          novelties={data.novelties}
           onTraceModule={goTraceModule}
           onTraceRole={goTraceRole}
         />
@@ -171,9 +222,9 @@ export function MigrationScreen() {
       {tab === 'trace' && (
         <TraceView
           rows={rows}
-          roles={ROLES}
+          roles={data.roles}
           byId={byId}
-          novelties={NOVELTIES}
+          novelties={data.novelties}
           roleId={traceRole}
           moduleId={traceModule}
           onSelectRole={setTraceRole}
@@ -181,6 +232,14 @@ export function MigrationScreen() {
         />
       )}
       {tab === 'agg' && <Aggregations rows={rows} verdictCounts={dash.verdictCounts} />}
+      {tab === 'import' && (
+        <ImportMasterView
+          sourceFile={data.sourceFile}
+          updatedAt={data.updatedAt}
+          isServerData={data.server}
+          onImported={loadServer}
+        />
+      )}
     </div>
   );
 }
