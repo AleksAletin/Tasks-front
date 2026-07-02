@@ -1,22 +1,31 @@
-// «Дёрни за ниточку» (brief §4.2): pick a role → its modules with states; pick a module → every
-// role that has it + тип/задача/состояние. Clicking across panels walks the chain both ways in
+// «Дёрни за ниточку» (brief §4.2, master edition): pick a role → its modules with states (наив +
+// истинная готовность «к переносу»); pick a module → every role that has it + вердикт «перенос ×
+// новинки» + the module's pending новинки. Clicking across panels walks the chain both ways in
 // one click — the acceptance criterion.
 import { useMemo } from 'react';
-import { roleStats, type DerivedModule, type RoleRow } from './domain';
-import { BUCKET_COLOR, BucketPill, CARD, TIER_COLOR, TierPill } from './ui';
+import {
+  noveltiesByModule,
+  roleStats,
+  type MasterModule,
+  type NoveltyRow,
+  type RoleRow,
+} from './domain';
+import { BUCKET_COLOR, BucketPill, CARD, CritPill, TIER_COLOR, TierPill, VerdictPill } from './ui';
 
 export function TraceView({
   rows,
   roles,
   byId,
+  novelties,
   roleId,
   moduleId,
   onSelectRole,
   onSelectModule,
 }: {
-  rows: DerivedModule[];
+  rows: MasterModule[];
   roles: RoleRow[];
-  byId: Map<number, DerivedModule>;
+  byId: Map<number, MasterModule>;
+  novelties: NoveltyRow[];
   roleId: number | null;
   moduleId: number | null;
   onSelectRole: (id: number | null) => void;
@@ -33,11 +42,16 @@ export function TraceView({
     if (!role) return [];
     return role.modules
       .map((id) => byId.get(id))
-      .filter((m): m is DerivedModule => !!m)
+      .filter((m): m is MasterModule => !!m)
       .sort((a, b) => b.need - a.need || a.id - b.id);
   }, [role, byId]);
+  const moduleNovelties = useMemo(
+    () => (moduleId == null ? [] : novelties.filter((n) => n.modules.includes(moduleId))),
+    [novelties, moduleId],
+  );
 
-  const stats = role ? roleStats(role, byId) : null;
+  const novByModule = useMemo(() => noveltiesByModule(novelties), [novelties]);
+  const stats = role ? roleStats(role, byId, novByModule) : null;
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, alignItems: 'start' }}>
@@ -67,8 +81,17 @@ export function TraceView({
                 label="Ядро / Средние / Хвост"
                 value={`${stats.core} / ${stats.mid} / ${stats.tail}`}
               />
-              <Stat label="#готово" value={String(stats.done)} tone="#4a9b7f" />
-              <Stat label="%готово" value={Math.round(stats.pctDone * 100) + '%'} tone="#4a9b7f" />
+              <Stat label="К переносу" value={String(stats.toMigrate)} />
+              <Stat
+                label="Готово (наив)"
+                value={`${stats.done} · ${Math.round(stats.pctDone * 100)}%`}
+                tone="#4263d8"
+              />
+              <Stat
+                label="Истинно готово"
+                value={`${stats.trueDone} · ${Math.round(stats.pctTrue * 100)}%`}
+                tone="#4a9b7f"
+              />
             </div>
             <div style={{ fontSize: 11.5, color: 'var(--text-faint)', marginBottom: 6 }}>
               Модули роли (клик → правая панель):
@@ -104,6 +127,11 @@ export function TraceView({
                   >
                     {m.name}
                   </span>
+                  {m.noveltyCount > 0 && (
+                    <span title="новинок" style={{ fontSize: 10.5, fontWeight: 800, color: '#cf6b6b', flexShrink: 0 }}>
+                      +{m.noveltyCount}
+                    </span>
+                  )}
                   <span style={{ fontSize: 11, fontWeight: 700, color: TIER_COLOR[m.tier], flexShrink: 0 }}>
                     {m.need}
                   </span>
@@ -137,10 +165,10 @@ export function TraceView({
             <div style={{ margin: '14px 0 4px', fontSize: 14.5, fontWeight: 700, color: 'var(--text-3)' }}>
               {module.name}
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', marginBottom: 12 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', marginBottom: 6 }}>
               <TierPill tier={module.tier} />
               <BucketPill bucket={module.bucket} />
-              <span style={{ fontSize: 12, color: 'var(--text-soft)' }}>{module.type || 'тип не задан'}</span>
+              <VerdictPill verdict={module.verdict} />
               <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: '#4263d8' }}>
                 {/^BAC-\d+/.test(module.bac) ? module.bac : 'без задачи'}
               </span>
@@ -148,15 +176,54 @@ export function TraceView({
                 <span style={{ fontSize: 12, color: 'var(--text-soft)' }}>· {module.state}</span>
               )}
             </div>
+            {module.note && (
+              <div style={{ fontSize: 11.5, color: 'var(--text-faint)', marginBottom: 10, lineHeight: 1.45 }}>
+                {module.note}
+              </div>
+            )}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, marginBottom: 12 }}>
               <Stat label="Нужность (ролей)" value={String(module.need)} tone={TIER_COLOR[module.tier]} />
-              <Stat label="Приоритет" value={String(module.priority)} />
-              <Stat label="Действие" value={module.action} small />
+              <Stat label="Score" value={String(module.score)} />
+              <Stat
+                label="Новинок"
+                value={String(module.noveltyCount)}
+                tone={module.noveltyCount ? '#cf6b6b' : undefined}
+              />
             </div>
+
+            {moduleNovelties.length > 0 && (
+              <>
+                <div style={{ fontSize: 11.5, color: 'var(--text-faint)', marginBottom: 6 }}>
+                  Новинки модуля (влить перед переключением роли):
+                </div>
+                <div style={{ maxHeight: '20vh', overflowY: 'auto', marginBottom: 12 }}>
+                  {moduleNovelties.map((n) => (
+                    <div key={n.bac} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', fontSize: 12 }}>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#4263d8', flexShrink: 0 }}>
+                        {n.bac}
+                      </span>
+                      <CritPill criticality={n.criticality} />
+                      <span
+                        style={{
+                          flex: 1,
+                          color: 'var(--text-soft)',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {n.title}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
             <div style={{ fontSize: 11.5, color: 'var(--text-faint)', marginBottom: 6 }}>
               Роли, у которых он есть (клик → левая панель):
             </div>
-            <div style={{ maxHeight: '38vh', overflowY: 'auto', display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <div style={{ maxHeight: '30vh', overflowY: 'auto', display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {rolesOfModule.map((r) => (
                 <span
                   key={r.id}

@@ -1,0 +1,848 @@
+[
+{
+"rank": 1,
+"wave": "🔵 В1 · закончить",
+"id": 539,
+"targetRole": true,
+"novelties": 2,
+"verdict": "🎯 влить новинки",
+"score": 7450
+},
+{
+"rank": 2,
+"wave": "🔵 В1 · закончить",
+"id": 3299,
+"targetRole": true,
+"novelties": 4,
+"verdict": "🎯 влить новинки",
+"score": 7450
+},
+{
+"rank": 3,
+"wave": "🔵 В1 · закончить",
+"id": 787,
+"targetRole": true,
+"novelties": 2,
+"verdict": "🎯 влить новинки",
+"score": 7450
+},
+{
+"rank": 4,
+"wave": "🔵 В1 · закончить",
+"id": 686,
+"targetRole": true,
+"novelties": 1,
+"verdict": "🎯 влить новинки",
+"score": 7440
+},
+{
+"rank": 5,
+"wave": "🔵 В1 · закончить",
+"id": 2704,
+"targetRole": true,
+"novelties": 1,
+"verdict": "🎯 влить новинки",
+"score": 7430
+},
+{
+"rank": 6,
+"wave": "🔵 В1 · закончить",
+"id": 3188,
+"targetRole": true,
+"novelties": 1,
+"verdict": "🎯 влить новинки",
+"score": 7400
+},
+{
+"rank": 7,
+"wave": "🔵 В1 · закончить",
+"id": 655,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7380
+},
+{
+"rank": 8,
+"wave": "🔵 В1 · закончить",
+"id": 2622,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7380
+},
+{
+"rank": 9,
+"wave": "🔵 В1 · закончить",
+"id": 1887,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7360
+},
+{
+"rank": 10,
+"wave": "🔵 В1 · закончить",
+"id": 2845,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7360
+},
+{
+"rank": 11,
+"wave": "🔵 В1 · закончить",
+"id": 2998,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7330
+},
+{
+"rank": 12,
+"wave": "🔵 В1 · закончить",
+"id": 620,
+"targetRole": false,
+"novelties": 1,
+"verdict": "🎯 влить новинки",
+"score": 7160
+},
+{
+"rank": 13,
+"wave": "🔵 В1 · закончить",
+"id": 2979,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7140
+},
+{
+"rank": 14,
+"wave": "🔵 В1 · закончить",
+"id": 455,
+"targetRole": false,
+"novelties": 1,
+"verdict": "🎯 влить новинки",
+"score": 7120
+},
+{
+"rank": 15,
+"wave": "🔵 В1 · закончить",
+"id": 2930,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7110
+},
+{
+"rank": 16,
+"wave": "🔵 В1 · закончить",
+"id": 3046,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7110
+},
+{
+"rank": 17,
+"wave": "🔵 В1 · закончить",
+"id": 3471,
+"targetRole": false,
+"novelties": 2,
+"verdict": "🎯 влить новинки",
+"score": 7080
+},
+{
+"rank": 18,
+"wave": "🔵 В1 · закончить",
+"id": 1622,
+"targetRole": false,
+"novelties": 1,
+"verdict": "🎯 влить новинки",
+"score": 7070
+},
+{
+"rank": 19,
+"wave": "🔵 В1 · закончить",
+"id": 2553,
+"targetRole": false,
+"novelties": 1,
+"verdict": "🎯 влить новинки",
+"score": 7050
+},
+{
+"rank": 20,
+"wave": "🔵 В1 · закончить",
+"id": 2936,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7040
+},
+{
+"rank": 21,
+"wave": "🔵 В1 · закончить",
+"id": 3472,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7030
+},
+{
+"rank": 22,
+"wave": "🔵 В1 · закончить",
+"id": 3064,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7030
+},
+{
+"rank": 23,
+"wave": "🔵 В1 · закончить",
+"id": 2519,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7030
+},
+{
+"rank": 24,
+"wave": "🔵 В1 · закончить",
+"id": 2624,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7030
+},
+{
+"rank": 25,
+"wave": "🔵 В1 · закончить",
+"id": 2081,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7020
+},
+{
+"rank": 26,
+"wave": "🔵 В1 · закончить",
+"id": 3417,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7020
+},
+{
+"rank": 27,
+"wave": "🔵 В1 · закончить",
+"id": 1930,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7010
+},
+{
+"rank": 28,
+"wave": "🔵 В1 · закончить",
+"id": 3035,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"score": 7010
+},
+{
+"rank": 29,
+"wave": "⛔ В2 · разблокировать",
+"id": 2222,
+"targetRole": true,
+"novelties": 0,
+"verdict": "⛔ заблокировано",
+"score": 6380
+},
+{
+"rank": 30,
+"wave": "⛔ В2 · разблокировать",
+"id": 2491,
+"targetRole": true,
+"novelties": 0,
+"verdict": "⛔ заблокировано",
+"score": 6360
+},
+{
+"rank": 31,
+"wave": "⛔ В2 · разблокировать",
+"id": 2166,
+"targetRole": true,
+"novelties": 0,
+"verdict": "⛔ заблокировано",
+"score": 6290
+},
+{
+"rank": 32,
+"wave": "⛔ В2 · разблокировать",
+"id": 634,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⛔ заблокировано",
+"score": 6050
+},
+{
+"rank": 33,
+"wave": "⛔ В2 · разблокировать",
+"id": 1761,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⛔ заблокировано",
+"score": 6020
+},
+{
+"rank": 34,
+"wave": "🔴 В3 · досинхрон новинок",
+"id": 425,
+"targetRole": true,
+"novelties": 17,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"score": 5630
+},
+{
+"rank": 35,
+"wave": "🔴 В3 · досинхрон новинок",
+"id": 55,
+"targetRole": true,
+"novelties": 10,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"score": 5580
+},
+{
+"rank": 36,
+"wave": "🔴 В3 · досинхрон новинок",
+"id": 305,
+"targetRole": true,
+"novelties": 5,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"score": 5510
+},
+{
+"rank": 37,
+"wave": "🔴 В3 · досинхрон новинок",
+"id": 9,
+"targetRole": true,
+"novelties": 4,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"score": 5490
+},
+{
+"rank": 38,
+"wave": "🔴 В3 · досинхрон новинок",
+"id": 499,
+"targetRole": true,
+"novelties": 3,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"score": 5470
+},
+{
+"rank": 39,
+"wave": "🔴 В3 · досинхрон новинок",
+"id": 527,
+"targetRole": true,
+"novelties": 2,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"score": 5450
+},
+{
+"rank": 40,
+"wave": "🔴 В3 · досинхрон новинок",
+"id": 603,
+"targetRole": true,
+"novelties": 2,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"score": 5450
+},
+{
+"rank": 41,
+"wave": "🔴 В3 · досинхрон новинок",
+"id": 79,
+"targetRole": true,
+"novelties": 1,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"score": 5410
+},
+{
+"rank": 42,
+"wave": "🔴 В3 · досинхрон новинок",
+"id": 817,
+"targetRole": false,
+"novelties": 1,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"score": 5170
+},
+{
+"rank": 43,
+"wave": "🔴 В3 · досинхрон новинок",
+"id": 820,
+"targetRole": false,
+"novelties": 1,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"score": 5140
+},
+{
+"rank": 44,
+"wave": "🔴 В3 · досинхрон новинок",
+"id": 3114,
+"targetRole": false,
+"novelties": 2,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"score": 5130
+},
+{
+"rank": 45,
+"wave": "🔴 В3 · досинхрон новинок",
+"id": 478,
+"targetRole": false,
+"novelties": 1,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"score": 5090
+},
+{
+"rank": 46,
+"wave": "🔴 В3 · досинхрон новинок",
+"id": 2443,
+"targetRole": false,
+"novelties": 1,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"score": 5080
+},
+{
+"rank": 47,
+"wave": "🟢 В4 · строить",
+"id": 47,
+"targetRole": true,
+"novelties": 12,
+"verdict": "📌 строить с новинками",
+"score": 4590
+},
+{
+"rank": 48,
+"wave": "🟢 В4 · строить",
+"id": 588,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🟢 готово к работе",
+"score": 4420
+},
+{
+"rank": 49,
+"wave": "🟢 В4 · строить",
+"id": 1677,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🟢 готово к работе",
+"score": 4380
+},
+{
+"rank": 50,
+"wave": "🟢 В4 · строить",
+"id": 788,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🟢 готово к работе",
+"score": 4300
+},
+{
+"rank": 51,
+"wave": "🟢 В4 · строить",
+"id": 3333,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🟢 готово к работе",
+"score": 4260
+},
+{
+"rank": 52,
+"wave": "🟢 В4 · строить",
+"id": 3003,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🟢 готово к работе",
+"score": 4110
+},
+{
+"rank": 53,
+"wave": "🟡 В5 · завести задачу",
+"id": 3524,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"score": 3420
+},
+{
+"rank": 54,
+"wave": "🟡 В5 · завести задачу",
+"id": 2856,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"score": 3380
+},
+{
+"rank": 55,
+"wave": "🟡 В5 · завести задачу",
+"id": 1778,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"score": 3360
+},
+{
+"rank": 56,
+"wave": "🟡 В5 · завести задачу",
+"id": 2655,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"score": 3360
+},
+{
+"rank": 57,
+"wave": "🟡 В5 · завести задачу",
+"id": 2661,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"score": 3360
+},
+{
+"rank": 58,
+"wave": "🟡 В5 · завести задачу",
+"id": 2801,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"score": 3360
+},
+{
+"rank": 59,
+"wave": "🟡 В5 · завести задачу",
+"id": 3324,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"score": 3310
+},
+{
+"rank": 60,
+"wave": "🟡 В5 · завести задачу",
+"id": 3497,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"score": 3190
+},
+{
+"rank": 61,
+"wave": "🟡 В5 · завести задачу",
+"id": 2915,
+"targetRole": true,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"score": 3150
+},
+{
+"rank": 62,
+"wave": "🟡 В5 · завести задачу",
+"id": 2442,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"score": 3110
+},
+{
+"rank": 63,
+"wave": "🟡 В5 · завести задачу",
+"id": 2741,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"score": 3100
+},
+{
+"rank": 64,
+"wave": "🟡 В5 · завести задачу",
+"id": 2850,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"score": 3100
+},
+{
+"rank": 65,
+"wave": "🟡 В5 · завести задачу",
+"id": 1881,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"score": 3100
+},
+{
+"rank": 66,
+"wave": "🟡 В5 · завести задачу",
+"id": 3468,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"score": 3070
+},
+{
+"rank": 67,
+"wave": "🟡 В5 · завести задачу",
+"id": 776,
+"targetRole": false,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"score": 3050
+},
+{
+"rank": 68,
+"wave": "❓ В6 · пересмотреть",
+"id": 2623,
+"targetRole": true,
+"novelties": 1,
+"verdict": "❓ пересмотреть",
+"score": 2390
+},
+{
+"rank": 69,
+"wave": "❓ В6 · пересмотреть",
+"id": 23,
+"targetRole": false,
+"novelties": 2,
+"verdict": "❓ пересмотреть",
+"score": 2140
+},
+{
+"rank": 70,
+"wave": "⏸ В7 · хвост",
+"id": 2405,
+"targetRole": false,
+"novelties": 1,
+"verdict": "⏸ хвост+нов",
+"score": 1050
+},
+{
+"rank": 71,
+"wave": "⏸ В7 · хвост",
+"id": 604,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1040
+},
+{
+"rank": 72,
+"wave": "⏸ В7 · хвост",
+"id": 848,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1040
+},
+{
+"rank": 73,
+"wave": "⏸ В7 · хвост",
+"id": 1878,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1040
+},
+{
+"rank": 74,
+"wave": "⏸ В7 · хвост",
+"id": 1481,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1030
+},
+{
+"rank": 75,
+"wave": "⏸ В7 · хвост",
+"id": 1632,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1030
+},
+{
+"rank": 76,
+"wave": "⏸ В7 · хвост",
+"id": 1744,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1030
+},
+{
+"rank": 77,
+"wave": "⏸ В7 · хвост",
+"id": 2145,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1030
+},
+{
+"rank": 78,
+"wave": "⏸ В7 · хвост",
+"id": 2153,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1030
+},
+{
+"rank": 79,
+"wave": "⏸ В7 · хвост",
+"id": 2738,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1030
+},
+{
+"rank": 80,
+"wave": "⏸ В7 · хвост",
+"id": 2942,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1030
+},
+{
+"rank": 81,
+"wave": "⏸ В7 · хвост",
+"id": 2944,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1030
+},
+{
+"rank": 82,
+"wave": "⏸ В7 · хвост",
+"id": 1879,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1030
+},
+{
+"rank": 83,
+"wave": "⏸ В7 · хвост",
+"id": 778,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1020
+},
+{
+"rank": 84,
+"wave": "⏸ В7 · хвост",
+"id": 995,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1020
+},
+{
+"rank": 85,
+"wave": "⏸ В7 · хвост",
+"id": 1745,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1020
+},
+{
+"rank": 86,
+"wave": "⏸ В7 · хвост",
+"id": 1753,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1020
+},
+{
+"rank": 87,
+"wave": "⏸ В7 · хвост",
+"id": 1755,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1020
+},
+{
+"rank": 88,
+"wave": "⏸ В7 · хвост",
+"id": 1819,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1020
+},
+{
+"rank": 89,
+"wave": "⏸ В7 · хвост",
+"id": 2066,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1020
+},
+{
+"rank": 90,
+"wave": "⏸ В7 · хвост",
+"id": 2469,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1020
+},
+{
+"rank": 91,
+"wave": "⏸ В7 · хвост",
+"id": 3154,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1020
+},
+{
+"rank": 92,
+"wave": "⏸ В7 · хвост",
+"id": 2067,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1010
+},
+{
+"rank": 93,
+"wave": "⏸ В7 · хвост",
+"id": 2574,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1010
+},
+{
+"rank": 94,
+"wave": "⏸ В7 · хвост",
+"id": 3447,
+"targetRole": false,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"score": 1010
+}
+]

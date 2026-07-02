@@ -1,49 +1,57 @@
-// «Карта и бэклог переезда» — v1 screen (brief §4.1–4.5). Renders the tested domain over the
-// Support dataset: the ranked Бэклог, the «взять следующим» build queue, the WIP list, the
-// Роль×Модуль матрица, the module/role registries with «дёрни за ниточку», and the aggregations.
-// нужность is recomputed from the role↔module membership (never trusted from a COUNT — brief §3).
-// All numbers come from ./domain — this file is presentation only.
+// «Карта и бэклог переезда» — master edition (два бэклога: перенос + новинки). Renders the
+// oracle-tested domain over the Support MASTER dataset: the Score-ranked 🎯 Бэклог (волны В1–В7),
+// the «взять следующим»/WIP queues, Новинки, the Роль×Модуль матрица, the registries with «дёрни
+// за ниточку», and the aggregations incl. the вердикт funnel (перенос × новинки). нужность is
+// recomputed from the role↔module membership. All numbers come from ./domain.
 import { useMemo, useState } from 'react';
 import supportData from './data/support.json';
 import rolesData from './data/support-roles.json';
+import noveltiesData from './data/support-novelties.json';
 import {
   applyMembership,
-  backlog,
   funnel,
   crosstab,
+  masterDashboard,
+  masterDerive,
   takeNext,
   inProgress,
   BUCKET_ORDER,
   TIER_ORDER,
   type Bucket,
   type DerivedModule,
+  type MasterModule,
   type ModuleRow,
+  type NoveltyRow,
   type RoleRow,
-  type Tier,
 } from './domain';
 import {
   BUCKET_COLOR,
   BucketPill,
   CARD,
-  Filter,
   SectionTitle,
   TD,
   TH,
   TIER_COLOR,
   TierPill,
+  VERDICT_COLOR,
+  VerdictPill,
 } from './ui';
+import { ScoreBacklogView } from './ScoreBacklogView';
+import { NoveltyView } from './NoveltyView';
 import { MatrixView } from './MatrixView';
 import { RegistryView } from './RegistryView';
 import { TraceView } from './TraceView';
 
 const MODULES = supportData as ModuleRow[];
 const ROLES = rolesData as RoleRow[];
+const NOVELTIES = noveltiesData as NoveltyRow[];
 
-type TabKey = 'backlog' | 'next' | 'wip' | 'matrix' | 'registry' | 'trace' | 'agg';
+type TabKey = 'backlog' | 'next' | 'wip' | 'novelties' | 'matrix' | 'registry' | 'trace' | 'agg';
 const TABS: { key: TabKey; label: string }[] = [
-  { key: 'backlog', label: 'Бэклог' },
+  { key: 'backlog', label: '🎯 Бэклог' },
   { key: 'next', label: 'Взять следующим' },
   { key: 'wip', label: 'В работе / блок' },
+  { key: 'novelties', label: 'Новинки' },
   { key: 'matrix', label: 'Матрица' },
   { key: 'registry', label: 'Реестры' },
   { key: 'trace', label: 'Ниточка' },
@@ -51,12 +59,16 @@ const TABS: { key: TabKey; label: string }[] = [
 ];
 
 export function MigrationScreen() {
-  // нужность из членства роль→модуль; на данных Саппорта совпадает с выгрузкой 1:1 (тест).
-  const rows = useMemo(() => backlog(applyMembership(MODULES, ROLES)), []);
+  // нужность из членства роль↔модуль + мастер-модель (новинки → вердикт → волны В1–В7 → Score).
+  const rows = useMemo(
+    () => masterDerive(applyMembership(MODULES, ROLES), NOVELTIES, ROLES),
+    [],
+  );
   const byId = useMemo(() => new Map(rows.map((m) => [m.id, m])), [rows]);
+  const dash = useMemo(() => masterDashboard(rows, NOVELTIES, ROLES), [rows]);
   const [tab, setTab] = useState<TabKey>('backlog');
 
-  // «Дёрни за ниточку» selection — deep-linked from the registries.
+  // «Дёрни за ниточку» selection — deep-linked from the registries and новинки.
   const [traceRole, setTraceRole] = useState<number | null>(null);
   const [traceModule, setTraceModule] = useState<number | null>(null);
   const goTraceModule = (id: number) => {
@@ -68,12 +80,10 @@ export function MigrationScreen() {
     setTab('trace');
   };
 
-  const fun = useMemo(() => funnel(rows), [rows]);
   const total = rows.length;
-  const doneCount = fun.find((f) => f.bucket === 'Готово')?.count ?? 0;
-  const core = rows.filter((r) => r.tier === 'Ядро');
-  const coreDone = core.filter((r) => r.bucket === 'Готово').length;
-  const coreNoTask = rows.filter((r) => r.tier === 'Ядро' && r.bucket === 'Нужна задача').length;
+  const notMigrating = rows.filter((r) => r.bucket === 'Не переносим').length;
+  const wipCount = rows.filter((r) => r.bucket === 'В работе').length;
+  const blockedCount = rows.filter((r) => r.bucket === 'Заблокировано').length;
 
   return (
     <div style={{ padding: '22px 26px 60px', maxWidth: 1280, margin: '0 auto' }}>
@@ -81,30 +91,37 @@ export function MigrationScreen() {
         Карта и бэклог переезда
       </div>
       <div style={{ fontSize: 13, color: 'var(--text-soft)', marginBottom: 18 }}>
-        Скоуп: Саппорт · {ROLES.length} ролей · {total} модулей · нужность считается из членства
-        роль↔модуль. Приоритет = что разблокирует больше ролей за единицу работы.
+        Скоуп: Саппорт · {ROLES.length} ролей · {total} модулей · два бэклога: перенос + новинки.
+        Целевая роль — {dashTargetName(ROLES)} · нужность из членства роль↔модуль.
       </div>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
-        <Kpi label="Всего модулей" value={String(total)} />
         <Kpi
-          label="Готово (честно)"
-          value={`${Math.round((doneCount / total) * 100)}%`}
-          sub={`${doneCount} из ${total}`}
+          label="Истинно готово (цел. роль)"
+          value={`${Math.round(dash.trueReadinessTarget * 100)}%`}
+          sub={`наивно ${Math.round(dash.naiveReadinessTarget * 100)}% — без учёта новинок`}
           tone="#4a9b7f"
         />
-        <Kpi label="Ядро готово" value={`${coreDone}/${core.length}`} sub="максимальный рычаг" tone="#4263d8" />
         <Kpi
-          label="Ядро без тикета"
-          value={String(coreNoTask)}
-          sub="🟡 завести задачу"
-          tone="#d9a441"
+          label="🔴 ПЕРЕОТКРЫТЬ"
+          value={String(dash.reopenCount)}
+          sub="«готово», но пришли новинки"
+          tone="#cf6b6b"
+        />
+        <Kpi
+          label="Новинок всего"
+          value={String(dash.noveltiesTotal)}
+          sub="догоняющих задач из старой системы"
+          tone="#c8893f"
+        />
+        <Kpi
+          label="Всего модулей"
+          value={String(total)}
+          sub={`к переносу ${total - notMigrating} · не переносим ${notMigrating}`}
         />
         <Kpi
           label="В работе / блок"
-          value={`${fun.find((f) => f.bucket === 'В работе')?.count ?? 0} / ${
-            fun.find((f) => f.bucket === 'Заблокировано')?.count ?? 0
-          }`}
+          value={`${wipCount} / ${blockedCount}`}
           sub="WIP — доводить"
           tone="#c8893f"
         />
@@ -134,15 +151,19 @@ export function MigrationScreen() {
         })}
       </div>
 
-      {tab === 'backlog' && <BacklogTable rows={rows} />}
+      {tab === 'backlog' && <ScoreBacklogView rows={rows} />}
       {tab === 'next' && <QueueList rows={takeNext(rows)} showTask emptyHint="Нет модулей к взятию" />}
       {tab === 'wip' && <QueueList rows={inProgress(rows)} showState emptyHint="Нет активных модулей" />}
+      {tab === 'novelties' && (
+        <NoveltyView novelties={NOVELTIES} byId={byId} onTraceModule={goTraceModule} />
+      )}
       {tab === 'matrix' && <MatrixView rows={rows} roles={ROLES} byId={byId} />}
       {tab === 'registry' && (
         <RegistryView
           rows={rows}
           roles={ROLES}
           byId={byId}
+          novelties={NOVELTIES}
           onTraceModule={goTraceModule}
           onTraceRole={goTraceRole}
         />
@@ -152,100 +173,31 @@ export function MigrationScreen() {
           rows={rows}
           roles={ROLES}
           byId={byId}
+          novelties={NOVELTIES}
           roleId={traceRole}
           moduleId={traceModule}
           onSelectRole={setTraceRole}
           onSelectModule={setTraceModule}
         />
       )}
-      {tab === 'agg' && <Aggregations rows={rows} funnelRows={fun} />}
+      {tab === 'agg' && <Aggregations rows={rows} verdictCounts={dash.verdictCounts} />}
     </div>
   );
 }
 
+function dashTargetName(roles: RoleRow[]): string {
+  const target = roles.find((r) => r.id === 1122);
+  return target ? `${target.name} (${target.id})` : '1122';
+}
+
 function Kpi({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: string }) {
   return (
-    <div style={{ ...CARD, padding: '13px 16px', minWidth: 132, flex: '1 1 132px' }}>
+    <div style={{ ...CARD, padding: '13px 16px', minWidth: 150, flex: '1 1 150px' }}>
       <div style={{ fontSize: 22, fontWeight: 800, color: tone ?? 'var(--text-3)', letterSpacing: '-.5px' }}>
         {value}
       </div>
       <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-2)', marginTop: 2 }}>{label}</div>
       {sub && <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 1 }}>{sub}</div>}
-    </div>
-  );
-}
-
-function BacklogTable({ rows }: { rows: DerivedModule[] }) {
-  const [bucketF, setBucketF] = useState<Bucket | 'все'>('все');
-  const [tierF, setTierF] = useState<Tier | 'все'>('все');
-
-  const shown = rows.filter(
-    (r) => (bucketF === 'все' || r.bucket === bucketF) && (tierF === 'все' || r.tier === tierF),
-  );
-
-  return (
-    <div>
-      <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-        <Filter label="Бакет" value={bucketF} onChange={setBucketF} options={['все', ...BUCKET_ORDER]} />
-        <Filter label="Ярус" value={tierF} onChange={setTierF} options={['все', ...TIER_ORDER]} />
-        <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>{shown.length} модулей</span>
-      </div>
-      <div style={{ ...CARD, overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto', maxHeight: '62vh', overflowY: 'auto' }}>
-          <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 940 }}>
-            <thead>
-              <tr>
-                <th style={TH}>Ранг</th>
-                <th style={TH}>ID</th>
-                <th style={TH}>Модуль</th>
-                <th style={TH}>Тип</th>
-                <th style={TH}>Ярус</th>
-                <th style={{ ...TH, textAlign: 'right' }}>Разбл. ролей</th>
-                <th style={TH}>Задача</th>
-                <th style={TH}>Состояние</th>
-                <th style={TH}>Бакет</th>
-                <th style={{ ...TH, textAlign: 'right' }}>Приоритет</th>
-                <th style={TH}>Действие</th>
-              </tr>
-            </thead>
-            <tbody>
-              {shown.map((r, i) => (
-                <tr key={r.id}>
-                  <td style={{ ...TD, color: 'var(--text-faint)' }}>{i + 1}</td>
-                  <td style={{ ...TD, color: 'var(--text-faint)', fontVariantNumeric: 'tabular-nums' }}>
-                    {r.id}
-                  </td>
-                  <td style={{ ...TD, fontWeight: 600, color: 'var(--text-3)', maxWidth: 300 }}>{r.name}</td>
-                  <td style={{ ...TD, color: 'var(--text-soft)' }}>{r.type}</td>
-                  <td style={TD}>
-                    <TierPill tier={r.tier} />
-                  </td>
-                  <td style={{ ...TD, textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
-                    {r.need}
-                  </td>
-                  <td style={{ ...TD, fontFamily: "'JetBrains Mono', monospace", fontSize: 11.5 }}>
-                    {/^BAC-\d+/.test(r.bac) ? (
-                      <span style={{ color: '#4263d8' }}>{r.bac}</span>
-                    ) : (
-                      <span style={{ color: 'var(--text-faint)' }}>—</span>
-                    )}
-                  </td>
-                  <td style={{ ...TD, color: 'var(--text-soft)', maxWidth: 160, fontSize: 11.5 }}>
-                    {r.state && r.state !== 'неизвестно' ? r.state : '·'}
-                  </td>
-                  <td style={TD}>
-                    <BucketPill bucket={r.bucket} />
-                  </td>
-                  <td style={{ ...TD, textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
-                    {r.priority}
-                  </td>
-                  <td style={{ ...TD, fontSize: 11.5, color: 'var(--text-soft)', maxWidth: 220 }}>{r.action}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
   );
 }
@@ -318,7 +270,7 @@ function QueueList({
                 {r.name}
               </div>
               <div style={{ fontSize: 11.5, color: 'var(--text-faint)', marginTop: 1 }}>
-                <TierPill tier={r.tier} /> · {r.type}
+                <TierPill tier={r.tier} /> · {r.type || 'тип не задан'}
                 {showState && r.state && r.state !== 'неизвестно' ? ` · ${r.state}` : ''}
                 {showTask
                   ? /^BAC-\d+/.test(r.bac)
@@ -340,20 +292,52 @@ function QueueList({
 
 function Aggregations({
   rows,
-  funnelRows,
+  verdictCounts,
 }: {
-  rows: DerivedModule[];
-  funnelRows: ReturnType<typeof funnel>;
+  rows: MasterModule[];
+  verdictCounts: Record<string, number>;
 }) {
+  const funnelRows = useMemo(() => funnel(rows), [rows]);
   const maxCount = Math.max(...funnelRows.map((f) => f.count), 1);
   const byTier = useMemo(() => crosstab(rows, 'tier', TIER_ORDER), [rows]);
-  const types = useMemo(() => [...new Set(rows.map((r) => r.type))], [rows]);
-  const byType = useMemo(() => crosstab(rows, 'type', types), [rows, types]);
+  const types = useMemo(() => [...new Set(rows.map((r) => r.type || '—'))], [rows]);
+  const byType = useMemo(
+    () => crosstab(rows.map((r) => ({ ...r, type: r.type || '—' })), 'type', types),
+    [rows, types],
+  );
+  const verdicts = Object.entries(verdictCounts).sort((a, b) => b[1] - a[1]);
+  const maxVerdict = Math.max(...verdicts.map(([, c]) => c), 1);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
       <section>
-        <SectionTitle>Воронка по бакетам</SectionTitle>
+        <SectionTitle>Вердикты — перенос × новинки (единый план)</SectionTitle>
+        <div style={{ ...CARD, padding: '14px 18px' }}>
+          {verdicts.map(([verdict, count]) => (
+            <div key={verdict} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '4px 0' }}>
+              <div style={{ width: 200, flexShrink: 0 }}>
+                <VerdictPill verdict={verdict} />
+              </div>
+              <div style={{ flex: 1, height: 16, background: 'var(--surf-1)', borderRadius: 5, overflow: 'hidden' }}>
+                <div
+                  style={{
+                    width: `${(count / maxVerdict) * 100}%`,
+                    height: '100%',
+                    background: VERDICT_COLOR[verdict] ?? '#8a8f98',
+                    borderRadius: 5,
+                  }}
+                />
+              </div>
+              <div style={{ width: 40, textAlign: 'right', fontSize: 12.5, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
+                {count}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <SectionTitle>Воронка по бакетам (перенос)</SectionTitle>
         <div style={{ ...CARD, padding: '14px 18px' }}>
           {funnelRows.map((f) => (
             <div key={f.bucket} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '5px 0' }}>

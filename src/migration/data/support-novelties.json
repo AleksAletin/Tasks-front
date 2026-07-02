@@ -1,0 +1,1099 @@
+[
+{
+"bac": "BAC-1753",
+"title": "3299 MultiAccountInfoSupport. Экспорт по отдельному модулю",
+"modules": [
+3299
+],
+"criticality": "🔴 Критично",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1760",
+"title": "3299 MultiAccountInfoSupport. Мультиаккаунты для саппорта",
+"modules": [
+3299
+],
+"criticality": "🔴 Критично",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1767",
+"title": "55 WebUserDoppelgangers. Добавить новую колонку",
+"modules": [
+55
+],
+"criticality": "🟠 Существенно",
+"changeType": "Добавление колонки/кнопки",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1654",
+"title": "Проверка поиска.Доработка",
+"modules": [
+425
+],
+"criticality": "🟠 Существенно",
+"changeType": "Доработка/изменение",
+"priority": "Критическая",
+"state": "Новая"
+},
+{
+"bac": "BAC-1669",
+"title": "Проверка поиска.Доработка",
+"modules": [
+425
+],
+"criticality": "🟠 Существенно",
+"changeType": "Доработка/изменение",
+"priority": "Критическая",
+"state": "Новая"
+},
+{
+"bac": "BAC-1747",
+"title": "Проверка поиска.Доработка",
+"modules": [
+425
+],
+"criticality": "🟠 Существенно",
+"changeType": "Доработка/изменение",
+"priority": "Критическая",
+"state": "Новая"
+},
+{
+"bac": "BAC-1773",
+"title": "499 HistoryOut. Добавить колонку с фингруппой",
+"modules": [
+499
+],
+"criticality": "🟠 Существенно",
+"changeType": "Добавление колонки/кнопки",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1620",
+"title": "Добавить отметку мошеннических операций для касс МК (SMP)",
+"modules": [],
+"criticality": "🟠 Существенно",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1642",
+"title": "Добавить отметку мошеннических операций для касс МК (SMP)",
+"modules": [],
+"criticality": "🟠 Существенно",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1672",
+"title": "539 WebUserAllChangeLog. Добавить признак второго типа 2FA",
+"modules": [
+539
+],
+"criticality": "🟠 Существенно",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1776",
+"title": "Переход в отчет \"Проверка промокодов\" в карточке игрока",
+"modules": [
+527
+],
+"criticality": "🟠 Существенно",
+"changeType": "Перенос",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1801",
+"title": "Перенос вкладки Платежные ограничения в карточку пользователя",
+"modules": [
+2704
+],
+"criticality": "🟠 Существенно",
+"changeType": "Перенос",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1794",
+"title": "787 VisCommentUserCard. Дополнить платежные комменты",
+"modules": [
+787
+],
+"criticality": "🟠 Существенно",
+"changeType": "Добавление колонки/кнопки",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1792",
+"title": "Покраска строки с информацией о порезке в отчете \"веб ставки пользователя\".",
+"modules": [
+47
+],
+"criticality": "🟠 Существенно",
+"changeType": "Визуал/подсветка",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1806",
+"title": "3465 AccrualBonusLogReport. Создать новый отчет \"Лог начисления бонусов\" и кнопку \"Начислить бонус\"",
+"modules": [],
+"criticality": "🟠 Существенно",
+"changeType": "Новое (net-new)",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1804",
+"title": "Реализация начисления фриспинов в админке",
+"modules": [],
+"criticality": "🟠 Существенно",
+"changeType": "Новое (net-new)",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1524",
+"title": "Смена статуса в Не принятых ставках игрока",
+"modules": [
+47
+],
+"criticality": "🟠 Существенно",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1633",
+"title": "47 WebBetDetails.Доработка отчета \"Web-ставки пользователя\" (Отображение Суммы приема и Суммы приема RUB при выбранном периоде не более 7-ми дней)",
+"modules": [
+47
+],
+"criticality": "🟠 Существенно",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1634",
+"title": "ДОРАБОТКА. 47 WebBetDetails.Доработка отчета \"Web-ставки пользователя\" (Отображение Суммы приема и Суммы приема RUB при выбранном периоде не более 7-ми дней)",
+"modules": [
+47
+],
+"criticality": "🟠 Существенно",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1786",
+"title": "305 LogOperWebUse. Отчет движение средств пользователя",
+"modules": [
+305
+],
+"criticality": "🟠 Существенно",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1757",
+"title": "Доработка вкладки \"Просмотр медиа файлов карточки игрока\"",
+"modules": [
+603
+],
+"criticality": "🟠 Существенно",
+"changeType": "Доработка/изменение",
+"priority": "Значительная",
+"state": "Новая"
+},
+{
+"bac": "BAC-1670",
+"title": "9 WebUsers. Подсвечивать валютные счета при открытии деталей пользователя",
+"modules": [
+9
+],
+"criticality": "🟠 Существенно",
+"changeType": "Визуал/подсветка",
+"priority": "Значительная",
+"state": "Новая"
+},
+{
+"bac": "BAC-1763",
+"title": "WebUserSearchNormalization.Создание модуля \"Автоматическое включение нормализации\"",
+"modules": [
+3188
+],
+"criticality": "🟡 Обычное",
+"changeType": "Новое (net-new)",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1525",
+"title": "3568 UserActivityStatusColumn. Добавить новое поле",
+"modules": [],
+"criticality": "🟡 Обычное",
+"changeType": "Новое (net-new)",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1650",
+"title": "Добавить новый столбец в отчет \"Поиск веб-игрока\"",
+"modules": [
+425
+],
+"criticality": "🟡 Обычное",
+"changeType": "Новое (net-new)",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1805",
+"title": "2553 - UserAutoMoneyReserve, 478- WebUserReservation Резерв и авторезерв",
+"modules": [
+2553,
+478
+],
+"criticality": "🟡 Обычное",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1774",
+"title": "3114 OTPLog. Складывать в лог номер телефона и email при отправке",
+"modules": [
+3114
+],
+"criticality": "🟡 Обычное",
+"changeType": "Логирование",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1745",
+"title": "3114 OTPLog. Сортировка поля \"источник\"",
+"modules": [
+3114
+],
+"criticality": "🟡 Обычное",
+"changeType": "UI/фильтры",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1771",
+"title": "71 SetUserRestrictions. История порезок валютного счета",
+"modules": [],
+"criticality": "🟡 Обычное",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1744",
+"title": "SuspiciousUsersReport. Лог подозрительных действий оператора",
+"modules": [],
+"criticality": "🟡 Обычное",
+"changeType": "Логирование",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1664",
+"title": "SuspiciousUsersReport. Лог подозрительных действий оператора",
+"modules": [],
+"criticality": "🟡 Обычное",
+"changeType": "Логирование",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1677",
+"title": "SuspiciousUsersReport. Лог подозрительных действий оператора",
+"modules": [],
+"criticality": "🟡 Обычное",
+"changeType": "Логирование",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1787",
+"title": "3471 BonusButton. Настройка уведомлений о начислениях бонусов",
+"modules": [
+3471
+],
+"criticality": "🟡 Обычное",
+"changeType": "Доработка/изменение",
+"priority": "Обычная",
+"state": "Новая"
+},
+{
+"bac": "BAC-1807",
+"title": "Кнопка \"Начислить Бонус\"",
+"modules": [
+3471
+],
+"criticality": "🟡 Обычное",
+"changeType": "Добавление колонки/кнопки",
+"priority": "Обычная",
+"state": "Новая"
+},
+{
+"bac": "BAC-1778",
+"title": "Копировать только валютные. Отчет поиск веб игрока",
+"modules": [
+425
+],
+"criticality": "🟡 Обычное",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1779",
+"title": "47 WebBetDetails - Web-ставки. Отображение изменений пользователя",
+"modules": [
+47
+],
+"criticality": "🟡 Обычное",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1761",
+"title": "603 WebUserMediaRead. Кассовые аккаунты - актуальность в админке",
+"modules": [
+603
+],
+"criticality": "🟡 Обычное",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1631",
+"title": "9 WebUsers. Убрать детали пользователя из списка заходивших с одного ПК",
+"modules": [
+9,
+55
+],
+"criticality": "🟡 Обычное",
+"changeType": "Убрать/скрыть",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1632",
+"title": "47 WebBetDetails.Доработка отчета \"Web-ставки пользователя\"",
+"modules": [
+47
+],
+"criticality": "🟡 Обычное",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1803",
+"title": "47 WebBetDetails - Десктоп / Обновить \"Отчет для пометки оппозитных игр\" для СБ",
+"modules": [
+47
+],
+"criticality": "🟡 Обычное",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1673",
+"title": "9 WebUsers. Возможность вызова деталей пользователя по нескольким игрокам",
+"modules": [
+9
+],
+"criticality": "🟡 Обычное",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1797",
+"title": "55 WebUserDoppelgangers. Мелкие доработки для NEW версии отчета",
+"modules": [
+55
+],
+"criticality": "🟡 Обычное",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1676",
+"title": "55 WebUserDoppelgangers. Доработка отчета Список заходивших с пк NEW",
+"modules": [
+55
+],
+"criticality": "🟡 Обычное",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1782",
+"title": "55 WebUserDoppelgangers. Колонка любимый спорт",
+"modules": [
+55
+],
+"criticality": "🟡 Обычное",
+"changeType": "Добавление колонки/кнопки",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1796",
+"title": "Отчет Список заходивших с одного ПК",
+"modules": [
+55
+],
+"criticality": "🟡 Обычное",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1756",
+"title": "Прокинуть колонку Проблемный игрок в несколько отчетов",
+"modules": [],
+"criticality": "🟡 Обычное",
+"changeType": "Добавление колонки/кнопки",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1795",
+"title": "Переработка горячих клавиш",
+"modules": [],
+"criticality": "🟡 Обычное",
+"changeType": "UI/фильтры",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1799",
+"title": "3551 WebUserDoppelgangers_HiddenColumns - Список заходивших с одного ПК- убрать лишние колонки в соответствующем фильтре",
+"modules": [
+55
+],
+"criticality": "🟡 Обычное",
+"changeType": "Убрать/скрыть",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1646",
+"title": "1772 GetHashGuids и 55 WebUserDoppelgangers. Изменить кнопку",
+"modules": [
+55
+],
+"criticality": "🟡 Обычное",
+"changeType": "Добавление колонки/кнопки",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1648",
+"title": "425 WebUserSearch. Нормализация поиска по номеру документа",
+"modules": [
+425
+],
+"criticality": "🟡 Обычное",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1644",
+"title": "55 WebUserDoppelgangers/ 997 GetMultiAccByIP. Отчёты \"Список заходивших с одного ПК\" и \"Пересечение по IP\"",
+"modules": [
+55
+],
+"criticality": "🟡 Обычное",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1768",
+"title": "425 WebUserSearch. Добавить новую колонку",
+"modules": [
+425
+],
+"criticality": "🟡 Обычное",
+"changeType": "Добавление колонки/кнопки",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1785",
+"title": "305 LogOperWebUse. Отчет движение средств пользователя. Возы.",
+"modules": [
+305
+],
+"criticality": "🟡 Обычное",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1629",
+"title": "686 ElectronicRechargePlayer, 499 HistoryOut. Добавить колонки в отчеты",
+"modules": [
+686,
+499
+],
+"criticality": "🟡 Обычное",
+"changeType": "Добавление колонки/кнопки",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1635",
+"title": "425 WebUserSearch и 2623 WebUserFinOper_3_4. Докинуть колонку",
+"modules": [
+425,
+2623
+],
+"criticality": "🟡 Обычное",
+"changeType": "Добавление колонки/кнопки",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1674",
+"title": "305 LogOperWebUse. Добавление колонок в отчет \"Движение средств веб-пользователя\"",
+"modules": [
+305
+],
+"criticality": "🟡 Обычное",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1798",
+"title": "425 WebUserSearch - Убрать колонки ДЕМО из поиска веб-игрока и деталей пользователя",
+"modules": [
+425
+],
+"criticality": "🟡 Обычное",
+"changeType": "Убрать/скрыть",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1777",
+"title": "425 WebUserSearch. Реализовать чекбокс Показать все валютные счета",
+"modules": [
+425
+],
+"criticality": "🟡 Обычное",
+"changeType": "UI/фильтры",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1755",
+"title": "425 WebUserSearch. Поиск веб игрока",
+"modules": [
+425
+],
+"criticality": "🟡 Обычное",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1762",
+"title": "47 WebBetDetails. Изменить отображение валютных счетов",
+"modules": [
+47
+],
+"criticality": "🟡 Обычное",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1783",
+"title": "787 VisCommentUserCard. Изменения в карточке пользователя",
+"modules": [
+787
+],
+"criticality": "🟡 Обычное",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1780",
+"title": "527 PromoCodesCheck - Админка. Проверка промо-кодов. Добавление колонки \"Сумма в RUB\"",
+"modules": [
+527
+],
+"criticality": "🟡 Обычное",
+"changeType": "Добавление колонки/кнопки",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1645",
+"title": "305 LogOperWebUse. Дополнить пкм",
+"modules": [
+305
+],
+"criticality": "🟡 Обычное",
+"changeType": "Добавление колонки/кнопки",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1793",
+"title": "Изменения колонки \"ВИД\" в WEB-ставки пользователя v.1",
+"modules": [
+47
+],
+"criticality": "🟡 Обычное",
+"changeType": "Добавление колонки/кнопки",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1625",
+"title": "425 WebUserSearch. Задача по доработке поиска веб-игрока",
+"modules": [
+425
+],
+"criticality": "🟡 Обычное",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1652",
+"title": "47 WebBetDetails. Добавить кнопку в отчет по веб-ставкам пользователя для просмотра баланса в шовных кошельках",
+"modules": [
+47
+],
+"criticality": "🟡 Обычное",
+"changeType": "Добавление колонки/кнопки",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1649",
+"title": "Перейти на новый ключ idUserArray в методе получения сведений о пользователе",
+"modules": [
+9
+],
+"criticality": "🟡 Обычное",
+"changeType": "Перенос",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1639",
+"title": "Прокинуть колонку в отчет",
+"modules": [],
+"criticality": "🟡 Обычное",
+"changeType": "Добавление колонки/кнопки",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1636",
+"title": "WebUserDoppelgangers.По умолчанию \"Скрыть неинформативные\"",
+"modules": [
+55
+],
+"criticality": "🟡 Обычное",
+"changeType": "Убрать/скрыть",
+"priority": "Обычная",
+"state": "Новая"
+},
+{
+"bac": "BAC-1638",
+"title": "539 WebUserAllChangeLog. Доработка отчета",
+"modules": [
+539
+],
+"criticality": "🟡 Обычное",
+"changeType": "Доработка/изменение",
+"priority": "Обычная",
+"state": "Новая"
+},
+{
+"bac": "BAC-1651",
+"title": "3282 RepportUsersOldContacts. Новый отчет \"Поиск по отвязанным данным\"",
+"modules": [],
+"criticality": "🟡 Обычное",
+"changeType": "Новое (net-new)",
+"priority": "Обычная",
+"state": "Новая"
+},
+{
+"bac": "BAC-1769",
+"title": "79 WebUserGeoCity. Доработка в отчет Местоположения игрока",
+"modules": [
+79
+],
+"criticality": "⚪ Низкое",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1628",
+"title": "305 LogOperWebUse. Доработка отчета по движению средств пользователя",
+"modules": [
+305
+],
+"criticality": "⚪ Низкое",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1067",
+"title": "Вкладка \"Лояльность NEW\" в Карточке игрока",
+"modules": [
+23
+],
+"criticality": "⚪ Низкое",
+"changeType": "Прочее",
+"priority": "Обычная",
+"state": "Ожидает разработку"
+},
+{
+"bac": "BAC-1772",
+"title": "23 Card. Убрать колонку",
+"modules": [
+23
+],
+"criticality": "⚪ Низкое",
+"changeType": "Убрать/скрыть",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1750",
+"title": "2443 TelemarketingCallUserTagsReport. Мульти-выбор тегов",
+"modules": [
+2443
+],
+"criticality": "⚪ Низкое",
+"changeType": "UI/фильтры",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1775",
+"title": "455 ReportSupportCalls, 820 SupportCallsOut. Вывод итогов и колонки реферала",
+"modules": [
+455,
+820
+],
+"criticality": "⚪ Низкое",
+"changeType": "Добавление колонки/кнопки",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1766",
+"title": "817 UserCallBack. Доработка фильтров в отчете Заказанные звонки пользователя",
+"modules": [
+817
+],
+"criticality": "⚪ Низкое",
+"changeType": "UI/фильтры",
+"priority": "Обычная",
+"state": "Новая"
+},
+{
+"bac": "BAC-1665",
+"title": "425 WebUserSearch. Цвета для трех классов игрока (идея ADMINKA-50)",
+"modules": [
+425
+],
+"criticality": "⚪ Низкое",
+"changeType": "Визуал/подсветка",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1678",
+"title": "425 WebUserSearch. Цвета для трех классов игрока (идея ADMINKA-50)",
+"modules": [
+425
+],
+"criticality": "⚪ Низкое",
+"changeType": "Визуал/подсветка",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1743",
+"title": "425 WebUserSearch. Цвета для трех классов игрока (идея ADMINKA-50)",
+"modules": [
+425
+],
+"criticality": "⚪ Низкое",
+"changeType": "Визуал/подсветка",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1748",
+"title": "914, 3299 MultiAccountInfo. Добавить EN и FR перевод отчета",
+"modules": [
+3299
+],
+"criticality": "⚪ Низкое",
+"changeType": "Локализация",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1749",
+"title": "914, 3299 MultiAccountInfo. Добавить EN и FR перевод отчета",
+"modules": [
+3299
+],
+"criticality": "⚪ Низкое",
+"changeType": "Локализация",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1627",
+"title": "425 WebUserSearch. Переименовать и добавить колонку",
+"modules": [
+425
+],
+"criticality": "⚪ Низкое",
+"changeType": "Переименование",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1754",
+"title": "499 HistoryOut. Покраска плохого кошелька в истории вывода пользователя",
+"modules": [
+499
+],
+"criticality": "⚪ Низкое",
+"changeType": "Визуал/подсветка",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1758",
+"title": "47 WebBetDetails. Сделать подсветку для промо",
+"modules": [
+47
+],
+"criticality": "⚪ Низкое",
+"changeType": "Визуал/подсветка",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1759",
+"title": "Покраска ставок по классу клиента.",
+"modules": [
+47
+],
+"criticality": "⚪ Низкое",
+"changeType": "Визуал/подсветка",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1666",
+"title": "425 WebUserSearch. EN и FR интерфейс: цвета классов игрока и статусов верификации",
+"modules": [
+425
+],
+"criticality": "⚪ Низкое",
+"changeType": "Визуал/подсветка",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1630",
+"title": "997 GetMultiAccByIP. Доработка отчета Пересечения по Ip new",
+"modules": [],
+"criticality": "⚪ Низкое",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1746",
+"title": "1913 ActiveRefBonuses. Доработка отчета \"активные бонусы по рефералам\"",
+"modules": [],
+"criticality": "⚪ Низкое",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1662",
+"title": "2947 ReportTelemarketingSupportLang. Доработка отчета",
+"modules": [],
+"criticality": "⚪ Низкое",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1663",
+"title": "2947 ReportTelemarketingSupportLang. Доработка отчета \"Справочник связей языков поддержки\"",
+"modules": [],
+"criticality": "⚪ Низкое",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1751",
+"title": "589 RepportReviewWebUser. Логирование действий сотрудников",
+"modules": [],
+"criticality": "⚪ Низкое",
+"changeType": "Логирование",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1764",
+"title": "2947 ReportTelemarketingSupportLang. Доработка отчета",
+"modules": [],
+"criticality": "⚪ Низкое",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1770",
+"title": "Синхронизировать время отчетов",
+"modules": [],
+"criticality": "⚪ Низкое",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1788",
+"title": "1683 - BadWallets Возможность указать массива агентов при добавление плохого кошелька",
+"modules": [],
+"criticality": "⚪ Низкое",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1675",
+"title": "3424 SocialAccountsLog. Доработка логирования привязанных соц.сетей в карточке игрока",
+"modules": [],
+"criticality": "⚪ Низкое",
+"changeType": "Логирование",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1660",
+"title": "3424 SocialAccountsLog. Доработка логирования привязанных соц.сетей в карточке игрока",
+"modules": [],
+"criticality": "⚪ Низкое",
+"changeType": "Логирование",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1802",
+"title": "Отправка зеркала и VIP-номера телефона на Email",
+"modules": [],
+"criticality": "⚪ Низкое",
+"changeType": "Прочее",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1637",
+"title": "Обновить вид отчета \"Копировать информацию об игроке\"",
+"modules": [],
+"criticality": "⚪ Низкое",
+"changeType": "Доработка/изменение",
+"priority": "Обычная",
+"state": "Новая"
+},
+{
+"bac": "BAC-1752",
+"title": "2405 Adminka2_cdr_GetInfo. Доработка отчета «Ключевые показатели исходящей линии ТМ»",
+"modules": [
+2405
+],
+"criticality": "⚪ Низкое",
+"changeType": "Доработка/изменение",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1668",
+"title": "1622 UsersWithoutDeposit. Не работают фильтры в отчете \"Прогноз звонков ИИ\"",
+"modules": [
+1622
+],
+"criticality": "⚪ Низкое",
+"changeType": "UI/фильтры",
+"priority": "Обычная",
+"state": "Новая"
+},
+{
+"bac": "BAC-1680",
+"title": "620 CallingUserSearch. Отчет \"Найти звонящего\": цвета для трех классов игрока",
+"modules": [
+620
+],
+"criticality": "⚪ Низкое",
+"changeType": "Визуал/подсветка",
+"priority": "",
+"state": ""
+},
+{
+"bac": "BAC-1781",
+"title": "Переименовать кнопки отправки зеркал",
+"modules": [],
+"criticality": "⚪ Низкое",
+"changeType": "Переименование",
+"priority": "",
+"state": ""
+}
+]

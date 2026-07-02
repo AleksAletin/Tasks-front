@@ -147,3 +147,57 @@ export function SectionTitle({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+
+/** Colors for the master's 14 «перенос × новинки» verdicts (exact strings). */
+export const VERDICT_COLOR: Record<string, string> = {
+  '🔴 ПЕРЕОТКРЫТЬ': '#cf6b6b',
+  '🎯 влить новинки': '#c8893f',
+  '⛔ заблок+нов': '#cf6b6b',
+  '⛔ заблокировано': '#cf6b6b',
+  '📌 строить с новинками': '#4263d8',
+  '🆕 задача+новинки': '#d9a441',
+  '🟡 завести задачу': '#d9a441',
+  '🔵 в работе': '#c8893f',
+  '🟢 готово к работе': '#4263d8',
+  '✅ готово-актуально': '#4a9b7f',
+  '❓ пересмотреть': '#8a8f98',
+  '⏸ хвост+нов': '#8a8f98',
+  '⏸ хвост': '#8a8f98',
+  '🚫 не переносим': '#b0b4ba',
+};
+
+export function VerdictPill({ verdict }: { verdict: string }) {
+  const c = VERDICT_COLOR[verdict] ?? '#8a8f98';
+  return (
+    <span
+      style={{
+        display: 'inline-block',
+        padding: '2px 8px',
+        borderRadius: 7,
+        fontSize: 11,
+        fontWeight: 700,
+        whiteSpace: 'nowrap',
+        color: c,
+        background: c + '1e',
+      }}
+    >
+      {verdict}
+    </span>
+  );
+}
+
+/** «🔴 Критично» / «🟠 Существенно» / «🟡 Обычное» / «⚪ Низкое» — colored by the emoji. */
+export function CritPill({ criticality }: { criticality: string }) {
+  const c = criticality.startsWith('🔴')
+    ? '#cf6b6b'
+    : criticality.startsWith('🟠')
+      ? '#d9812f'
+      : criticality.startsWith('🟡')
+        ? '#d9a441'
+        : '#8a8f98';
+  return (
+    <span style={{ fontSize: 11.5, fontWeight: 700, whiteSpace: 'nowrap', color: c }}>
+      {criticality || '—'}
+    </span>
+  );
+}

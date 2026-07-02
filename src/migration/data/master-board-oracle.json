@@ -1,0 +1,1982 @@
+[
+{
+"id": 1,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 23,
+"tier": "Средние",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 109,
+"novelties": 2,
+"verdict": "❓ пересмотреть",
+"trulyDone": ""
+},
+{
+"id": 45,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 51,
+"tier": "Средние",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 112,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 97,
+"tier": "Ядро",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 134,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 231,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 239,
+"tier": "Ядро",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 126,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 463,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 595,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 103,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 604,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 604,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 650,
+"tier": "Ядро",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 131,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 776,
+"tier": "Средние",
+"bucket": "Нужна задача",
+"wave": 3,
+"priority": 705,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"trulyDone": ""
+},
+{
+"id": 778,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 602,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 848,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 604,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 851,
+"tier": "Ядро",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 122,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 891,
+"tier": "Ядро",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 995,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 602,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 1111,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 1403,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 103,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 1422,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 1481,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 603,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 1565,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 103,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 1632,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 603,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 1700,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 103,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 1744,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 603,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 1745,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 602,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 1753,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 602,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 1755,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 602,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 1778,
+"tier": "Ядро",
+"bucket": "Нужна задача",
+"wave": 3,
+"priority": 726,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"trulyDone": ""
+},
+{
+"id": 1780,
+"tier": "Средние",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 107,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 1786,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 1791,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 1819,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 602,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 1870,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 1903,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 1920,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 1968,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2066,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 602,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 2067,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 601,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 2089,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2142,
+"tier": "Средние",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 112,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2145,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 603,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 2153,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 603,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 2212,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2231,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2405,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 602,
+"novelties": 1,
+"verdict": "⏸ хвост+нов",
+"trulyDone": ""
+},
+{
+"id": 2442,
+"tier": "Средние",
+"bucket": "Нужна задача",
+"wave": 3,
+"priority": 711,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"trulyDone": ""
+},
+{
+"id": 2463,
+"tier": "Ядро",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 126,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2466,
+"tier": "Ядро",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 127,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2469,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 602,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 2570,
+"tier": "Ядро",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2574,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 601,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 2582,
+"tier": "Средние",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 105,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2595,
+"tier": "Ядро",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 126,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2626,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 104,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2652,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2655,
+"tier": "Ядро",
+"bucket": "Нужна задача",
+"wave": 3,
+"priority": 726,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"trulyDone": ""
+},
+{
+"id": 2661,
+"tier": "Ядро",
+"bucket": "Нужна задача",
+"wave": 3,
+"priority": 726,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"trulyDone": ""
+},
+{
+"id": 2731,
+"tier": "Средние",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 112,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2738,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 603,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 2741,
+"tier": "Средние",
+"bucket": "Нужна задача",
+"wave": 3,
+"priority": 710,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"trulyDone": ""
+},
+{
+"id": 2745,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2750,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2801,
+"tier": "Ядро",
+"bucket": "Нужна задача",
+"wave": 3,
+"priority": 726,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"trulyDone": ""
+},
+{
+"id": 2850,
+"tier": "Средние",
+"bucket": "Нужна задача",
+"wave": 3,
+"priority": 710,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"trulyDone": ""
+},
+{
+"id": 2856,
+"tier": "Ядро",
+"bucket": "Нужна задача",
+"wave": 3,
+"priority": 728,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"trulyDone": ""
+},
+{
+"id": 2915,
+"tier": "Средние",
+"bucket": "Нужна задача",
+"wave": 3,
+"priority": 705,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"trulyDone": ""
+},
+{
+"id": 2931,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2942,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 603,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 2944,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 603,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 3006,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 104,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 3021,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 3041,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 3154,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 602,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 3324,
+"tier": "Ядро",
+"bucket": "Нужна задача",
+"wave": 3,
+"priority": 721,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"trulyDone": ""
+},
+{
+"id": 3405,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 3447,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 601,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 3459,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 103,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 3468,
+"tier": "Средние",
+"bucket": "Нужна задача",
+"wave": 3,
+"priority": 707,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"trulyDone": ""
+},
+{
+"id": 3497,
+"tier": "Средние",
+"bucket": "Нужна задача",
+"wave": 3,
+"priority": 719,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"trulyDone": ""
+},
+{
+"id": 3524,
+"tier": "Ядро",
+"bucket": "Нужна задача",
+"wave": 3,
+"priority": 732,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"trulyDone": ""
+},
+{
+"id": 3540,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 3333,
+"tier": "Средние",
+"bucket": "Готово к работе",
+"wave": 2,
+"priority": 816,
+"novelties": 0,
+"verdict": "🟢 готово к работе",
+"trulyDone": ""
+},
+{
+"id": 47,
+"tier": "Ядро",
+"bucket": "Готово к работе",
+"wave": 2,
+"priority": 828,
+"novelties": 12,
+"verdict": "📌 строить с новинками",
+"trulyDone": ""
+},
+{
+"id": 1677,
+"tier": "Ядро",
+"bucket": "Готово к работе",
+"wave": 2,
+"priority": 828,
+"novelties": 0,
+"verdict": "🟢 готово к работе",
+"trulyDone": ""
+},
+{
+"id": 3472,
+"tier": "Хвост",
+"bucket": "В работе",
+"wave": 1,
+"priority": 903,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 3471,
+"tier": "Хвост",
+"bucket": "В работе",
+"wave": 1,
+"priority": 903,
+"novelties": 2,
+"verdict": "🎯 влить новинки",
+"trulyDone": ""
+},
+{
+"id": 539,
+"tier": "Ядро",
+"bucket": "В работе",
+"wave": 1,
+"priority": 928,
+"novelties": 2,
+"verdict": "🎯 влить новинки",
+"trulyDone": ""
+},
+{
+"id": 788,
+"tier": "Ядро",
+"bucket": "Готово к работе",
+"wave": 2,
+"priority": 820,
+"novelties": 0,
+"verdict": "🟢 готово к работе",
+"trulyDone": ""
+},
+{
+"id": 2930,
+"tier": "Хвост",
+"bucket": "В работе",
+"wave": 1,
+"priority": 901,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 3046,
+"tier": "Хвост",
+"bucket": "В работе",
+"wave": 1,
+"priority": 901,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 3299,
+"tier": "Ядро",
+"bucket": "В работе",
+"wave": 1,
+"priority": 921,
+"novelties": 4,
+"verdict": "🎯 влить новинки",
+"trulyDone": ""
+},
+{
+"id": 838,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 808,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 2491,
+"tier": "Ядро",
+"bucket": "Заблокировано",
+"wave": 8,
+"priority": 226,
+"novelties": 0,
+"verdict": "⛔ заблокировано",
+"trulyDone": ""
+},
+{
+"id": 2166,
+"tier": "Средние",
+"bucket": "Заблокировано",
+"wave": 8,
+"priority": 219,
+"novelties": 0,
+"verdict": "⛔ заблокировано",
+"trulyDone": ""
+},
+{
+"id": 2889,
+"tier": "Ядро",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 1887,
+"tier": "Ядро",
+"bucket": "В работе",
+"wave": 1,
+"priority": 926,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 2704,
+"tier": "Ядро",
+"bucket": "В работе",
+"wave": 1,
+"priority": 928,
+"novelties": 1,
+"verdict": "🎯 влить новинки",
+"trulyDone": ""
+},
+{
+"id": 2845,
+"tier": "Ядро",
+"bucket": "В работе",
+"wave": 1,
+"priority": 926,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 3003,
+"tier": "Средние",
+"bucket": "Готово к работе",
+"wave": 2,
+"priority": 811,
+"novelties": 0,
+"verdict": "🟢 готово к работе",
+"trulyDone": ""
+},
+{
+"id": 787,
+"tier": "Ядро",
+"bucket": "В работе",
+"wave": 1,
+"priority": 928,
+"novelties": 2,
+"verdict": "🎯 влить новинки",
+"trulyDone": ""
+},
+{
+"id": 2998,
+"tier": "Ядро",
+"bucket": "В работе",
+"wave": 1,
+"priority": 923,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 686,
+"tier": "Ядро",
+"bucket": "В работе",
+"wave": 1,
+"priority": 931,
+"novelties": 1,
+"verdict": "🎯 влить новинки",
+"trulyDone": ""
+},
+{
+"id": 2081,
+"tier": "Хвост",
+"bucket": "В работе",
+"wave": 1,
+"priority": 902,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 2553,
+"tier": "Хвост",
+"bucket": "В работе",
+"wave": 1,
+"priority": 902,
+"novelties": 1,
+"verdict": "🎯 влить новинки",
+"trulyDone": ""
+},
+{
+"id": 2598,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 126,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 55,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 127,
+"novelties": 10,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"trulyDone": ""
+},
+{
+"id": 527,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 2,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"trulyDone": ""
+},
+{
+"id": 588,
+"tier": "Ядро",
+"bucket": "Готово к работе",
+"wave": 2,
+"priority": 832,
+"novelties": 0,
+"verdict": "🟢 готово к работе",
+"trulyDone": ""
+},
+{
+"id": 305,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 5,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"trulyDone": ""
+},
+{
+"id": 849,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 575,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 3205,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 125,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 603,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 2,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"trulyDone": ""
+},
+{
+"id": 2599,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 126,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 2044,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 126,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1856,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 126,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 3434,
+"tier": "Хвост",
+"bucket": "Готово",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 79,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 1,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"trulyDone": ""
+},
+{
+"id": 996,
+"tier": "Хвост",
+"bucket": "Готово",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 3417,
+"tier": "Хвост",
+"bucket": "В работе",
+"wave": 1,
+"priority": 902,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 644,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 124,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 9,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 4,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"trulyDone": ""
+},
+{
+"id": 2492,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 126,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 478,
+"tier": "Средние",
+"bucket": "Готово",
+"wave": 9,
+"priority": 106,
+"novelties": 1,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"trulyDone": ""
+},
+{
+"id": 2651,
+"tier": "Хвост",
+"bucket": "Готово",
+"wave": 9,
+"priority": 104,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 2172,
+"tier": "Хвост",
+"bucket": "Готово",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1690,
+"tier": "Средние",
+"bucket": "Готово",
+"wave": 9,
+"priority": 108,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1916,
+"tier": "Средние",
+"bucket": "Готово",
+"wave": 9,
+"priority": 106,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 2444,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 820,
+"tier": "Средние",
+"bucket": "Готово",
+"wave": 9,
+"priority": 111,
+"novelties": 1,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"trulyDone": ""
+},
+{
+"id": 3463,
+"tier": "Хвост",
+"bucket": "Готово",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1878,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 604,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 1879,
+"tier": "Хвост",
+"bucket": "Хвост — потом",
+"wave": 4,
+"priority": 603,
+"novelties": 0,
+"verdict": "⏸ хвост",
+"trulyDone": ""
+},
+{
+"id": 1881,
+"tier": "Средние",
+"bucket": "Нужна задача",
+"wave": 3,
+"priority": 710,
+"novelties": 0,
+"verdict": "🟡 завести задачу",
+"trulyDone": ""
+},
+{
+"id": 455,
+"tier": "Средние",
+"bucket": "В работе",
+"wave": 1,
+"priority": 909,
+"novelties": 1,
+"verdict": "🎯 влить новинки",
+"trulyDone": ""
+},
+{
+"id": 465,
+"tier": "Средние",
+"bucket": "Готово",
+"wave": 9,
+"priority": 108,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 620,
+"tier": "Средние",
+"bucket": "В работе",
+"wave": 1,
+"priority": 913,
+"novelties": 1,
+"verdict": "🎯 влить новинки",
+"trulyDone": ""
+},
+{
+"id": 767,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 886,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 941,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 985,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 986,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 939,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 126,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1622,
+"tier": "Хвост",
+"bucket": "В работе",
+"wave": 1,
+"priority": 904,
+"novelties": 1,
+"verdict": "🎯 влить новинки",
+"trulyDone": ""
+},
+{
+"id": 3064,
+"tier": "Хвост",
+"bucket": "В работе",
+"wave": 1,
+"priority": 903,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 1765,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 1828,
+"tier": "Хвост",
+"bucket": "Готово",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1977,
+"tier": "Хвост",
+"bucket": "Готово",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1741,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1930,
+"tier": "Хвост",
+"bucket": "В работе",
+"wave": 1,
+"priority": 901,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 1950,
+"tier": "Хвост",
+"bucket": "Готово",
+"wave": 9,
+"priority": 104,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 2237,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2995,
+"tier": "Хвост",
+"bucket": "Готово",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 21,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 451,
+"tier": "Средние",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 115,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2519,
+"tier": "Хвост",
+"bucket": "В работе",
+"wave": 1,
+"priority": 903,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 772,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 126,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1788,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 124,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 2082,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 101,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 75,
+"tier": "Средние",
+"bucket": "Готово",
+"wave": 9,
+"priority": 107,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 2222,
+"tier": "Ядро",
+"bucket": "Заблокировано",
+"wave": 8,
+"priority": 228,
+"novelties": 0,
+"verdict": "⛔ заблокировано",
+"trulyDone": ""
+},
+{
+"id": 2443,
+"tier": "Средние",
+"bucket": "Готово",
+"wave": 9,
+"priority": 105,
+"novelties": 1,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"trulyDone": ""
+},
+{
+"id": 3114,
+"tier": "Средние",
+"bucket": "Готово",
+"wave": 9,
+"priority": 108,
+"novelties": 2,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"trulyDone": ""
+},
+{
+"id": 3035,
+"tier": "Хвост",
+"bucket": "В работе",
+"wave": 1,
+"priority": 901,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 1762,
+"tier": "Хвост",
+"bucket": "Готово",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1761,
+"tier": "Хвост",
+"bucket": "Заблокировано",
+"wave": 8,
+"priority": 202,
+"novelties": 0,
+"verdict": "⛔ заблокировано",
+"trulyDone": ""
+},
+{
+"id": 634,
+"tier": "Средние",
+"bucket": "Заблокировано",
+"wave": 8,
+"priority": 205,
+"novelties": 0,
+"verdict": "⛔ заблокировано",
+"trulyDone": ""
+},
+{
+"id": 637,
+"tier": "Хвост",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "🚫 не переносим",
+"trulyDone": ""
+},
+{
+"id": 2936,
+"tier": "Хвост",
+"bucket": "В работе",
+"wave": 1,
+"priority": 904,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 719,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 425,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 132,
+"novelties": 17,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"trulyDone": ""
+},
+{
+"id": 422,
+"tier": "Средние",
+"bucket": "Готово",
+"wave": 9,
+"priority": 106,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1682,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 129,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 423,
+"tier": "Средние",
+"bucket": "Готово",
+"wave": 9,
+"priority": 105,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 3047,
+"tier": "Хвост",
+"bucket": "Готово",
+"wave": 9,
+"priority": 102,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 499,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 3,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"trulyDone": ""
+},
+{
+"id": 2165,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 121,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 2136,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 126,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 783,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 655,
+"tier": "Ядро",
+"bucket": "В работе",
+"wave": 1,
+"priority": 928,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 2979,
+"tier": "Средние",
+"bucket": "В работе",
+"wave": 1,
+"priority": 914,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 817,
+"tier": "Средние",
+"bucket": "Готово",
+"wave": 9,
+"priority": 114,
+"novelties": 1,
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
+"trulyDone": ""
+},
+{
+"id": 1925,
+"tier": "Средние",
+"bucket": "Готово",
+"wave": 9,
+"priority": 112,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 3425,
+"tier": "Средние",
+"bucket": "Готово",
+"wave": 9,
+"priority": 107,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1710,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 125,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 2623,
+"tier": "Ядро",
+"bucket": "Не переносим",
+"wave": 9,
+"priority": 126,
+"novelties": 1,
+"verdict": "❓ пересмотреть",
+"trulyDone": ""
+},
+{
+"id": 3188,
+"tier": "Ядро",
+"bucket": "В работе",
+"wave": 1,
+"priority": 927,
+"novelties": 1,
+"verdict": "🎯 влить новинки",
+"trulyDone": ""
+},
+{
+"id": 2622,
+"tier": "Ядро",
+"bucket": "В работе",
+"wave": 1,
+"priority": 928,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 2624,
+"tier": "Хвост",
+"bucket": "В работе",
+"wave": 1,
+"priority": 903,
+"novelties": 0,
+"verdict": "🔵 в работе",
+"trulyDone": ""
+},
+{
+"id": 1801,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1803,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1987,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1818,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 126,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1814,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 125,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1860,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 131,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+},
+{
+"id": 1902,
+"tier": "Ядро",
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
+"novelties": 0,
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
+}
+]
