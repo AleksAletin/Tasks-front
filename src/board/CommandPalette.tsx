@@ -62,6 +62,11 @@ export function CommandPalette() {
       },
       {
         kind: 'Экран',
+        label: 'Обращения (ОС)',
+        run: () => go('tickets'),
+      },
+      {
+        kind: 'Экран',
         label: 'Дашборд и отчётность',
         run: () => go('dashboard'),
       },

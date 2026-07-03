@@ -17,6 +17,7 @@ import { DashboardScreen } from './DashboardScreen';
 import { SettingsScreen } from './SettingsScreen';
 import { UsersScreen } from './UsersScreen';
 import { MigrationScreen } from '../migration/MigrationScreen';
+import { TicketsScreen } from '../feedback/TicketsScreen';
 import { Popup } from './Popup';
 import { HeaderMenus } from './HeaderMenus';
 import { ToolMenu } from './ToolMenu';
@@ -257,6 +258,7 @@ export function BoardApp() {
               {screen === 'dashboard' && <DashboardScreen />}
               {screen === 'users' && <UsersScreen />}
               {screen === 'migration' && <MigrationScreen />}
+              {screen === 'tickets' && <TicketsScreen />}
             </>
           )}
         </div>

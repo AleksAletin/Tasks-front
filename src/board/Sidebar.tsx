@@ -48,6 +48,7 @@ export function Sidebar() {
   const peopleActive = screen === 'users';
   const boardActive = screen === 'board' && !settingsScreen;
   const migrationActive = screen === 'migration';
+  const ticketsActive = screen === 'tickets';
 
   return (
     <aside
@@ -222,6 +223,7 @@ export function Sidebar() {
             dashActive={dashActive}
             peopleActive={peopleActive}
             migrationActive={migrationActive}
+            ticketsActive={ticketsActive}
             addBoard={addBoard}
             selectBoard={selectBoard}
             setScreen={setScreen}
@@ -240,6 +242,7 @@ function BoardsNav({
   dashActive,
   peopleActive,
   migrationActive,
+  ticketsActive,
   addBoard,
   selectBoard,
   setScreen,
@@ -251,6 +254,7 @@ function BoardsNav({
   dashActive: boolean;
   peopleActive: boolean;
   migrationActive: boolean;
+  ticketsActive: boolean;
   addBoard: () => void;
   selectBoard: (id: string) => void;
   setScreen: (s: Screen) => void;
@@ -372,6 +376,25 @@ function BoardsNav({
             strokeWidth="2"
           >
             <path d="M9 20l-6 2V6l6-2 6 2 6-2v16l-6 2-6-2zM9 4v16M15 6v16" />
+          </svg>
+        }
+      />
+      <NavItem
+        active={ticketsActive}
+        label="Обращения"
+        navOpen={navOpen}
+        onClick={() => setScreen('tickets')}
+        icon={
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M22 12h-6l-2 3h-4l-2-3H2" />
+            <path d="M5.5 5.1L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.7 4H7.3a2 2 0 0 0-1.8 1.1z" />
           </svg>
         }
       />
