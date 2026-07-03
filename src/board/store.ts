@@ -156,6 +156,8 @@ interface BoardState {
   invites: Person[];
 
   // ---- ephemeral ----
+  /** «Обращения»: сколько тикетов в статусе «новое» — бейдж в сайдбаре. */
+  ticketsNewCount: number;
   authed: boolean;
   loginEmail: string;
   viewer: boolean;
@@ -219,6 +221,7 @@ interface BoardState {
     version?: number;
   }) => void;
   setPrefsVersion: (v: number) => void;
+  setTicketsNewCount: (n: number) => void;
   login: () => void;
   setLoginEmail: (v: string) => void;
   toggleNav: () => void;
@@ -410,6 +413,7 @@ export const useBoard = create<BoardState>()(
       labels: initialLabels,
       prefsVersion: 0,
       boardVersion: 0,
+      ticketsNewCount: 0,
       colWidths: {},
       colOrder: [],
       colWrap: {},
@@ -514,6 +518,7 @@ export const useBoard = create<BoardState>()(
       },
       setPrefsVersion: (v) => set({ prefsVersion: v }),
       setBoardVersion: (v) => set({ boardVersion: v }),
+      setTicketsNewCount: (n) => set({ ticketsNewCount: n }),
       login: () => set({ authed: true }),
       setLoginEmail: (v) => set({ loginEmail: v }),
       toggleNav: () => set((s) => ({ navOpen: !s.navOpen })),

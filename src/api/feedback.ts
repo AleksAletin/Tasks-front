@@ -92,6 +92,21 @@ export async function authorReply(id: number, token: string, text: string): Prom
 
 // ---- staff (инбокс + триаж) ----
 
+export interface TicketStats {
+  total: number;
+  new: number;
+  inProgress: number;
+  answered: number;
+  taskCreated: number;
+  rejected: number;
+}
+
+/** Cheap status counters for the sidebar badge. */
+export async function fetchTicketStats(): Promise<TicketStats> {
+  const { data } = await apiClient.get<TicketStats>('/tickets/stats');
+  return data;
+}
+
 export async function listTickets(): Promise<TicketStaffView[]> {
   const { data } = await apiClient.get<TicketStaffView[]>('/tickets');
   return data;

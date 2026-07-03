@@ -49,6 +49,8 @@ export function Sidebar() {
   const boardActive = screen === 'board' && !settingsScreen;
   const migrationActive = screen === 'migration';
   const ticketsActive = screen === 'tickets';
+  const viewer = useBoard((s) => s.viewer);
+  const ticketsNewCount = useBoard((s) => s.ticketsNewCount);
 
   return (
     <aside
@@ -224,6 +226,8 @@ export function Sidebar() {
             peopleActive={peopleActive}
             migrationActive={migrationActive}
             ticketsActive={ticketsActive}
+            showTickets={!viewer}
+            ticketsNewCount={ticketsNewCount}
             addBoard={addBoard}
             selectBoard={selectBoard}
             setScreen={setScreen}
@@ -243,6 +247,8 @@ function BoardsNav({
   peopleActive,
   migrationActive,
   ticketsActive,
+  showTickets,
+  ticketsNewCount,
   addBoard,
   selectBoard,
   setScreen,
@@ -255,6 +261,8 @@ function BoardsNav({
   peopleActive: boolean;
   migrationActive: boolean;
   ticketsActive: boolean;
+  showTickets: boolean;
+  ticketsNewCount: number;
   addBoard: () => void;
   selectBoard: (id: string) => void;
   setScreen: (s: Screen) => void;
@@ -379,9 +387,11 @@ function BoardsNav({
           </svg>
         }
       />
+      {showTickets && (
       <NavItem
         active={ticketsActive}
         label="Обращения"
+        badge={ticketsNewCount > 0 ? ticketsNewCount : undefined}
         navOpen={navOpen}
         onClick={() => setScreen('tickets')}
         icon={
@@ -398,6 +408,7 @@ function BoardsNav({
           </svg>
         }
       />
+      )}
       <NavItem
         active={dashActive}
         label="Дашборд и отчётность"
@@ -443,12 +454,14 @@ function BoardsNav({
 function NavItem({
   active,
   label,
+  badge,
   navOpen,
   onClick,
   icon,
 }: {
   active: boolean;
   label: string;
+  badge?: number;
   navOpen: boolean;
   onClick: () => void;
   icon: React.ReactNode;
@@ -469,8 +482,43 @@ function NavItem({
         color: active ? ACCENT : 'var(--text-soft)',
       }}
     >
-      {icon}
+      <span style={{ position: 'relative', display: 'flex' }}>
+        {icon}
+        {!navOpen && badge !== undefined && (
+          <span
+            style={{
+              position: 'absolute',
+              top: -3,
+              right: -4,
+              width: 7,
+              height: 7,
+              borderRadius: 4,
+              background: '#cf6b6b',
+            }}
+          />
+        )}
+      </span>
       {navOpen && <span style={{ whiteSpace: 'nowrap' }}>{label}</span>}
+      {navOpen && badge !== undefined && (
+        <span
+          style={{
+            marginLeft: 'auto',
+            minWidth: 18,
+            height: 18,
+            padding: '0 5px',
+            borderRadius: 9,
+            background: '#cf6b6b',
+            color: '#fff',
+            fontSize: 10.5,
+            fontWeight: 800,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {badge}
+        </span>
+      )}
     </div>
   );
 }

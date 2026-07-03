@@ -29,6 +29,8 @@ const STATUS_ORDER = ['new', 'in_progress', 'answered', 'task_created', 'rejecte
 
 export function TicketsScreen() {
   const addToast = useBoard((s) => s.addToast);
+  const viewer = useBoard((s) => s.viewer);
+  const setTicketsNewCount = useBoard((s) => s.setTicketsNewCount);
   const [tickets, setTickets] = useState<TicketStaffView[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [offline, setOffline] = useState(false);
@@ -38,6 +40,7 @@ export function TicketsScreen() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    if (viewer) return;
     listTickets().then(
       (list) => {
         setTickets(list);
@@ -48,7 +51,12 @@ export function TicketsScreen() {
         setLoaded(true);
       },
     );
-  }, []);
+  }, [viewer]);
+
+  // Бейдж «новых» в сайдбаре живёт от того же списка.
+  useEffect(() => {
+    setTicketsNewCount(tickets.filter((t) => t.status === 'new').length);
+  }, [tickets, setTicketsNewCount]);
 
   const counts = useMemo(() => {
     const map: Record<string, number> = {};
@@ -93,6 +101,16 @@ export function TicketsScreen() {
       return updated;
     }, 'Таска создана в разделе «Обращения»');
 
+  if (viewer) {
+    return (
+      <Shell>
+        <div style={{ ...CARD, padding: 20, fontSize: 13, color: 'var(--text-soft)' }}>
+          Обращения доступны только участникам — режим «Наблюдатель» их не видит (персональные
+          данные авторов).
+        </div>
+      </Shell>
+    );
+  }
   if (!loaded) {
     return <Shell><div style={{ color: 'var(--text-faint)', fontSize: 13 }}>Загружаю…</div></Shell>;
   }

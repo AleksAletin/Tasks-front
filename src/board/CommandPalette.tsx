@@ -35,6 +35,7 @@ export function CommandPalette() {
   const setViewer = useBoard((s) => s.setViewer);
   const openSettings = useBoard((s) => s.openSettings);
   const startCoach = useBoard((s) => s.startCoach);
+  const viewer = useBoard((s) => s.viewer);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const run = useCallback(
@@ -60,11 +61,15 @@ export function CommandPalette() {
         label: 'Карта и бэклог переезда',
         run: () => go('migration'),
       },
-      {
-        kind: 'Экран',
-        label: 'Обращения (ОС)',
-        run: () => go('tickets'),
-      },
+      ...(viewer
+        ? []
+        : [
+            {
+              kind: 'Экран',
+              label: 'Обращения (ОС)',
+              run: () => go('tickets'),
+            },
+          ]),
       {
         kind: 'Экран',
         label: 'Дашборд и отчётность',
@@ -98,6 +103,7 @@ export function CommandPalette() {
     return all.slice(0, 8);
   }, [
     groups,
+    viewer,
     cmdQuery,
     setBoardTab,
     setScreen,

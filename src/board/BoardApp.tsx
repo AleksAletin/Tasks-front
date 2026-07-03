@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { fetchBoard } from '../api/board';
 import { fetchPrefs } from '../api/prefs';
 import { startBackendSync } from '../api/sync';
+import { fetchTicketStats } from '../api/feedback';
 import { useBoard } from './store';
 import { Login } from './Login';
 import { Sidebar } from './Sidebar';
@@ -191,6 +192,26 @@ export function BoardApp() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [toggleDark, startCoach]);
+
+  // Sidebar badge: poll the cheap ticket stats (new count) once a minute on the backend path.
+  useEffect(() => {
+    if (!USE_BACKEND || !authed) return;
+    let cancelled = false;
+    const tick = () => {
+      fetchTicketStats().then(
+        (stats) => {
+          if (!cancelled) useBoard.getState().setTicketsNewCount(stats.new);
+        },
+        () => {},
+      );
+    };
+    tick();
+    const timer = setInterval(tick, 60_000);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, [authed]);
 
   // First authenticated load shows the onboarding coachmarks once per browser.
   useEffect(() => {
