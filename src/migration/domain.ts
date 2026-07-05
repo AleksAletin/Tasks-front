@@ -333,10 +333,18 @@ export interface NoveltyRow {
   state: string;
 }
 
-/** Pending новинки per module (a novelty touching N modules counts once for each). */
+/** A novelty is PENDING until its own task is done/deployed/cancelled — closed ones stop
+ * counting toward a module's вердикт (the master's rule; «всего новинок» keeps counting all). */
+export function isNoveltyPending(n: NoveltyRow): boolean {
+  const st = (n.state ?? '').toLowerCase();
+  return !(st.includes('готово') || st.includes('выложен') || st.includes('отмен'));
+}
+
+/** PENDING новинки per module (a novelty touching N modules counts once for each). */
 export function noveltiesByModule(novelties: NoveltyRow[]): Map<number, number> {
   const map = new Map<number, number>();
   for (const n of novelties) {
+    if (!isNoveltyPending(n)) continue;
     for (const id of new Set(n.modules)) {
       map.set(id, (map.get(id) ?? 0) + 1);
     }
@@ -386,7 +394,10 @@ export interface ScoringConfig {
 }
 
 export const DEFAULT_SCORING: ScoringConfig = {
-  waveWeight: 1000,
+  // Стратегия Б (выбор команды, 2026-07-05): шаг волны 200 вместо 1000 — волна остаётся главной
+  // осью, но нужность (×10 за роль) получает реальный вес и может переставлять модули между
+  // соседними волнами. Сверено бит-в-бит с листом «Бэклог модулей Б».
+  waveWeight: 200,
   needWeight: 10,
   noveltyWeight: 20,
   noveltyCap: 9,
@@ -474,6 +485,7 @@ export function masterDerive(
 ): MasterModule[] {
   const byModule = new Map<number, NoveltyRow[]>();
   for (const n of novelties) {
+    if (!isNoveltyPending(n)) continue; // закрытые новинки не давят на вердикт/Score
     for (const id of new Set(n.modules)) {
       const list = byModule.get(id) ?? [];
       list.push(n);

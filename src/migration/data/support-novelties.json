@@ -7,8 +7,8 @@
 ],
 "criticality": "🔴 Критично",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Критическая",
+"state": "Новая"
 },
 {
 "bac": "BAC-1760",
@@ -18,8 +18,8 @@
 ],
 "criticality": "🔴 Критично",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Критическая",
+"state": "Новая"
 },
 {
 "bac": "BAC-1767",
@@ -29,8 +29,8 @@
 ],
 "criticality": "🟠 Существенно",
 "changeType": "Добавление колонки/кнопки",
-"priority": "",
-"state": ""
+"priority": "Критическая",
+"state": "Новая"
 },
 {
 "bac": "BAC-1654",
@@ -73,8 +73,8 @@
 ],
 "criticality": "🟠 Существенно",
 "changeType": "Добавление колонки/кнопки",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1620",
@@ -82,8 +82,8 @@
 "modules": [],
 "criticality": "🟠 Существенно",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Значительная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1642",
@@ -91,8 +91,8 @@
 "modules": [],
 "criticality": "🟠 Существенно",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Значительная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1672",
@@ -102,8 +102,8 @@
 ],
 "criticality": "🟠 Существенно",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1776",
@@ -113,8 +113,8 @@
 ],
 "criticality": "🟠 Существенно",
 "changeType": "Перенос",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1801",
@@ -124,8 +124,8 @@
 ],
 "criticality": "🟠 Существенно",
 "changeType": "Перенос",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1794",
@@ -135,8 +135,8 @@
 ],
 "criticality": "🟠 Существенно",
 "changeType": "Добавление колонки/кнопки",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1792",
@@ -146,8 +146,8 @@
 ],
 "criticality": "🟠 Существенно",
 "changeType": "Визуал/подсветка",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1806",
@@ -155,8 +155,8 @@
 "modules": [],
 "criticality": "🟠 Существенно",
 "changeType": "Новое (net-new)",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1804",
@@ -164,8 +164,8 @@
 "modules": [],
 "criticality": "🟠 Существенно",
 "changeType": "Новое (net-new)",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1524",
@@ -175,8 +175,8 @@
 ],
 "criticality": "🟠 Существенно",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Значительная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1633",
@@ -186,8 +186,8 @@
 ],
 "criticality": "🟠 Существенно",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Значительная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1634",
@@ -197,8 +197,8 @@
 ],
 "criticality": "🟠 Существенно",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Значительная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1786",
@@ -208,8 +208,8 @@
 ],
 "criticality": "🟠 Существенно",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Значительная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1757",
@@ -241,8 +241,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Новое (net-new)",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1525",
@@ -250,8 +250,8 @@
 "modules": [],
 "criticality": "🟡 Обычное",
 "changeType": "Новое (net-new)",
-"priority": "",
-"state": ""
+"priority": "Значительная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1650",
@@ -261,8 +261,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Новое (net-new)",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1805",
@@ -273,8 +273,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1774",
@@ -284,8 +284,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Логирование",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1745",
@@ -295,8 +295,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "UI/фильтры",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1771",
@@ -304,8 +304,8 @@
 "modules": [],
 "criticality": "🟡 Обычное",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1744",
@@ -313,8 +313,8 @@
 "modules": [],
 "criticality": "🟡 Обычное",
 "changeType": "Логирование",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1664",
@@ -322,8 +322,8 @@
 "modules": [],
 "criticality": "🟡 Обычное",
 "changeType": "Логирование",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1677",
@@ -331,8 +331,8 @@
 "modules": [],
 "criticality": "🟡 Обычное",
 "changeType": "Логирование",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1787",
@@ -364,8 +364,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1779",
@@ -375,8 +375,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1761",
@@ -386,8 +386,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1631",
@@ -398,8 +398,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Убрать/скрыть",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1632",
@@ -409,8 +409,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1803",
@@ -420,8 +420,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1673",
@@ -431,8 +431,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1797",
@@ -442,8 +442,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1676",
@@ -453,8 +453,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1782",
@@ -464,8 +464,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Добавление колонки/кнопки",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1796",
@@ -475,8 +475,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1756",
@@ -484,8 +484,8 @@
 "modules": [],
 "criticality": "🟡 Обычное",
 "changeType": "Добавление колонки/кнопки",
-"priority": "",
-"state": ""
+"priority": "Значительная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1795",
@@ -493,8 +493,8 @@
 "modules": [],
 "criticality": "🟡 Обычное",
 "changeType": "UI/фильтры",
-"priority": "",
-"state": ""
+"priority": "Значительная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1799",
@@ -504,8 +504,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Убрать/скрыть",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1646",
@@ -515,8 +515,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Добавление колонки/кнопки",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Выложено в prod"
 },
 {
 "bac": "BAC-1648",
@@ -526,8 +526,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1644",
@@ -537,8 +537,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Выложено в prod"
 },
 {
 "bac": "BAC-1768",
@@ -548,8 +548,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Добавление колонки/кнопки",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1785",
@@ -559,8 +559,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1629",
@@ -571,8 +571,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Добавление колонки/кнопки",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1635",
@@ -583,8 +583,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Добавление колонки/кнопки",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1674",
@@ -605,8 +605,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Убрать/скрыть",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1777",
@@ -616,8 +616,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "UI/фильтры",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1755",
@@ -627,8 +627,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1762",
@@ -638,8 +638,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1783",
@@ -649,8 +649,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1780",
@@ -660,8 +660,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Добавление колонки/кнопки",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Выложено в prod"
 },
 {
 "bac": "BAC-1645",
@@ -671,8 +671,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Добавление колонки/кнопки",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1793",
@@ -682,8 +682,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Добавление колонки/кнопки",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1625",
@@ -693,8 +693,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Выложено в prod"
 },
 {
 "bac": "BAC-1652",
@@ -704,8 +704,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Добавление колонки/кнопки",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1649",
@@ -715,8 +715,8 @@
 ],
 "criticality": "🟡 Обычное",
 "changeType": "Перенос",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1639",
@@ -724,8 +724,8 @@
 "modules": [],
 "criticality": "🟡 Обычное",
 "changeType": "Добавление колонки/кнопки",
-"priority": "",
-"state": ""
+"priority": "Значительная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1636",
@@ -766,8 +766,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Незначительная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1628",
@@ -777,8 +777,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Незначительная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1067",
@@ -799,8 +799,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "Убрать/скрыть",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1750",
@@ -810,8 +810,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "UI/фильтры",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1775",
@@ -822,8 +822,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "Добавление колонки/кнопки",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1766",
@@ -844,8 +844,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "Визуал/подсветка",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1678",
@@ -855,8 +855,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "Визуал/подсветка",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1743",
@@ -866,8 +866,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "Визуал/подсветка",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1748",
@@ -877,8 +877,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "Локализация",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1749",
@@ -888,8 +888,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "Локализация",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1627",
@@ -899,8 +899,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "Переименование",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1754",
@@ -910,8 +910,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "Визуал/подсветка",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1758",
@@ -921,8 +921,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "Визуал/подсветка",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1759",
@@ -932,8 +932,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "Визуал/подсветка",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1666",
@@ -943,8 +943,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "Визуал/подсветка",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1630",
@@ -952,8 +952,8 @@
 "modules": [],
 "criticality": "⚪ Низкое",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1746",
@@ -961,8 +961,8 @@
 "modules": [],
 "criticality": "⚪ Низкое",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1662",
@@ -970,8 +970,8 @@
 "modules": [],
 "criticality": "⚪ Низкое",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1663",
@@ -979,8 +979,8 @@
 "modules": [],
 "criticality": "⚪ Низкое",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1751",
@@ -988,8 +988,8 @@
 "modules": [],
 "criticality": "⚪ Низкое",
 "changeType": "Логирование",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1764",
@@ -997,8 +997,8 @@
 "modules": [],
 "criticality": "⚪ Низкое",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1770",
@@ -1006,8 +1006,8 @@
 "modules": [],
 "criticality": "⚪ Низкое",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1788",
@@ -1015,8 +1015,8 @@
 "modules": [],
 "criticality": "⚪ Низкое",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1675",
@@ -1024,8 +1024,8 @@
 "modules": [],
 "criticality": "⚪ Низкое",
 "changeType": "Логирование",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1660",
@@ -1033,8 +1033,8 @@
 "modules": [],
 "criticality": "⚪ Низкое",
 "changeType": "Логирование",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1802",
@@ -1042,8 +1042,8 @@
 "modules": [],
 "criticality": "⚪ Низкое",
 "changeType": "Прочее",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1637",
@@ -1062,8 +1062,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "Доработка/изменение",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1668",
@@ -1074,7 +1074,7 @@
 "criticality": "⚪ Низкое",
 "changeType": "UI/фильтры",
 "priority": "Обычная",
-"state": "Новая"
+"state": "Отменено"
 },
 {
 "bac": "BAC-1680",
@@ -1084,8 +1084,8 @@
 ],
 "criticality": "⚪ Низкое",
 "changeType": "Визуал/подсветка",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 },
 {
 "bac": "BAC-1781",
@@ -1093,7 +1093,7 @@
 "modules": [],
 "criticality": "⚪ Низкое",
 "changeType": "Переименование",
-"priority": "",
-"state": ""
+"priority": "Обычная",
+"state": "Новая"
 }
 ]

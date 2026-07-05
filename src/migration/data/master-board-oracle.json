@@ -112,21 +112,21 @@
 {
 "id": 776,
 "tier": "Средние",
-"bucket": "Нужна задача",
-"wave": 3,
-"priority": 705,
+"bucket": "В работе",
+"wave": 1,
+"priority": 905,
 "novelties": 0,
-"verdict": "🟡 завести задачу",
+"verdict": "🔵 в работе",
 "trulyDone": ""
 },
 {
 "id": 778,
 "tier": "Хвост",
-"bucket": "Хвост — потом",
-"wave": 4,
-"priority": 602,
+"bucket": "В работе",
+"wave": 1,
+"priority": 902,
 "novelties": 0,
-"verdict": "⏸ хвост",
+"verdict": "🔵 в работе",
 "trulyDone": ""
 },
 {
@@ -162,12 +162,12 @@
 {
 "id": 995,
 "tier": "Хвост",
-"bucket": "Хвост — потом",
-"wave": 4,
-"priority": 602,
+"bucket": "Готово",
+"wave": 9,
+"priority": 102,
 "novelties": 0,
-"verdict": "⏸ хвост",
-"trulyDone": ""
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
 },
 {
 "id": 1111,
@@ -222,11 +222,11 @@
 {
 "id": 1632,
 "tier": "Хвост",
-"bucket": "Хвост — потом",
-"wave": 4,
-"priority": 603,
+"bucket": "В работе",
+"wave": 1,
+"priority": 903,
 "novelties": 0,
-"verdict": "⏸ хвост",
+"verdict": "🔵 в работе",
 "trulyDone": ""
 },
 {
@@ -252,11 +252,11 @@
 {
 "id": 1745,
 "tier": "Хвост",
-"bucket": "Хвост — потом",
-"wave": 4,
-"priority": 602,
+"bucket": "В работе",
+"wave": 1,
+"priority": 902,
 "novelties": 0,
-"verdict": "⏸ хвост",
+"verdict": "🔵 в работе",
 "trulyDone": ""
 },
 {
@@ -282,11 +282,11 @@
 {
 "id": 1778,
 "tier": "Ядро",
-"bucket": "Нужна задача",
-"wave": 3,
-"priority": 726,
+"bucket": "В работе",
+"wave": 1,
+"priority": 926,
 "novelties": 0,
-"verdict": "🟡 завести задачу",
+"verdict": "🔵 в работе",
 "trulyDone": ""
 },
 {
@@ -322,12 +322,12 @@
 {
 "id": 1819,
 "tier": "Хвост",
-"bucket": "Хвост — потом",
-"wave": 4,
-"priority": 602,
+"bucket": "Готово",
+"wave": 9,
+"priority": 102,
 "novelties": 0,
-"verdict": "⏸ хвост",
-"trulyDone": ""
+"verdict": "✅ готово-актуально",
+"trulyDone": "да"
 },
 {
 "id": 1870,
@@ -512,11 +512,11 @@
 {
 "id": 2574,
 "tier": "Хвост",
-"bucket": "Хвост — потом",
-"wave": 4,
-"priority": 601,
+"bucket": "В работе",
+"wave": 1,
+"priority": 901,
 "novelties": 0,
-"verdict": "⏸ хвост",
+"verdict": "🔵 в работе",
 "trulyDone": ""
 },
 {
@@ -562,21 +562,21 @@
 {
 "id": 2655,
 "tier": "Ядро",
-"bucket": "Нужна задача",
-"wave": 3,
-"priority": 726,
+"bucket": "Готово к работе",
+"wave": 2,
+"priority": 826,
 "novelties": 0,
-"verdict": "🟡 завести задачу",
+"verdict": "🟢 готово к работе",
 "trulyDone": ""
 },
 {
 "id": 2661,
 "tier": "Ядро",
-"bucket": "Нужна задача",
-"wave": 3,
-"priority": 726,
+"bucket": "Готово к работе",
+"wave": 2,
+"priority": 826,
 "novelties": 0,
-"verdict": "🟡 завести задачу",
+"verdict": "🟢 готово к работе",
 "trulyDone": ""
 },
 {
@@ -592,11 +592,11 @@
 {
 "id": 2738,
 "tier": "Хвост",
-"bucket": "Хвост — потом",
-"wave": 4,
-"priority": 603,
+"bucket": "Готово к работе",
+"wave": 2,
+"priority": 803,
 "novelties": 0,
-"verdict": "⏸ хвост",
+"verdict": "🟢 готово к работе",
 "trulyDone": ""
 },
 {
@@ -632,41 +632,41 @@
 {
 "id": 2801,
 "tier": "Ядро",
-"bucket": "Нужна задача",
-"wave": 3,
-"priority": 726,
+"bucket": "В работе",
+"wave": 1,
+"priority": 926,
 "novelties": 0,
-"verdict": "🟡 завести задачу",
+"verdict": "🔵 в работе",
 "trulyDone": ""
 },
 {
 "id": 2850,
 "tier": "Средние",
-"bucket": "Нужна задача",
-"wave": 3,
-"priority": 710,
+"bucket": "В работе",
+"wave": 1,
+"priority": 910,
 "novelties": 0,
-"verdict": "🟡 завести задачу",
+"verdict": "🔵 в работе",
 "trulyDone": ""
 },
 {
 "id": 2856,
 "tier": "Ядро",
-"bucket": "Нужна задача",
-"wave": 3,
-"priority": 728,
+"bucket": "В работе",
+"wave": 1,
+"priority": 928,
 "novelties": 0,
-"verdict": "🟡 завести задачу",
+"verdict": "🔵 в работе",
 "trulyDone": ""
 },
 {
 "id": 2915,
 "tier": "Средние",
-"bucket": "Нужна задача",
-"wave": 3,
-"priority": 705,
+"bucket": "Готово к работе",
+"wave": 2,
+"priority": 805,
 "novelties": 0,
-"verdict": "🟡 завести задачу",
+"verdict": "🟢 готово к работе",
 "trulyDone": ""
 },
 {
@@ -682,21 +682,21 @@
 {
 "id": 2942,
 "tier": "Хвост",
-"bucket": "Хвост — потом",
-"wave": 4,
-"priority": 603,
+"bucket": "Готово к работе",
+"wave": 2,
+"priority": 803,
 "novelties": 0,
-"verdict": "⏸ хвост",
+"verdict": "🟢 готово к работе",
 "trulyDone": ""
 },
 {
 "id": 2944,
 "tier": "Хвост",
-"bucket": "Хвост — потом",
-"wave": 4,
-"priority": 603,
+"bucket": "Готово к работе",
+"wave": 2,
+"priority": 803,
 "novelties": 0,
-"verdict": "⏸ хвост",
+"verdict": "🟢 готово к работе",
 "trulyDone": ""
 },
 {
@@ -742,11 +742,11 @@
 {
 "id": 3324,
 "tier": "Ядро",
-"bucket": "Нужна задача",
-"wave": 3,
-"priority": 721,
+"bucket": "В работе",
+"wave": 1,
+"priority": 921,
 "novelties": 0,
-"verdict": "🟡 завести задачу",
+"verdict": "🔵 в работе",
 "trulyDone": ""
 },
 {
@@ -792,21 +792,21 @@
 {
 "id": 3497,
 "tier": "Средние",
-"bucket": "Нужна задача",
-"wave": 3,
-"priority": 719,
+"bucket": "Готово к работе",
+"wave": 2,
+"priority": 819,
 "novelties": 0,
-"verdict": "🟡 завести задачу",
+"verdict": "🟢 готово к работе",
 "trulyDone": ""
 },
 {
 "id": 3524,
 "tier": "Ядро",
-"bucket": "Нужна задача",
-"wave": 3,
-"priority": 732,
+"bucket": "Готово к работе",
+"wave": 2,
+"priority": 832,
 "novelties": 0,
-"verdict": "🟡 завести задачу",
+"verdict": "🟢 готово к работе",
 "trulyDone": ""
 },
 {
@@ -872,11 +872,11 @@
 {
 "id": 539,
 "tier": "Ядро",
-"bucket": "В работе",
-"wave": 1,
-"priority": 928,
+"bucket": "Готово",
+"wave": 9,
+"priority": 128,
 "novelties": 2,
-"verdict": "🎯 влить новинки",
+"verdict": "🔴 ПЕРЕОТКРЫТЬ",
 "trulyDone": ""
 },
 {
@@ -1075,7 +1075,7 @@
 "bucket": "Готово",
 "wave": 9,
 "priority": 127,
-"novelties": 10,
+"novelties": 8,
 "verdict": "🔴 ПЕРЕОТКРЫТЬ",
 "trulyDone": ""
 },
@@ -1085,7 +1085,7 @@
 "bucket": "Готово",
 "wave": 9,
 "priority": 128,
-"novelties": 2,
+"novelties": 1,
 "verdict": "🔴 ПЕРЕОТКРЫТЬ",
 "trulyDone": ""
 },
@@ -1455,8 +1455,8 @@
 "bucket": "В работе",
 "wave": 1,
 "priority": 904,
-"novelties": 1,
-"verdict": "🎯 влить новинки",
+"novelties": 0,
+"verdict": "🔵 в работе",
 "trulyDone": ""
 },
 {
@@ -1725,7 +1725,7 @@
 "bucket": "Готово",
 "wave": 9,
 "priority": 132,
-"novelties": 17,
+"novelties": 16,
 "verdict": "🔴 ПЕРЕОТКРЫТЬ",
 "trulyDone": ""
 },

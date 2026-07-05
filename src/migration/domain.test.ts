@@ -82,12 +82,12 @@ describe('master domain — Реестр+Борд (198 модулей)', () => {
     expect(modules).toHaveLength(198);
     const f = Object.fromEntries(funnel(backlog(modules)).map((r) => [r.bucket, r.count]));
     expect(f).toMatchObject({
-      'В работе': 28,
+      'В работе': 37,
       Заблокировано: 5,
-      'Готово к работе': 6,
-      'Нужна задача': 15,
-      'Хвост — потом': 25,
-      Готово: 66,
+      'Готово к работе': 14,
+      'Нужна задача': 4,
+      'Хвост — потом': 16,
+      Готово: 69,
       'Не переносим': 53,
     });
   });
@@ -121,11 +121,11 @@ describe('master domain — 🎯 Бэклог (score, В1–В7)', () => {
   const oracle = backlogOracle as BacklogOracle[];
   const ranked = masterBacklog(master);
 
-  it('exactly the эталон set of modules is in the backlog (94, волны 1–7)', () => {
+  it('exactly the эталон set of modules is in the backlog (92, волны 1–7)', () => {
     expect(new Set(ranked.map((r) => r.id))).toEqual(new Set(oracle.map((o) => o.id)));
   });
 
-  it('score, волна и целевая роль совпадают с эталоном для всех 94', () => {
+  it('score (стратегия Б), волна и целевая роль совпадают с эталоном для всех 92', () => {
     const byId = new Map(oracle.map((o) => [o.id, o]));
     const mismatches = ranked
       .map((r) => {
@@ -229,11 +229,11 @@ describe('master domain — role↔module membership', () => {
     expect(mismatches).toEqual([]);
   });
 
-  it('целевая роль 1122: истинно 32 из 69 (46.4%), наивно 40 из 69 (58.0%)', () => {
+  it('целевая роль 1122: истинно 32 из 69 (46.4%), наивно 41 из 69 (59.4%)', () => {
     const byId = new Map(backlog(modules).map((m) => [m.id, m]));
     const stats = roleStats(roles.find((r) => r.id === 1122)!, byId, noveltiesByModule(novelties));
     expect(stats.toMigrate).toBe(69);
-    expect(stats.done).toBe(40);
+    expect(stats.done).toBe(41);
     expect(stats.trueDone).toBe(32);
   });
 });
