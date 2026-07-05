@@ -222,6 +222,13 @@ interface BoardState {
   }) => void;
   setPrefsVersion: (v: number) => void;
   setTicketsNewCount: (n: number) => void;
+  /** «Карта переезда» → доска: upsert доски и групп-волн; задачи добавляются только
+   * отсутствующие (правки пользователя не трогаем). Возвращает число добавленных. */
+  importMigrationBoard: (payload: {
+    board: Board;
+    groups: Group[];
+    collapsedGroupIds: string[];
+  }) => number;
   login: () => void;
   setLoginEmail: (v: string) => void;
   toggleNav: () => void;
@@ -519,6 +526,50 @@ export const useBoard = create<BoardState>()(
       setPrefsVersion: (v) => set({ prefsVersion: v }),
       setBoardVersion: (v) => set({ boardVersion: v }),
       setTicketsNewCount: (n) => set({ ticketsNewCount: n }),
+      importMigrationBoard: ({ board, groups, collapsedGroupIds }) => {
+        let added = 0;
+        set((s) => {
+          const boards = s.boards.some((b) => b.id === board.id)
+            ? s.boards.map((b) => (b.id === board.id ? { ...b, name: board.name, color: board.color } : b))
+            : [...s.boards, board];
+
+          const existingById = new Map(
+            s.groups.filter((g) => (g.boardId ?? 'b1') === board.id).map((g) => [g.id, g]),
+          );
+          const presentTaskIds = new Set(
+            s.groups
+              .filter((g) => (g.boardId ?? 'b1') === board.id)
+              .flatMap((g) => g.tasks.map((t) => t.id)),
+          );
+
+          const mergedNew = groups.map((incoming) => {
+            const existing = existingById.get(incoming.id);
+            if (!existing) {
+              added += incoming.tasks.length;
+              return incoming;
+            }
+            const fresh = incoming.tasks.filter((t) => !presentTaskIds.has(t.id));
+            added += fresh.length;
+            return { ...existing, name: incoming.name, color: incoming.color, tasks: [...existing.tasks, ...fresh] };
+          });
+          const others = s.groups.filter((g) => (g.boardId ?? 'b1') !== board.id);
+          const collapsed = { ...s.collapsed };
+          for (const gid of collapsedGroupIds) {
+            if (!(gid in collapsed)) collapsed[gid] = true;
+          }
+
+          return {
+            boards,
+            groups: [...others, ...mergedNew],
+            collapsed,
+            activeBoardId: board.id,
+            screen: 'board',
+            boardTab: 'table',
+            settingsScreen: false,
+          };
+        });
+        return added;
+      },
       login: () => set({ authed: true }),
       setLoginEmail: (v) => set({ loginEmail: v }),
       toggleNav: () => set((s) => ({ navOpen: !s.navOpen })),

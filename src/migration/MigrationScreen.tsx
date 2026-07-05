@@ -43,6 +43,8 @@ import { MatrixView } from './MatrixView';
 import { RegistryView } from './RegistryView';
 import { TraceView } from './TraceView';
 import { ImportMasterView } from './ImportMasterView';
+import { migrationToBoard, noveltiesToBoard } from './toBoard';
+import { useBoard } from '../board/store';
 
 // Bundled demo snapshot (extracted from the MASTER of 2026-07-02) — the fallback until a dataset
 // is imported server-side, and the standalone (no-backend) mode's data.
@@ -138,8 +140,11 @@ export function MigrationScreen() {
 
   return (
     <div style={{ padding: '22px 26px 60px', maxWidth: 1280, margin: '0 auto' }}>
-      <div style={{ marginBottom: 4, fontSize: 21, fontWeight: 800, letterSpacing: '-.3px' }}>
-        Карта и бэклог переезда
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
+        <div style={{ fontSize: 21, fontWeight: 800, letterSpacing: '-.3px' }}>
+          Карта и бэклог переезда
+        </div>
+        <ToBoardButton rows={rows} novelties={data.novelties} />
       </div>
       <div style={{ fontSize: 13, color: 'var(--text-soft)', marginBottom: 18 }}>
         Скоуп: Саппорт · {data.roles.length} ролей · {total} модулей · два бэклога: перенос + новинки.
@@ -247,6 +252,41 @@ export function MigrationScreen() {
 function dashTargetName(roles: RoleRow[]): string {
   const target = roles.find((r) => r.id === 1122);
   return target ? `${target.name} (${target.id})` : '1122';
+}
+
+// «Разложить на доски»: модули → «Переезд модулей» (волны В1–В7), новинки → «Новинки (догоняшки)»
+// (по критичности). Повторный клик доливает только новое — правки на досках не трогаются. BAC
+// уезжает в ticketId, статусы дальше держит YouTrack-синк.
+function ToBoardButton({ rows, novelties }: { rows: MasterModule[]; novelties: NoveltyRow[] }) {
+  const importMigrationBoard = useBoard((s) => s.importMigrationBoard);
+  const addToast = useBoard((s) => s.addToast);
+  return (
+    <button
+      onClick={() => {
+        const addedNovelties = importMigrationBoard(noveltiesToBoard(novelties, rows));
+        const addedModules = importMigrationBoard(migrationToBoard(rows)); // активной остаётся доска модулей
+        const added = addedModules + addedNovelties;
+        addToast(
+          added > 0
+            ? `Разложено на доски: модулей +${addedModules}, новинок +${addedNovelties}`
+            : 'Доски «Переезд модулей» и «Новинки» уже актуальны',
+        );
+      }}
+      style={{
+        padding: '7px 14px',
+        borderRadius: 9,
+        border: '1px solid var(--surf-2)',
+        background: 'transparent',
+        color: '#8a63d8',
+        fontSize: 12.5,
+        fontWeight: 700,
+        cursor: 'pointer',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      → Разложить на доски
+    </button>
+  );
 }
 
 function Kpi({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: string }) {
