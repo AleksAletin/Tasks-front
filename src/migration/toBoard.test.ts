@@ -11,13 +11,17 @@ import {
   type RoleRow,
 } from './domain';
 import {
+  epicsToBoard,
+  epicTaskId,
   migrationToBoard,
   migrationTaskId,
   noveltiesToBoard,
   noveltyTaskId,
+  EPICS_BOARD_ID,
   MIGRATION_BOARD_ID,
   NOVELTIES_BOARD_ID,
 } from './toBoard';
+import type { EpicRow } from './domain';
 import { useBoard } from '../board/store';
 
 const novelties = noveltiesData as NoveltyRow[];
@@ -84,6 +88,53 @@ describe('карта переезда → доска', () => {
     const { groups } = migrationToBoard(rows);
     const anyTask = groups[0].tasks[0];
     expect(['Ядро', 'Средние', 'Хвост']).toContain(anyTask.section);
+  });
+
+  it('эпики → задачи с подзадачами: группы-разделы, стадии в статусы, дети со статусами', () => {
+    const epics: EpicRow[] = [
+      {
+        key: 'R425',
+        section: 'Главное окно',
+        report: 'Отчёт «Поиск веб-пользователей»',
+        modules: 3,
+        taskCount: 3,
+        progress: 0.33,
+        ice: 6920,
+        novelties: 2,
+        stage: '🧠 аналитика',
+        team: 'fomina.an',
+        children: [
+          { bac: 'BAC-1', title: 'Дочка раз', type: 'Техдолг', stage: '🆕 новая', assignee: '' },
+          { bac: 'BAC-2', title: 'Дочка два', type: 'Задача', stage: '🔵 в работе', assignee: 'x' },
+          { bac: 'BAC-3', title: 'Дочка три', type: 'Задача', stage: '✅ готово', assignee: '' },
+        ],
+      },
+      {
+        key: 'R47',
+        section: '—',
+        report: 'Отчёт Б',
+        modules: 1,
+        taskCount: 0,
+        progress: 1,
+        ice: 100,
+        novelties: 0,
+        stage: '✅ катить!',
+        team: '',
+        children: [],
+      },
+    ];
+
+    const { board, groups } = epicsToBoard(epics);
+
+    expect(board.id).toBe(EPICS_BOARD_ID);
+    expect(groups.map((g) => g.name)).toEqual(['Главное окно', 'Прочее']); // «—» → Прочее
+    const epic = groups[0].tasks[0];
+    expect(epic.id).toBe(epicTaskId('R425'));
+    expect(epic.status).toBe('work'); // 🧠 аналитика
+    expect(epic.subs).toHaveLength(3);
+    expect(epic.subs!.map((s) => s.status)).toEqual(['plan', 'work', 'done']);
+    expect(epic.note).toContain('Σ ICE: 6920');
+    expect(groups[1].tasks[0].status).toBe('done'); // ✅ катить!
   });
 
   it('store: повторный импорт не плодит дублей и не трогает правки пользователя', () => {

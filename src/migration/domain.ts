@@ -340,6 +340,30 @@ export function isNoveltyPending(n: NoveltyRow): boolean {
   return !(st.includes('готово') || st.includes('выложен') || st.includes('отмен'));
 }
 
+/** Ребёнок эпика — задача BAC со стадией (🆕/🔵/✅/…) и исполнителем. */
+export interface EpicChildRow {
+  bac: string;
+  title: string;
+  type: string;
+  stage: string;
+  assignee: string;
+}
+
+/** Эпик = отчёт (лист «🧩 Эпики» мастера): шапка с воронкой стадий + дети-задачи. */
+export interface EpicRow {
+  key: string;
+  section: string;
+  report: string;
+  modules: number;
+  taskCount: number;
+  progress: number;
+  ice: number;
+  novelties: number;
+  stage: string;
+  team: string;
+  children: EpicChildRow[];
+}
+
 /** PENDING новинки per module (a novelty touching N modules counts once for each). */
 export function noveltiesByModule(novelties: NoveltyRow[]): Map<number, number> {
   const map = new Map<number, number>();

@@ -113,7 +113,7 @@ export function ImportMasterView({
         <div style={{ ...CARD, padding: '14px 18px' }}>
           <div style={{ fontSize: 13, fontWeight: 800, color: '#4a9b7f', marginBottom: 8 }}>
             ✓ Загружено: {summary.modules} модулей · {summary.roles} ролей · {summary.novelties}{' '}
-            новинок
+            новинок · {summary.epics} эпиков
           </div>
           {summary.warnings.length > 0 ? (
             <div style={{ fontSize: 12, color: '#b8862f', lineHeight: 1.55 }}>

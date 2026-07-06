@@ -1,11 +1,12 @@
 import { apiClient } from './client';
-import type { ModuleRow, NoveltyRow, RoleRow } from '../migration/domain';
+import type { EpicRow, ModuleRow, NoveltyRow, RoleRow } from '../migration/domain';
 
 /** GET /migration payload — the server-stored MASTER dataset (empty = never imported). */
 export interface MigrationDataset {
   modules: ModuleRow[];
   roles: RoleRow[];
   novelties: NoveltyRow[];
+  epics: EpicRow[];
   updatedAt: string | null;
   sourceFile: string | null;
 }
@@ -15,6 +16,7 @@ export interface MigrationImportSummary {
   modules: number;
   roles: number;
   novelties: number;
+  epics: number;
   warnings: string[];
   updatedAt: string;
 }

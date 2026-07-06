@@ -21,6 +21,7 @@ import {
   type Bucket,
   type DerivedModule,
   type MasterModule,
+  type EpicRow,
   type ModuleRow,
   type NoveltyRow,
   type RoleRow,
@@ -43,7 +44,7 @@ import { MatrixView } from './MatrixView';
 import { RegistryView } from './RegistryView';
 import { TraceView } from './TraceView';
 import { ImportMasterView } from './ImportMasterView';
-import { migrationToBoard, noveltiesToBoard } from './toBoard';
+import { epicsToBoard, migrationToBoard, noveltiesToBoard } from './toBoard';
 import { useBoard } from '../board/store';
 
 // Bundled demo snapshot (extracted from the MASTER of 2026-07-02) — the fallback until a dataset
@@ -52,12 +53,14 @@ const BUNDLED = {
   modules: supportData as ModuleRow[],
   roles: rolesData as RoleRow[],
   novelties: noveltiesData as NoveltyRow[],
+  epics: [] as EpicRow[], // встроенный снапшот без эпиков — приезжают с сервера после импорта
 };
 
 interface Dataset {
   modules: ModuleRow[];
   roles: RoleRow[];
   novelties: NoveltyRow[];
+  epics: EpicRow[];
   updatedAt: string | null;
   sourceFile: string | null;
   server: boolean;
@@ -101,6 +104,7 @@ export function MigrationScreen() {
             modules: d.modules,
             roles: d.roles,
             novelties: d.novelties,
+            epics: d.epics ?? [],
             updatedAt: d.updatedAt,
             sourceFile: d.sourceFile,
             server: true,
@@ -144,7 +148,7 @@ export function MigrationScreen() {
         <div style={{ fontSize: 21, fontWeight: 800, letterSpacing: '-.3px' }}>
           Карта и бэклог переезда
         </div>
-        <ToBoardButton rows={rows} novelties={data.novelties} />
+        <ToBoardButton rows={rows} novelties={data.novelties} epics={data.epics} />
       </div>
       <div style={{ fontSize: 13, color: 'var(--text-soft)', marginBottom: 18 }}>
         Скоуп: Саппорт · {data.roles.length} ролей · {total} модулей · два бэклога: перенос + новинки.
@@ -257,19 +261,29 @@ function dashTargetName(roles: RoleRow[]): string {
 // «Разложить на доски»: модули → «Переезд модулей» (волны В1–В7), новинки → «Новинки (догоняшки)»
 // (по критичности). Повторный клик доливает только новое — правки на досках не трогаются. BAC
 // уезжает в ticketId, статусы дальше держит YouTrack-синк.
-function ToBoardButton({ rows, novelties }: { rows: MasterModule[]; novelties: NoveltyRow[] }) {
+function ToBoardButton({
+  rows,
+  novelties,
+  epics,
+}: {
+  rows: MasterModule[];
+  novelties: NoveltyRow[];
+  epics: EpicRow[];
+}) {
   const importMigrationBoard = useBoard((s) => s.importMigrationBoard);
   const addToast = useBoard((s) => s.addToast);
   return (
     <button
       onClick={() => {
         const addedNovelties = importMigrationBoard(noveltiesToBoard(novelties, rows));
-        const addedModules = importMigrationBoard(migrationToBoard(rows)); // активной остаётся доска модулей
-        const added = addedModules + addedNovelties;
+        const addedModules = importMigrationBoard(migrationToBoard(rows));
+        // эпики импортируем последними — их доска и остаётся активной
+        const addedEpics = epics.length ? importMigrationBoard(epicsToBoard(epics)) : 0;
+        const added = addedModules + addedNovelties + addedEpics;
         addToast(
           added > 0
-            ? `Разложено на доски: модулей +${addedModules}, новинок +${addedNovelties}`
-            : 'Доски «Переезд модулей» и «Новинки» уже актуальны',
+            ? `Разложено: модулей +${addedModules}, новинок +${addedNovelties}, эпиков +${addedEpics}`
+            : 'Доски переезда уже актуальны',
         );
       }}
       style={{

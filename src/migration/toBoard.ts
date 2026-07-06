@@ -2,11 +2,12 @@
 // становятся обычными задачами — драг, статусы, владельцы, панель; привязка BAC в ticketId отдаёт
 // статусы YouTrack-синку, и доски живут сами. Чистые трансформации: store-экшен решает, что
 // добавлять (повторный прогон доливает только новое).
-import type { Board, Group, Task } from '../board/model';
-import { isNoveltyPending, WAVE_INFO, type MasterModule, type NoveltyRow } from './domain';
+import type { Board, Group, Sub, Task } from '../board/model';
+import { isNoveltyPending, WAVE_INFO, type EpicRow, type MasterModule, type NoveltyRow } from './domain';
 
 export const MIGRATION_BOARD_ID = 'b_migration';
 export const NOVELTIES_BOARD_ID = 'b_novelties';
+export const EPICS_BOARD_ID = 'b_epics';
 
 const WAVE_COLORS: Record<number, string> = {
   1: '#4263d8',
@@ -180,4 +181,103 @@ export function noveltiesToBoard(novelties: NoveltyRow[], rows: MasterModule[]):
   } as Group);
 
   return { board, groups, collapsedGroupIds: [closedId] };
+}
+
+// ---------------------------------------------------------------------------
+// Эпики → доска «Эпики (отчёты)»: эпик = задача с ПОДЗАДАЧАМИ (дети BAC), группы = разделы
+// админки. Прогресс-бейдж (n/N) доска агрегирует сама из статусов подзадач.
+
+export const epicTaskId = (key: string) => `epic_${key}`;
+
+const sectionSlug = (section: string) =>
+  'g_epic_' +
+  (section || 'прочее')
+    .toLowerCase()
+    .replace(/[^a-zа-яё0-9]+/gi, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 32);
+
+function epicStatus(stage: string): Task['status'] {
+  const s = stage.toLowerCase();
+  if (s.includes('катить') || s.includes('готово')) return 'done';
+  if (s.includes('аналит') || s.includes('разработ') || s.includes('тест') || s.includes('залив')) {
+    return 'work';
+  }
+  return 'plan';
+}
+
+function childStatus(stage: string): Sub['status'] {
+  const s = stage.toLowerCase();
+  if (s.includes('готово') || s.includes('отмен')) return 'done';
+  if (s.includes('работ') || s.includes('тест') || s.includes('аналит') || s.includes('залив')) {
+    return 'work';
+  }
+  if (s.includes('ожида')) return 'stuck';
+  return 'plan'; // 🆕 новая / пусто
+}
+
+function epicTaskOf(e: EpicRow): Task {
+  const note = [
+    `задач: ${e.taskCount}`,
+    `модулей: ${e.modules}`,
+    e.ice ? `Σ ICE: ${e.ice}` : null,
+    e.novelties ? `новинок: ${e.novelties}` : null,
+    e.team ? `команда: ${e.team}` : null,
+  ]
+    .filter(Boolean)
+    .join(' · ');
+  return {
+    id: epicTaskId(e.key),
+    name: `${e.key} · ${e.report}`,
+    owner: null,
+    status: epicStatus(e.stage),
+    due: null,
+    priority: null,
+    tl: null,
+    note,
+    lastBy: '',
+    lastAgo: '',
+    section: e.section || 'Прочее',
+    type: 'mig',
+    source: 'ours',
+    subs: e.children.map(
+      (c): Sub => ({
+        id: `sub_${e.key}_${c.bac}`,
+        name: `${c.bac} · ${c.title}`,
+        owner: null,
+        status: childStatus(c.stage),
+        due: null,
+      }),
+    ),
+  } as Task;
+}
+
+/** Доска «Эпики (отчёты)»: группы = разделы админки, эпики внутри — по Σ ICE (жирные вперёд). */
+export function epicsToBoard(epics: EpicRow[]): MigrationBoard {
+  const board: Board = { id: EPICS_BOARD_ID, name: 'Эпики (отчёты)', color: '#2e9e83' } as Board;
+
+  const sectionOrder: string[] = [];
+  const bySection = new Map<string, EpicRow[]>();
+  for (const e of epics) {
+    const section = e.section && e.section !== '—' ? e.section : 'Прочее';
+    if (!bySection.has(section)) {
+      bySection.set(section, []);
+      sectionOrder.push(section);
+    }
+    bySection.get(section)!.push(e);
+  }
+
+  const groups: Group[] = sectionOrder.map((section) => ({
+    id: sectionSlug(section),
+    name: section,
+    color: '#2e9e83',
+    tasks: bySection
+      .get(section)!
+      .slice()
+      .sort((a, b) => b.ice - a.ice || a.key.localeCompare(b.key))
+      .map(epicTaskOf),
+    boardId: EPICS_BOARD_ID,
+  })) as Group[];
+
+  return { board, groups, collapsedGroupIds: [] };
 }
