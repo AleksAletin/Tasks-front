@@ -292,6 +292,8 @@ interface BoardState {
   closeAddColMenu: () => void;
   addSub: (taskId: string, name: string) => void;
   updateSub: (taskId: string, subId: string, patch: Partial<Sub>) => void;
+  removeSub: (taskId: string, subId: string) => void;
+  moveSub: (taskId: string, subId: string, toIndex: number) => void;
   startAddSub: (taskId: string) => void;
   setSubDraft: (v: string) => void;
   cancelAddSub: () => void;
@@ -356,6 +358,15 @@ const patchTask = (
     ...g,
     tasks: g.tasks.map((t) => (t.id === taskId ? { ...t, ...patch } : t)),
   }));
+
+// Legacy epic subs baked «BAC-123 · Title» into the name before subs had ticketId.
+// Split those on hydrate so the chip + YouTrack sync pick them up; already-normalized
+// subs pass through untouched, so the board self-heals on its next save.
+const normalizeSub = (s: Sub): Sub => {
+  if (s.ticketId) return s;
+  const m = /^([A-ZА-ЯЁ]+-\d+)\s*·\s*(.+)$/u.exec(s.name);
+  return m ? { ...s, ticketId: m[1], name: m[2] } : s;
+};
 
 // Debounced localStorage — the default persist middleware serializes the WHOLE persisted
 // blob synchronously on every mutation (each keystroke / drag tick / parity toggle). Batch
@@ -486,7 +497,12 @@ export const useBoard = create<BoardState>()(
       hydrateBoard: ({ boards, groups, parity, version }) =>
         set((s) => ({
           boards,
-          groups,
+          groups: groups.map((g) => ({
+            ...g,
+            tasks: g.tasks.map((t) =>
+              t.subs?.length ? { ...t, subs: t.subs.map(normalizeSub) } : t,
+            ),
+          })),
           parity,
           ...(version !== undefined ? { boardVersion: version } : {}),
           activeBoardId: boards.some((b) => b.id === s.activeBoardId)
@@ -1097,6 +1113,36 @@ export const useBoard = create<BoardState>()(
                   }
                 : t,
             ),
+          }));
+          return { groups };
+        }),
+      removeSub: (taskId, subId) =>
+        set((s) => {
+          if (s.viewer) return {};
+          const groups = s.groups.map((g) => ({
+            ...g,
+            tasks: g.tasks.map((t) =>
+              t.id === taskId
+                ? { ...t, subs: (t.subs ?? []).filter((x) => x.id !== subId) }
+                : t,
+            ),
+          }));
+          return { groups };
+        }),
+      moveSub: (taskId, subId, toIndex) =>
+        set((s) => {
+          if (s.viewer) return {};
+          const groups = s.groups.map((g) => ({
+            ...g,
+            tasks: g.tasks.map((t) => {
+              if (t.id !== taskId) return t;
+              const subs = [...(t.subs ?? [])];
+              const from = subs.findIndex((x) => x.id === subId);
+              if (from < 0) return t;
+              const [moved] = subs.splice(from, 1);
+              subs.splice(Math.max(0, Math.min(toIndex, subs.length)), 0, moved);
+              return { ...t, subs };
+            }),
           }));
           return { groups };
         }),

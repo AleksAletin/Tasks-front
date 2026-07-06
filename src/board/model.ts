@@ -41,6 +41,10 @@ export interface Sub {
   owner: string | null;
   status: StatusKey;
   due: string | null;
+  priority?: PrioKey | null;
+  note?: string;
+  /** Linked YouTrack issue id (e.g. "BAC-123"), or null. The sync pulls its State. */
+  ticketId?: string | null;
 }
 export interface Timeline {
   start: string;

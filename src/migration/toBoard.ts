@@ -243,10 +243,13 @@ function epicTaskOf(e: EpicRow): Task {
     subs: e.children.map(
       (c): Sub => ({
         id: `sub_${e.key}_${c.bac}`,
-        name: `${c.bac} · ${c.title}`,
+        // BAC уходит в ticketId (чип + синк статусов), имя остаётся человеческим.
+        name: c.title,
         owner: null,
         status: childStatus(c.stage),
         due: null,
+        ticketId: c.bac,
+        note: [c.type, c.assignee].filter(Boolean).join(' · '),
       }),
     ),
   } as Task;

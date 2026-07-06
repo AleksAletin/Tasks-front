@@ -2096,9 +2096,11 @@ function CustomCell({
 }
 
 // Раскрытые подзадачи — вложенная таблица по эталону прототипа: индент под родителем, свой
-// рамочный «стол» с синей акцент-полосой, шапкой «Подэлемент | Owner | Статус | Date» и строкой
-// «+ Добавить подэлемент» внутри рамки.
-const SUB_GRID = 'minmax(230px, 1fr) 96px 168px 128px';
+// рамочный «стол» с синей акцент-полосой, шапкой и строкой «+ Добавить подэлемент» внутри рамки.
+// Поля и функционал — как у взрослых задач: владелец/статус/приоритет/срок/примечание через те же
+// попапы, YouTrack-чип, инлайн-переименование, удаление и drag-порядок внутри карточки.
+const SUB_GRID =
+  'minmax(240px, 1fr) 84px 148px 128px 104px minmax(150px, 240px) 36px';
 
 function SubRows({ t, viewer }: { t: Task; viewer: boolean }) {
   const subs = t.subs ?? [];
@@ -2108,6 +2110,19 @@ function SubRows({ t, viewer }: { t: Task; viewer: boolean }) {
   const addSub = useBoard((s) => s.addSub);
   const cancelAddSub = useBoard((s) => s.cancelAddSub);
   const startAddSub = useBoard((s) => s.startAddSub);
+  const moveSub = useBoard((s) => s.moveSub);
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [overIdx, setOverIdx] = useState<number | null>(null);
+
+  const dropSub = () => {
+    if (dragId !== null && overIdx !== null) {
+      const from = subs.findIndex((x) => x.id === dragId);
+      // Индикатор — верхняя грань строки: при переносе вниз после изъятия индекс сдвигается.
+      if (from >= 0) moveSub(t.id, dragId, from < overIdx ? overIdx - 1 : overIdx);
+    }
+    setDragId(null);
+    setOverIdx(null);
+  };
 
   return (
     <div
@@ -2119,7 +2134,7 @@ function SubRows({ t, viewer }: { t: Task; viewer: boolean }) {
     >
       <div
         style={{
-          maxWidth: 760,
+          maxWidth: 1120,
           background: 'var(--card)',
           border: '1px solid var(--surf-1)',
           borderLeft: `4px solid ${ACCENT}`,
@@ -2143,11 +2158,30 @@ function SubRows({ t, viewer }: { t: Task; viewer: boolean }) {
           <HeadCell>Подэлемент</HeadCell>
           <HeadCell>Owner</HeadCell>
           <HeadCell>Статус</HeadCell>
-          <HeadCell last>Date</HeadCell>
+          <HeadCell>Приоритет</HeadCell>
+          <HeadCell>Срок</HeadCell>
+          <HeadCell>Примечание</HeadCell>
+          <HeadCell last />
         </div>
 
-        {subs.map((sub) => (
-          <SubRow key={sub.id} sub={sub} taskId={t.id} viewer={viewer} />
+        {subs.map((sub, i) => (
+          <SubRow
+            key={sub.id}
+            sub={sub}
+            taskId={t.id}
+            viewer={viewer}
+            dragging={dragId === sub.id}
+            dropTarget={dragId !== null && dragId !== sub.id && overIdx === i}
+            onDragStart={() => setDragId(sub.id)}
+            onDragOver={() => {
+              if (dragId && dragId !== sub.id && overIdx !== i) setOverIdx(i);
+            }}
+            onDrop={dropSub}
+            onDragEnd={() => {
+              setDragId(null);
+              setOverIdx(null);
+            }}
+          />
         ))}
 
         {!viewer && addingSub && (
@@ -2244,15 +2278,32 @@ function SubRow({
   sub,
   taskId,
   viewer,
+  dragging,
+  dropTarget,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onDragEnd,
 }: {
   sub: Sub;
   taskId: string;
   viewer: boolean;
+  dragging: boolean;
+  dropTarget: boolean;
+  onDragStart: () => void;
+  onDragOver: () => void;
+  onDrop: () => void;
+  onDragEnd: () => void;
 }) {
   const openPopup = useBoard((s) => s.openPopup);
-  const openPanel = useBoard((s) => s.openPanel);
+  const updateSub = useBoard((s) => s.updateSub);
+  const removeSub = useBoard((s) => s.removeSub);
   const labels = useBoard((s) => s.labels);
+  const [hover, setHover] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(sub.name);
   const sst = findLabel(labels.status, sub.status);
+  const spr = sub.priority ? findLabel(labels.priority, sub.priority) : null;
   const so = personById(sub.owner);
 
   let sdueLabel = '—';
@@ -2279,45 +2330,180 @@ function SubRow({
     const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
     let x = r.left;
     const y = r.bottom + 5;
-    // 'status' carries the label editor (wider) — size the clamp to the Popup's width.
+    // Пикеры меток несут редактор («Изменить метки») — они шире; заметка тоже фиксированная.
     const w =
-      kind === 'date' ? 280 : kind === 'status' ? 252 : Math.max(r.width, 180);
+      kind === 'date'
+        ? 280
+        : kind === 'status' || kind === 'priority'
+          ? 252
+          : kind === 'note'
+            ? 320
+            : Math.max(r.width, 180);
     if (x + w > window.innerWidth - 10) x = window.innerWidth - 10 - w;
     openPopup({ kind, taskId, subId: sub.id, field, x, y });
   };
 
+  const startRename = () => {
+    if (viewer) return;
+    setDraft(sub.name);
+    setEditing(true);
+  };
+  const commitRename = () => {
+    const n = draft.trim();
+    if (n && n !== sub.name) updateSub(taskId, sub.id, { name: n });
+    setEditing(false);
+  };
+
   return (
     <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onDragOver={(e) => {
+        e.preventDefault();
+        onDragOver();
+      }}
+      onDrop={(e) => {
+        e.preventDefault();
+        onDrop();
+      }}
       style={{
         display: 'grid',
         gridTemplateColumns: SUB_GRID,
         height: 40,
         borderBottom: '1px solid var(--surf-1)',
+        boxShadow: dropTarget ? `inset 0 2px 0 ${ACCENT}` : 'none',
+        opacity: dragging ? 0.45 : 1,
+        background: hover ? 'var(--glass-hi)' : 'transparent',
       }}
     >
       <div
-        onClick={() => openPanel(taskId)}
         style={{
           display: 'flex',
           alignItems: 'center',
-          padding: '0 12px',
+          gap: 7,
+          padding: '0 8px 0 6px',
           borderRight: '1px solid var(--surf-1)',
-          cursor: 'pointer',
           minWidth: 0,
         }}
       >
         <span
+          draggable={!viewer && !editing}
+          onDragStart={(e) => {
+            e.dataTransfer.effectAllowed = 'move';
+            onDragStart();
+          }}
+          onDragEnd={onDragEnd}
+          title={viewer ? undefined : 'Перетащить'}
           style={{
-            fontSize: 12.5,
-            fontWeight: 500,
-            color: 'var(--text-3)',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
+            flexShrink: 0,
+            width: 14,
+            textAlign: 'center',
+            fontSize: 11,
+            letterSpacing: '-1px',
+            color: hover && !viewer ? 'var(--text-faint)' : 'transparent',
+            cursor: viewer ? 'default' : 'grab',
+            userSelect: 'none',
           }}
         >
-          {sub.name}
+          ⋮⋮
         </span>
+        {editing ? (
+          <input
+            value={draft}
+            autoFocus
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commitRename}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') commitRename();
+              else if (e.key === 'Escape') setEditing(false);
+            }}
+            style={{
+              flex: 1,
+              minWidth: 0,
+              height: 26,
+              border: `1px solid ${ACCENT}`,
+              borderRadius: 6,
+              padding: '0 8px',
+              fontSize: 12.5,
+              outline: 'none',
+              background: 'var(--bg)',
+              color: 'var(--text)',
+            }}
+          />
+        ) : (
+          <>
+            <span
+              onClick={startRename}
+              title={viewer ? undefined : 'Переименовать'}
+              style={{
+                fontSize: 12.5,
+                fontWeight: 500,
+                color: 'var(--text-3)',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                cursor: viewer ? 'default' : 'text',
+              }}
+            >
+              {sub.name}
+            </span>
+            {sub.ticketId && (
+              <span
+                title={`YouTrack: ${sub.ticketId} — статус тянется синком`}
+                style={{
+                  flexShrink: 0,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 3,
+                  fontSize: 10,
+                  fontWeight: 700,
+                  fontFamily: "'JetBrains Mono', monospace",
+                  color: ACCENT,
+                  background: 'var(--surf-1)',
+                  padding: '1px 6px',
+                  borderRadius: 8,
+                }}
+              >
+                <svg
+                  width="9"
+                  height="9"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                >
+                  <path d="M9 17H7A5 5 0 0 1 7 7h2M15 7h2a5 5 0 0 1 0 10h-2M8 12h8" />
+                </svg>
+                {sub.ticketId}
+              </span>
+            )}
+            {hover && !viewer && (
+              <span
+                onClick={startRename}
+                title="Переименовать"
+                style={{
+                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: 'var(--text-faint)',
+                  cursor: 'pointer',
+                }}
+              >
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                </svg>
+              </span>
+            )}
+          </>
+        )}
       </div>
       <div
         onClick={(e) => subPopup('people', undefined, e)}
@@ -2367,11 +2553,51 @@ function SubRow({
         </div>
       </div>
       <div
+        onClick={(e) => subPopup('priority', undefined, e)}
+        style={{
+          borderRight: '1px solid var(--surf-1)',
+          cursor: viewer ? 'default' : 'pointer',
+        }}
+      >
+        {spr ? (
+          <div
+            style={{
+              height: '100%',
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: spr.bg,
+              color: '#fff',
+              fontSize: 12,
+              fontWeight: 600,
+              boxShadow: 'inset 0 0 0 1px var(--hover)',
+            }}
+          >
+            {spr.label}
+          </div>
+        ) : (
+          <div
+            style={{
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--line)',
+              fontSize: 15,
+            }}
+          >
+            +
+          </div>
+        )}
+      </div>
+      <div
         onClick={(e) => subPopup('date', 'due', e)}
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          borderRight: '1px solid var(--surf-1)',
           cursor: viewer ? 'default' : 'pointer',
           fontSize: 12,
           fontWeight: 600,
@@ -2380,6 +2606,71 @@ function SubRow({
         }}
       >
         {sdueLabel}
+      </div>
+      <div
+        onClick={(e) => subPopup('note', undefined, e)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          padding: '0 10px',
+          borderRight: '1px solid var(--surf-1)',
+          cursor: viewer ? 'default' : 'pointer',
+          minWidth: 0,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 12,
+            color: sub.note ? 'var(--text-soft)' : 'var(--line)',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {sub.note || '—'}
+        </span>
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {hover && !viewer && (
+          <span
+            onClick={() => removeSub(taskId, sub.id)}
+            title="Удалить подэлемент"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 24,
+              height: 24,
+              borderRadius: 6,
+              color: 'var(--text-faint)',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.color = '#cf6b6b';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.color =
+                'var(--text-faint)';
+            }}
+          >
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6" />
+            </svg>
+          </span>
+        )}
       </div>
     </div>
   );

@@ -224,8 +224,12 @@ export function Popup() {
       )}
       {popup.kind === 'note' && task && (
         <NoteEditor
-          value={task.note}
-          onChange={(v) => updateTask(popup.taskId!, { note: v })}
+          value={popup.subId ? (sub?.note ?? '') : task.note}
+          onChange={(v) =>
+            popup.subId
+              ? updateSub(popup.taskId!, popup.subId, { note: v })
+              : updateTask(popup.taskId!, { note: v })
+          }
           onClose={closePopup}
         />
       )}

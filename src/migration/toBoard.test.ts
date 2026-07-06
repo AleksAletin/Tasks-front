@@ -135,6 +135,13 @@ describe('карта переезда → доска', () => {
     expect(epic.subs!.map((s) => s.status)).toEqual(['plan', 'work', 'done']);
     expect(epic.note).toContain('Σ ICE: 6920');
     expect(groups[1].tasks[0].status).toBe('done'); // ✅ катить!
+
+    // Поля подзадачи: BAC — в ticketId (чип + синк), имя человеческое, тип/исполнитель — в note.
+    const first = epic.subs![0];
+    expect(first.ticketId).toBe('BAC-1');
+    expect(first.name).toBe('Дочка раз');
+    expect(first.note).toBe('Техдолг');
+    expect(epic.subs![1].note).toBe('Задача · x');
   });
 
   it('store: повторный импорт не плодит дублей и не трогает правки пользователя', () => {
