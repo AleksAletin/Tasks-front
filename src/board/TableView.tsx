@@ -1923,7 +1923,7 @@ const Row = memo(function Row({
       </div>
 
       {expanded && (
-        <SubRows t={t} g={g} rowGrid={rowGrid} cols={cols} viewer={viewer} />
+        <SubRows t={t} viewer={viewer} />
       )}
     </>
   );
@@ -2095,19 +2095,12 @@ function CustomCell({
   );
 }
 
-function SubRows({
-  t,
-  g,
-  rowGrid,
-  cols,
-  viewer,
-}: {
-  t: Task;
-  g: ViewGroup;
-  rowGrid: string;
-  cols: Col[];
-  viewer: boolean;
-}) {
+// Раскрытые подзадачи — вложенная таблица по эталону прототипа: индент под родителем, свой
+// рамочный «стол» с синей акцент-полосой, шапкой «Подэлемент | Owner | Статус | Date» и строкой
+// «+ Добавить подэлемент» внутри рамки.
+const SUB_GRID = 'minmax(230px, 1fr) 96px 168px 128px';
+
+function SubRows({ t, viewer }: { t: Task; viewer: boolean }) {
   const subs = t.subs ?? [];
   const addingSub = useBoard((s) => s.addingSub === t.id);
   const subDraft = useBoard((s) => s.subDraft);
@@ -2117,105 +2110,143 @@ function SubRows({
   const startAddSub = useBoard((s) => s.startAddSub);
 
   return (
-    <>
-      {subs.map((sub) => (
-        <SubRow
-          key={sub.id}
-          sub={sub}
-          taskId={t.id}
-          g={g}
-          rowGrid={rowGrid}
-          cols={cols}
-          viewer={viewer}
-        />
-      ))}
-      {!viewer && addingSub && (
+    <div
+      style={{
+        padding: '10px 24px 16px 84px',
+        borderBottom: '1px solid var(--surf-1)',
+        background: 'var(--glass)',
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 760,
+          background: 'var(--card)',
+          border: '1px solid var(--surf-1)',
+          borderLeft: `4px solid ${ACCENT}`,
+          borderRadius: 10,
+          boxShadow: '0 2px 10px var(--shadow, rgba(20,22,28,0.05))',
+          overflow: 'hidden',
+        }}
+      >
+        {/* шапка вложенной таблицы */}
         <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            padding: '0 0 0 84px',
+            display: 'grid',
+            gridTemplateColumns: SUB_GRID,
             height: 36,
-            borderLeft: `3px solid ${g.color}`,
             borderBottom: '1px solid var(--surf-1)',
-            background: 'var(--glass-hi)',
-          }}
-        >
-          <input
-            value={subDraft}
-            onChange={(e) => setSubDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                const n = subDraft.trim();
-                if (n) {
-                  addSub(t.id, n);
-                  setSubDraft('');
-                }
-              } else if (e.key === 'Escape') {
-                cancelAddSub();
-              }
-            }}
-            autoFocus
-            placeholder="Подэлемент, Enter — создать, Esc — отмена"
-            style={{
-              flex: 1,
-              maxWidth: 360,
-              height: 28,
-              border: `1px solid ${ACCENT}`,
-              borderRadius: 7,
-              padding: '0 10px',
-              fontSize: 12.5,
-              outline: 'none',
-            }}
-          />
-        </div>
-      )}
-      {!viewer && !addingSub && (
-        <div
-          onClick={() => startAddSub(t.id)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 7,
-            padding: '0 0 0 84px',
-            height: 32,
-            borderLeft: '3px solid transparent',
-            color: 'var(--text-faint)',
             fontSize: 12.5,
-            fontWeight: 600,
-            cursor: 'pointer',
+            fontWeight: 700,
+            color: 'var(--text-2)',
           }}
         >
-          <svg
-            width="13"
-            height="13"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-          >
-            <path d="M12 5v14M5 12h14" />
-          </svg>
-          Добавить подэлемент
+          <HeadCell>Подэлемент</HeadCell>
+          <HeadCell>Owner</HeadCell>
+          <HeadCell>Статус</HeadCell>
+          <HeadCell last>Date</HeadCell>
         </div>
-      )}
-    </>
+
+        {subs.map((sub) => (
+          <SubRow key={sub.id} sub={sub} taskId={t.id} viewer={viewer} />
+        ))}
+
+        {!viewer && addingSub && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '0 12px',
+              height: 40,
+              borderTop: subs.length ? '1px solid var(--surf-1)' : 'none',
+            }}
+          >
+            <input
+              value={subDraft}
+              onChange={(e) => setSubDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const n = subDraft.trim();
+                  if (n) {
+                    addSub(t.id, n);
+                    setSubDraft('');
+                  }
+                } else if (e.key === 'Escape') {
+                  cancelAddSub();
+                }
+              }}
+              autoFocus
+              placeholder="Подэлемент, Enter — создать, Esc — отмена"
+              style={{
+                flex: 1,
+                maxWidth: 360,
+                height: 28,
+                border: `1px solid ${ACCENT}`,
+                borderRadius: 7,
+                padding: '0 10px',
+                fontSize: 12.5,
+                outline: 'none',
+                background: 'var(--bg)',
+                color: 'var(--text)',
+              }}
+            />
+          </div>
+        )}
+        {!viewer && !addingSub && (
+          <div
+            onClick={() => startAddSub(t.id)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 7,
+              padding: '0 12px',
+              height: 36,
+              borderTop: subs.length ? '1px solid var(--surf-1)' : 'none',
+              color: 'var(--text-faint)',
+              fontSize: 12.5,
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+            >
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Добавить подэлемент
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function HeadCell({ children, last }: { children?: React.ReactNode; last?: boolean }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRight: last ? 'none' : '1px solid var(--surf-1)',
+      }}
+    >
+      {children}
+    </div>
   );
 }
 
 function SubRow({
   sub,
   taskId,
-  g,
-  rowGrid,
-  cols,
   viewer,
 }: {
   sub: Sub;
   taskId: string;
-  g: ViewGroup;
-  rowGrid: string;
-  cols: Col[];
   viewer: boolean;
 }) {
   const openPopup = useBoard((s) => s.openPopup);
@@ -2223,11 +2254,6 @@ function SubRow({
   const labels = useBoard((s) => s.labels);
   const sst = findLabel(labels.status, sub.status);
   const so = personById(sub.owner);
-  const orderOf: Record<string, number> = {};
-  cols.forEach((c, i) => {
-    orderOf[c.key] = i + 1;
-  });
-  const subKeys = ['task', 'owner', 'status', 'due'];
 
   let sdueLabel = '—';
   let sdueColor = 'var(--line)';
@@ -2264,38 +2290,22 @@ function SubRow({
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: rowGrid,
-        height: 36,
-        background: 'var(--glass)',
+        gridTemplateColumns: SUB_GRID,
+        height: 40,
         borderBottom: '1px solid var(--surf-1)',
-        borderLeft: `3px solid ${g.color}`,
       }}
     >
-      <div style={{ borderRight: '1px solid var(--surf-1)' }} />
       <div
         onClick={() => openPanel(taskId)}
         style={{
-          order: orderOf.task,
           display: 'flex',
           alignItems: 'center',
-          gap: 8,
-          padding: '0 8px 0 28px',
+          padding: '0 12px',
           borderRight: '1px solid var(--surf-1)',
           cursor: 'pointer',
           minWidth: 0,
         }}
       >
-        <svg
-          width="13"
-          height="13"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="var(--line)"
-          strokeWidth="2.2"
-          style={{ flexShrink: 0 }}
-        >
-          <path d="M5 5v8a3 3 0 0 0 3 3h11" />
-        </svg>
         <span
           style={{
             fontSize: 12.5,
@@ -2312,7 +2322,6 @@ function SubRow({
       <div
         onClick={(e) => subPopup('people', undefined, e)}
         style={{
-          order: orderOf.owner,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -2336,7 +2345,6 @@ function SubRow({
       <div
         onClick={(e) => subPopup('status', undefined, e)}
         style={{
-          order: orderOf.status,
           borderRight: '1px solid var(--surf-1)',
           cursor: viewer ? 'default' : 'pointer',
         }}
@@ -2361,11 +2369,9 @@ function SubRow({
       <div
         onClick={(e) => subPopup('date', 'due', e)}
         style={{
-          order: orderOf.due,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRight: '1px solid var(--surf-1)',
           cursor: viewer ? 'default' : 'pointer',
           fontSize: 12,
           fontWeight: 600,
@@ -2375,17 +2381,6 @@ function SubRow({
       >
         {sdueLabel}
       </div>
-      {cols
-        .filter((c) => !subKeys.includes(c.key))
-        .map((c) => (
-          <div
-            key={c.key}
-            style={{
-              order: orderOf[c.key],
-              borderRight: '1px solid var(--surf-1)',
-            }}
-          />
-        ))}
     </div>
   );
 }
