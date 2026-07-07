@@ -1119,6 +1119,20 @@ const Row = memo(function Row({
   const initPhases = useBoard((s) => s.initPhases);
   const [editingName, setEditingName] = useState(false);
   const [nameHover, setNameHover] = useState(false);
+  const autoRename = useBoard((s) => s.renamingTaskId === t.id);
+  const setRenamingTask = useBoard((s) => s.setRenamingTask);
+  // Только что созданная задача («Создать задачу» / «Добавить задача» / контекст-меню):
+  // привозим строку в вид и сразу открываем переименование — раньше она беззвучно
+  // падала в свёрнутую группу и создание выглядело сломанным.
+  useLayoutEffect(() => {
+    if (autoRename && !viewer) {
+      setEditingName(true);
+      setRenamingTask(null);
+      document
+        .querySelector(`[data-row-id="${t.id}"]`)
+        ?.scrollIntoView({ block: 'center' });
+    }
+  }, [autoRename, viewer, t.id, setRenamingTask]);
   const expanded = useBoard((s) => !!s.expanded[t.id]);
   const toggleExpand = useBoard((s) => s.toggleExpand);
   const dragStart = useBoard((s) => s.dragStart);
@@ -1467,6 +1481,7 @@ const Row = memo(function Row({
             <input
               value={t.name}
               autoFocus
+              onFocus={(e) => e.currentTarget.select()}
               onChange={(e) => updateTask(t.id, { name: e.target.value })}
               onClick={(e) => e.stopPropagation()}
               onMouseDown={(e) => e.stopPropagation()}

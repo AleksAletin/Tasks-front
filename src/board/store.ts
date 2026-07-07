@@ -315,6 +315,9 @@ interface BoardState {
   openCtx: (m: CtxMenu) => void;
   closeCtx: () => void;
   createTaskBelow: (id: string) => void;
+  /** Задача, которой надо открыть инлайн-переименование (только что созданная). */
+  renamingTaskId: string | null;
+  setRenamingTask: (id: string | null) => void;
   archiveTask: (id: string) => void;
   openCmd: () => void;
   closeCmd: () => void;
@@ -475,6 +478,7 @@ export const useBoard = create<BoardState>()(
       addColMenu: null,
       addingSub: null,
       subDraft: '',
+      renamingTaskId: null,
       cmdOpen: false,
       cmdQuery: '',
       cmdIdx: 0,
@@ -1255,11 +1259,14 @@ export const useBoard = create<BoardState>()(
       createTaskBelow: (id) =>
         set((s) => {
           const stamp = Date.now();
+          const ntId = 't' + stamp + '_' + Math.floor(Math.random() * 99);
+          let created = false;
           const groups = s.groups.map((g) => {
             const i = g.tasks.findIndex((t) => t.id === id);
             if (i < 0) return g;
+            created = true;
             const nt: Task = {
-              id: 't' + stamp + '_' + Math.floor(Math.random() * 99),
+              id: ntId,
               name: 'Новая задача',
               owner: null,
               status: 'plan',
@@ -1277,7 +1284,7 @@ export const useBoard = create<BoardState>()(
             tasks.splice(i + 1, 0, nt);
             return { ...g, tasks };
           });
-          return { groups, ctxMenu: null };
+          return { groups, ctxMenu: null, renamingTaskId: created ? ntId : s.renamingTaskId };
         }),
       archiveTask: (id) =>
         set((s) => {
@@ -1483,13 +1490,17 @@ export const useBoard = create<BoardState>()(
               boardId: s.activeBoardId,
               tasks: [nt],
             };
-            return { groups: [...s.groups, group] };
+            return { groups: [...s.groups, group], renamingTaskId: nt.id };
           }
+          // Свёрнутая целевая группа съедала задачу без следа («не работает») —
+          // раскрываем её и сразу открываем строке переименование.
           const firstId = boardGroups[0].id;
           return {
             groups: s.groups.map((g) =>
               g.id === firstId ? { ...g, tasks: [nt, ...g.tasks] } : g,
             ),
+            collapsed: { ...s.collapsed, [firstId]: false },
+            renamingTaskId: nt.id,
           };
         }),
       // Append a task to a specific group (the per-group «Добавить задача» footer row).
@@ -1516,8 +1527,10 @@ export const useBoard = create<BoardState>()(
             groups: s.groups.map((g) =>
               g.id === groupId ? { ...g, tasks: [...g.tasks, nt] } : g,
             ),
+            renamingTaskId: nt.id,
           };
         }),
+      setRenamingTask: (renamingTaskId) => set({ renamingTaskId }),
       setCalMonth: (calMonth) => set({ calMonth }),
       shiftCalMonth: (delta) =>
         set((s) => {
