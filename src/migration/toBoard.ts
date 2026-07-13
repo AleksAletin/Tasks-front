@@ -184,18 +184,14 @@ export function noveltiesToBoard(novelties: NoveltyRow[], rows: MasterModule[]):
 }
 
 // ---------------------------------------------------------------------------
-// Эпики → доска «Эпики (отчёты)»: эпик = задача с ПОДЗАДАЧАМИ (дети BAC), группы = разделы
-// админки. Прогресс-бейдж (n/N) доска агрегирует сама из статусов подзадач.
+// Эпики → доска «Эпики (отчёты)»: эпик = задача с ПОДЗАДАЧАМИ (дети BAC), ДВЕ группы по
+// состоянию — «В работе» и «Готово» (раздел админки остаётся в колонке «Раздел»).
+// Прогресс-бейдж (n/N) доска агрегирует сама из статусов подзадач.
 
 export const epicTaskId = (key: string) => `epic_${key}`;
 
-const sectionSlug = (section: string) =>
-  'g_epic_' +
-  (section || 'прочее')
-    .toLowerCase()
-    .replace(/[^a-zа-яё0-9]+/gi, '_')
-    .replace(/^_+|_+$/g, '')
-    .slice(0, 32);
+export const EPIC_WORK_GROUP_ID = 'g_epic_work';
+export const EPIC_DONE_GROUP_ID = 'g_epic_done';
 
 function epicStatus(stage: string): Task['status'] {
   const s = stage.toLowerCase();
@@ -237,7 +233,7 @@ function epicTaskOf(e: EpicRow): Task {
     note,
     lastBy: '',
     lastAgo: '',
-    section: e.section || 'Прочее',
+    section: e.section && e.section !== '—' ? e.section : 'Прочее',
     type: 'mig',
     source: 'ours',
     subs: e.children.map(
@@ -255,32 +251,32 @@ function epicTaskOf(e: EpicRow): Task {
   } as Task;
 }
 
-/** Доска «Эпики (отчёты)»: группы = разделы админки, эпики внутри — по Σ ICE (жирные вперёд). */
+/** Доска «Эпики (отчёты)»: две группы по состоянию — «В работе» (по Σ ICE, жирные вперёд)
+ * и свёрнутая «Готово». Раздел админки едет в поле section (колонка «Раздел»). */
 export function epicsToBoard(epics: EpicRow[]): MigrationBoard {
   const board: Board = { id: EPICS_BOARD_ID, name: 'Эпики (отчёты)', color: '#2e9e83' } as Board;
 
-  const sectionOrder: string[] = [];
-  const bySection = new Map<string, EpicRow[]>();
-  for (const e of epics) {
-    const section = e.section && e.section !== '—' ? e.section : 'Прочее';
-    if (!bySection.has(section)) {
-      bySection.set(section, []);
-      sectionOrder.push(section);
-    }
-    bySection.get(section)!.push(e);
-  }
+  const sorted = epics
+    .slice()
+    .sort((a, b) => b.ice - a.ice || a.key.localeCompare(b.key));
+  const isDone = (e: EpicRow) => epicStatus(e.stage) === 'done';
 
-  const groups: Group[] = sectionOrder.map((section) => ({
-    id: sectionSlug(section),
-    name: section,
-    color: '#2e9e83',
-    tasks: bySection
-      .get(section)!
-      .slice()
-      .sort((a, b) => b.ice - a.ice || a.key.localeCompare(b.key))
-      .map(epicTaskOf),
-    boardId: EPICS_BOARD_ID,
-  })) as Group[];
+  const groups: Group[] = [
+    {
+      id: EPIC_WORK_GROUP_ID,
+      name: '🔄 В работе',
+      color: '#d9a441',
+      tasks: sorted.filter((e) => !isDone(e)).map(epicTaskOf),
+      boardId: EPICS_BOARD_ID,
+    },
+    {
+      id: EPIC_DONE_GROUP_ID,
+      name: '✅ Готово',
+      color: '#4a9b7f',
+      tasks: sorted.filter(isDone).map(epicTaskOf),
+      boardId: EPICS_BOARD_ID,
+    },
+  ] as Group[];
 
-  return { board, groups, collapsedGroupIds: [] };
+  return { board, groups, collapsedGroupIds: [EPIC_DONE_GROUP_ID] };
 }

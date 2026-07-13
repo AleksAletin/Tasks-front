@@ -277,8 +277,11 @@ function ToBoardButton({
       onClick={() => {
         const addedNovelties = importMigrationBoard(noveltiesToBoard(novelties, rows));
         const addedModules = importMigrationBoard(migrationToBoard(rows));
-        // эпики импортируем последними — их доска и остаётся активной
-        const addedEpics = epics.length ? importMigrationBoard(epicsToBoard(epics)) : 0;
+        // эпики импортируем последними — их доска и остаётся активной; retirePrefix
+        // расформировывает группы старой раскладки по разделам (переход на «В работе/Готово»)
+        const addedEpics = epics.length
+          ? importMigrationBoard({ ...epicsToBoard(epics), retirePrefix: 'g_epic_' })
+          : 0;
         const added = addedModules + addedNovelties + addedEpics;
         addToast(
           added > 0

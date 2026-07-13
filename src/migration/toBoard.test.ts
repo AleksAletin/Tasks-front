@@ -124,17 +124,23 @@ describe('карта переезда → доска', () => {
       },
     ];
 
-    const { board, groups } = epicsToBoard(epics);
+    const { board, groups, collapsedGroupIds } = epicsToBoard(epics);
 
     expect(board.id).toBe(EPICS_BOARD_ID);
-    expect(groups.map((g) => g.name)).toEqual(['Главное окно', 'Прочее']); // «—» → Прочее
+    // Две группы по состоянию: «В работе» + свёрнутая «Готово»; раздел остаётся полем section.
+    expect(groups.map((g) => g.id)).toEqual(['g_epic_work', 'g_epic_done']);
+    expect(collapsedGroupIds).toEqual(['g_epic_done']);
     const epic = groups[0].tasks[0];
     expect(epic.id).toBe(epicTaskId('R425'));
     expect(epic.status).toBe('work'); // 🧠 аналитика
+    expect(epic.section).toBe('Главное окно');
     expect(epic.subs).toHaveLength(3);
     expect(epic.subs!.map((s) => s.status)).toEqual(['plan', 'work', 'done']);
     expect(epic.note).toContain('Σ ICE: 6920');
-    expect(groups[1].tasks[0].status).toBe('done'); // ✅ катить!
+    const done = groups[1].tasks[0];
+    expect(done.id).toBe(epicTaskId('R47'));
+    expect(done.status).toBe('done'); // ✅ катить!
+    expect(done.section).toBe('Прочее'); // «—» → Прочее
 
     // Поля подзадачи: BAC — в ticketId (чип + синк), имя человеческое, тип/исполнитель — в note.
     const first = epic.subs![0];
@@ -142,6 +148,72 @@ describe('карта переезда → доска', () => {
     expect(first.name).toBe('Дочка раз');
     expect(first.note).toBe('Техдолг');
     expect(epic.subs![1].note).toBe('Задача · x');
+  });
+
+  it('retirePrefix: переход с разделов на статусы — правки живут, сабы доливаются', () => {
+    const epics: EpicRow[] = [
+      {
+        key: 'R900',
+        section: 'Web',
+        report: 'Отчёт-переезд',
+        modules: 1,
+        taskCount: 2,
+        progress: 0,
+        ice: 500,
+        novelties: 0,
+        stage: '🧠 аналитика',
+        team: '',
+        children: [
+          { bac: 'BAC-91', title: 'Старая дочка', type: 'Задача', stage: '🆕 новая', assignee: '' },
+          { bac: 'BAC-92', title: 'Новая дочка из файла', type: 'Задача', stage: '🆕 новая', assignee: '' },
+        ],
+      },
+    ];
+
+    // Старая раскладка: эпик живёт в разделной группе; юзер назначил владельца, поправил
+    // саб; статус задачи — устаревшая стадия из прошлого файла.
+    const legacy = {
+      board: epicsToBoard(epics).board,
+      groups: [
+        {
+          id: 'g_epic_web',
+          name: 'Web',
+          color: '#2e9e83',
+          boardId: EPICS_BOARD_ID,
+          tasks: [
+            {
+              ...epicsToBoard(epics).groups[0].tasks[0],
+              status: 'done' as const, // устаревшая стадия прошлого файла
+              owner: 'p2', // правка юзера
+              subs: [
+                { id: 'sub_R900_BAC-91', name: 'Старая дочка', owner: null, status: 'done' as const, due: null, ticketId: 'BAC-91' },
+              ],
+            },
+          ],
+        },
+      ],
+      collapsedGroupIds: [],
+    };
+    useBoard.setState({
+      groups: useBoard.getState().groups.filter((g) => (g.boardId ?? 'b1') !== EPICS_BOARD_ID),
+    });
+    useBoard.getState().importMigrationBoard(legacy);
+
+    // Новая раскладка со статусными группами расформировывает разделные.
+    const added = useBoard
+      .getState()
+      .importMigrationBoard({ ...epicsToBoard(epics), retirePrefix: 'g_epic_' });
+
+    const state = useBoard.getState();
+    const boardGroups = state.groups.filter((g) => (g.boardId ?? 'b1') === EPICS_BOARD_ID);
+    expect(boardGroups.map((g) => g.id).sort()).toEqual(['g_epic_done', 'g_epic_work']);
+    const workGroup = boardGroups.find((g) => g.id === 'g_epic_work')!;
+    const moved = workGroup.tasks.find((t) => t.id === epicTaskId('R900'))!;
+    expect(moved.status).toBe('work'); // вычисляемая стадия обновилась из файла (🧠 аналитика)
+    expect(moved.owner).toBe('p2'); // правка юзера выжила при переезде
+    expect(moved.subs!.map((s) => s.ticketId)).toEqual(['BAC-91', 'BAC-92']); // сабы долиты
+    expect(moved.subs![0].status).toBe('done'); // правленый саб не перезаписан
+    expect(added).toBe(0); // сам эпик не считается новым
   });
 
   it('store: повторный импорт не плодит дублей и не трогает правки пользователя', () => {

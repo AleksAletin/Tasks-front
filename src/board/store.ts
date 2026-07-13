@@ -224,11 +224,15 @@ interface BoardState {
   setPrefsVersion: (v: number) => void;
   setTicketsNewCount: (n: number) => void;
   /** «Карта переезда» → доска: upsert доски и групп-волн; задачи добавляются только
-   * отсутствующие (правки пользователя не трогаем). Возвращает число добавленных. */
+   * отсутствующие (правки пользователя не трогаем). retirePrefix расформировывает группы
+   * старой раскладки (id с этим префиксом, отсутствующие во входе): их задачи переезжают в
+   * новые группы с сохранением правок и доливкой недостающих подзадач. Возвращает число
+   * добавленных задач. */
   importMigrationBoard: (payload: {
     board: Board;
     groups: Group[];
     collapsedGroupIds: string[];
+    retirePrefix?: string;
   }) => number;
   login: () => void;
   setLoginEmail: (v: string) => void;
@@ -549,32 +553,107 @@ export const useBoard = create<BoardState>()(
       setPrefsVersion: (v) => set({ prefsVersion: v }),
       setBoardVersion: (v) => set({ boardVersion: v }),
       setTicketsNewCount: (n) => set({ ticketsNewCount: n }),
-      importMigrationBoard: ({ board, groups, collapsedGroupIds }) => {
+      importMigrationBoard: ({ board, groups, collapsedGroupIds, retirePrefix }) => {
         let added = 0;
         set((s) => {
           const boards = s.boards.some((b) => b.id === board.id)
             ? s.boards.map((b) => (b.id === board.id ? { ...b, name: board.name, color: board.color } : b))
             : [...s.boards, board];
 
+          const boardGroups = s.groups.filter((g) => (g.boardId ?? 'b1') === board.id);
+          const incomingIds = new Set(groups.map((g) => g.id));
+
+          // Группы старой раскладки (сменилась группировка, например разделы → статусы):
+          // расформировываем, задачи не теряются — переезжают в новые группы.
+          const retiring = retirePrefix
+            ? boardGroups.filter((g) => g.id.startsWith(retirePrefix) && !incomingIds.has(g.id))
+            : [];
+          const retiringIds = new Set(retiring.map((g) => g.id));
+
           const existingById = new Map(
-            s.groups.filter((g) => (g.boardId ?? 'b1') === board.id).map((g) => [g.id, g]),
+            boardGroups.filter((g) => !retiringIds.has(g.id)).map((g) => [g.id, g]),
           );
           const presentTaskIds = new Set(
-            s.groups
-              .filter((g) => (g.boardId ?? 'b1') === board.id)
+            boardGroups
+              .filter((g) => !retiringIds.has(g.id))
               .flatMap((g) => g.tasks.map((t) => t.id)),
           );
 
-          const mergedNew = groups.map((incoming) => {
-            const existing = existingById.get(incoming.id);
-            if (!existing) {
-              added += incoming.tasks.length;
-              return incoming;
+          let mergedNew: Group[];
+          let keepForeign: Group[];
+
+          if (retirePrefix) {
+            // Режим reconcile (эпики): файл — источник правды по РАСКЛАДКЕ и вычисляемым
+            // полям. Каждая задача входа кладётся в группу входа (даже если уже лежала в
+            // другой); правки юзера (владелец/приоритет/сроки/правленые сабы) живут,
+            // статус-стадия/note-сводка/раздел обновляются, недостающие сабы доливаются.
+            const allById = new Map(boardGroups.flatMap((g) => g.tasks).map((t) => [t.id, t]));
+            const incomingTaskIds = new Set(groups.flatMap((g) => g.tasks.map((t) => t.id)));
+
+            const reconcile = (incoming: Task): Task => {
+              const prev = allById.get(incoming.id);
+              if (!prev) {
+                added += 1;
+                return incoming;
+              }
+              const have = prev.subs ?? [];
+              const fresh = (incoming.subs ?? []).filter(
+                (ps) =>
+                  !have.some(
+                    (es) => (es.ticketId && es.ticketId === ps.ticketId) || es.id === ps.id,
+                  ),
+              );
+              return {
+                ...prev,
+                status: incoming.status,
+                note: incoming.note,
+                section: incoming.section,
+                subs: [...have, ...fresh],
+              };
+            };
+
+            mergedNew = groups.map((incoming) => {
+              const existing = existingById.get(incoming.id);
+              // Ручные задачи, уже живущие в этой группе, остаются хвостом.
+              const manual = (existing?.tasks ?? []).filter((t) => !incomingTaskIds.has(t.id));
+              return {
+                ...(existing ?? incoming),
+                name: incoming.name,
+                color: incoming.color,
+                tasks: [...incoming.tasks.map(reconcile), ...manual],
+              };
+            });
+
+            // Ручные задачи из расформированных групп — в первую группу входа.
+            const leftovers = retiring
+              .flatMap((g) => g.tasks)
+              .filter((t) => !incomingTaskIds.has(t.id));
+            if (leftovers.length > 0 && mergedNew.length > 0) {
+              mergedNew[0] = { ...mergedNew[0], tasks: [...mergedNew[0].tasks, ...leftovers] };
             }
-            const fresh = incoming.tasks.filter((t) => !presentTaskIds.has(t.id));
-            added += fresh.length;
-            return { ...existing, name: incoming.name, color: incoming.color, tasks: [...existing.tasks, ...fresh] };
-          });
+
+            // Прочие группы доски (инбокс «Разобрать») не трогаем, но задачи, которые файл
+            // разложил по своим группам, из них убираем — без дублей.
+            keepForeign = boardGroups
+              .filter((g) => !incomingIds.has(g.id) && !retiringIds.has(g.id))
+              .map((g) => ({ ...g, tasks: g.tasks.filter((t) => !incomingTaskIds.has(t.id)) }));
+          } else {
+            // Обычный режим (модули/новинки): доливаем только отсутствующее, ничего не двигаем.
+            mergedNew = groups.map((incoming) => {
+              const existing = existingById.get(incoming.id);
+              if (!existing) {
+                added += incoming.tasks.length;
+                return incoming;
+              }
+              const fresh = incoming.tasks.filter((t) => !presentTaskIds.has(t.id));
+              added += fresh.length;
+              return { ...existing, name: incoming.name, color: incoming.color, tasks: [...existing.tasks, ...fresh] };
+            });
+            keepForeign = boardGroups.filter(
+              (g) => !incomingIds.has(g.id) && !retiringIds.has(g.id),
+            );
+          }
+
           const others = s.groups.filter((g) => (g.boardId ?? 'b1') !== board.id);
           const collapsed = { ...s.collapsed };
           for (const gid of collapsedGroupIds) {
@@ -583,7 +662,7 @@ export const useBoard = create<BoardState>()(
 
           return {
             boards,
-            groups: [...others, ...mergedNew],
+            groups: [...others, ...mergedNew, ...keepForeign],
             collapsed,
             activeBoardId: board.id,
             screen: 'board',
