@@ -238,17 +238,29 @@ export function Popup() {
   );
 }
 
-// Пикер «В подзадачи эпика…» (разбор инбокса, ТЗ v2 §3): поиск по задачам активной доски,
-// клик — задача уезжает подзадачей выбранного эпика (тикет и статус едут с ней).
+// Пикер «В подзадачи эпика…» (разбор инбокса, ТЗ v2 §3): поиск по задачам ВСЕХ досок
+// (активная вперёд — эпики и модули под рукой), клик — задача уезжает подзадачей
+// выбранного родителя (тикет и статус едут с ней).
 function AttachPicker({ taskId }: { taskId: string }) {
   const groups = useBoard((s) => s.groups);
+  const boards = useBoard((s) => s.boards);
   const activeBoardId = useBoard((s) => s.activeBoardId);
   const attachToEpic = useBoard((s) => s.attachToEpic);
   const [query, setQuery] = useState('');
 
+  const boardName = new Map(boards.map((b) => [b.id, b.name]));
   const candidates = groups
-    .filter((g) => (g.boardId ?? 'b1') === activeBoardId)
-    .flatMap((g) => g.tasks.map((t) => ({ task: t, group: g.name })))
+    .slice()
+    .sort((a, b) =>
+      ((a.boardId ?? 'b1') === activeBoardId ? 0 : 1) -
+      ((b.boardId ?? 'b1') === activeBoardId ? 0 : 1),
+    )
+    .flatMap((g) =>
+      g.tasks.map((t) => ({
+        task: t,
+        group: boardName.get(g.boardId ?? 'b1') ?? g.name,
+      })),
+    )
     .filter((c) => c.task.id !== taskId)
     .filter(
       (c) =>

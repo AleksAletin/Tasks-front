@@ -48,6 +48,7 @@ export interface UserOverride {
 export type Screen = 'board' | 'dashboard' | 'users' | 'migration' | 'tickets';
 export type BoardTab =
   | 'table'
+  | 'intake'
   | 'timeline'
   | 'parity'
   | 'alerts'
@@ -301,6 +302,8 @@ interface BoardState {
   moveSub: (taskId: string, subId: string, toIndex: number) => void;
   /** Разбор инбокса: задача целиком уезжает ПОДЗАДАЧЕЙ выбранного эпика (ТЗ v2 §3). */
   attachToEpic: (taskId: string, epicTaskId: string) => void;
+  /** Разбор инбокса: линейно в хвост первой группы доски «Бэклог». */
+  sendToBacklog: (taskId: string) => void;
   startAddSub: (taskId: string) => void;
   setSubDraft: (v: string) => void;
   cancelAddSub: () => void;
@@ -1263,6 +1266,44 @@ export const useBoard = create<BoardState>()(
             popup: null,
           };
         }),
+      sendToBacklog: (taskId) => {
+        let moved: string | null = null;
+        set((s) => {
+          if (s.viewer) return {};
+          const task = s.groups.flatMap((g) => g.tasks).find((t) => t.id === taskId);
+          if (!task) return {};
+          const backlog = s.boards.find(
+            (b) => b.id === 'b3' || b.name.toLowerCase().includes('бэклог'),
+          );
+          if (!backlog) return {};
+          moved = task.name;
+          let groups = s.groups.map((g) => ({
+            ...g,
+            tasks: g.tasks.filter((t) => t.id !== taskId),
+          }));
+          const target = groups.find((g) => (g.boardId ?? 'b1') === backlog.id);
+          if (target) {
+            groups = groups.map((g) =>
+              g.id === target.id ? { ...g, tasks: [...g.tasks, task] } : g,
+            );
+          } else {
+            groups = [
+              ...groups,
+              {
+                id: 'g' + Date.now(),
+                name: 'Входящие',
+                color: '#9b8fd1',
+                boardId: backlog.id,
+                tasks: [task],
+              },
+            ];
+          }
+          return { groups };
+        });
+        if (moved) {
+          get().addToast(`«${moved}» → Бэклог`);
+        }
+      },
       startAddSub: (taskId) =>
         set((s) =>
           s.viewer

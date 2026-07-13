@@ -297,3 +297,14 @@ export function deriveDue(task: Task): DueInfo {
   }
   return { label, color, strike, check, clock };
 }
+
+// Инбокс интейка (ТЗ v2 §3): задачи из групп «📥 Разобрать» и легаси «Из YouTrack» на
+// любой доске — то, что каскад автопривязки не разобрал. Кормит вкладку «Новые задачи»
+// и бейдж на её табе.
+const INTAKE_GROUP_IDS = new Set(['g_intake', 'g_yt']);
+
+export function intakeTasks(groups: Group[]): { task: Task; groupName: string }[] {
+  return groups
+    .filter((g) => INTAKE_GROUP_IDS.has(g.id))
+    .flatMap((g) => g.tasks.map((t) => ({ task: t, groupName: g.name })));
+}

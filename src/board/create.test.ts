@@ -62,3 +62,32 @@ describe('создание задачи: видимый результат', () 
     expect(useBoard.getState().renamingTaskId).toBeNull();
   });
 });
+
+describe('разбор инбокса: sendToBacklog', () => {
+  it('линейно уносит задачу в хвост первой группы доски «Бэклог»', () => {
+    useBoard.setState({
+      boards: [
+        { id: 'b1', name: 'Доска', color: '#000' },
+        { id: 'b3', name: 'Бэклог', color: '#9b8fd1' },
+      ],
+      groups: [
+        ...useBoard.getState().groups,
+        { id: 'g_backlog', name: 'Входящие', color: '#9b8fd1', boardId: 'b3', tasks: [] },
+      ],
+    });
+
+    useBoard.getState().sendToBacklog('t1');
+
+    const s = useBoard.getState();
+    const backlog = s.groups.find((g) => g.id === 'g_backlog')!;
+    expect(backlog.tasks.map((t) => t.id)).toEqual(['t1']); // хвостом в бэклог
+    expect(s.groups.flatMap((g) => g.tasks).filter((t) => t.id === 't1')).toHaveLength(1); // без дублей
+  });
+
+  it('без доски «Бэклог» — no-op (ничего не теряем)', () => {
+    useBoard.setState({ boards: [{ id: 'b1', name: 'Доска', color: '#000' }] });
+    const before = useBoard.getState().groups.flatMap((g) => g.tasks).length;
+    useBoard.getState().sendToBacklog('t1');
+    expect(useBoard.getState().groups.flatMap((g) => g.tasks).length).toBe(before);
+  });
+});

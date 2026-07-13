@@ -13,6 +13,8 @@ import { ParityView } from './ParityView';
 import { TimelineView } from './TimelineView';
 import { AlertsView } from './AlertsView';
 import { DeltaView } from './DeltaView';
+import { IntakeView } from './IntakeView';
+import { intakeTasks } from './derive';
 import { CalendarView } from './CalendarView';
 import { ImportWizard } from './ImportWizard';
 import { DashboardScreen } from './DashboardScreen';
@@ -34,6 +36,7 @@ const ACCENT = '#4263d8';
 
 type TabKey =
   | 'table'
+  | 'intake'
   | 'timeline'
   | 'parity'
   | 'alerts'
@@ -43,6 +46,11 @@ type TabKey =
 
 const TABS: { key: TabKey; label: string; d: string }[] = [
   { key: 'table', label: 'Таблица', d: 'M3 5h18v14H3zM3 10h18M9 5v14' },
+  {
+    key: 'intake',
+    label: 'Новые задачи',
+    d: 'M3 13h5l2 3h4l2-3h5M5 6h14l2 7v6H3v-6z',
+  },
   { key: 'timeline', label: 'Таймлайн', d: 'M4 7h10M8 12h12M4 17h8' },
   {
     key: 'parity',
@@ -274,6 +282,7 @@ export function BoardApp() {
                   <TableView />
                 </>
               )}
+              {screen === 'board' && boardTab === 'intake' && <IntakeView />}
               {screen === 'board' && boardTab === 'parity' && <ParityView />}
               {screen === 'board' && boardTab === 'timeline' && (
                 <TimelineView />
@@ -350,6 +359,7 @@ function BoardHeader() {
   const setBoardTab = useBoard((s) => s.setBoardTab);
   const boards = useBoard((s) => s.boards);
   const activeBoardId = useBoard((s) => s.activeBoardId);
+  const intakeCount = useBoard((s) => intakeTasks(s.groups).length);
   const title = boards.find((b) => b.id === activeBoardId)?.name ?? 'Доска';
   const sourceLabel = ytrack
     ? 'источник правды · YouTrack'
@@ -468,6 +478,20 @@ function BoardHeader() {
                 </svg>
               </span>
               {tab.label}
+              {tab.key === 'intake' && intakeCount > 0 && (
+                <span
+                  style={{
+                    fontSize: 10.5,
+                    fontWeight: 800,
+                    color: '#fff',
+                    background: '#d9812f',
+                    borderRadius: 8,
+                    padding: '1px 7px',
+                  }}
+                >
+                  {intakeCount}
+                </span>
+              )}
               {active && (
                 <span
                   style={{
