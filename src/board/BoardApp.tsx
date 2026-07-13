@@ -15,6 +15,7 @@ import { AlertsView } from './AlertsView';
 import { DeltaView } from './DeltaView';
 import { IntakeView } from './IntakeView';
 import { intakeTasks } from './derive';
+import { RoleChipsView } from '../migration/RoleChipsView';
 import { CalendarView } from './CalendarView';
 import { ImportWizard } from './ImportWizard';
 import { DashboardScreen } from './DashboardScreen';
@@ -37,6 +38,7 @@ const ACCENT = '#4263d8';
 type TabKey =
   | 'table'
   | 'intake'
+  | 'matrix'
   | 'timeline'
   | 'parity'
   | 'alerts'
@@ -50,6 +52,11 @@ const TABS: { key: TabKey; label: string; d: string }[] = [
     key: 'intake',
     label: 'Новые задачи',
     d: 'M3 13h5l2 3h4l2-3h5M5 6h14l2 7v6H3v-6z',
+  },
+  {
+    key: 'matrix',
+    label: 'Матрица',
+    d: 'M20.6 13.4 12 22l-9-9V4h9zM7.5 7.5h.01',
   },
   { key: 'timeline', label: 'Таймлайн', d: 'M4 7h10M8 12h12M4 17h8' },
   {
@@ -283,6 +290,7 @@ export function BoardApp() {
                 </>
               )}
               {screen === 'board' && boardTab === 'intake' && <IntakeView />}
+              {screen === 'board' && boardTab === 'matrix' && <RoleChipsView />}
               {screen === 'board' && boardTab === 'parity' && <ParityView />}
               {screen === 'board' && boardTab === 'timeline' && (
                 <TimelineView />

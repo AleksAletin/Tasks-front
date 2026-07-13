@@ -38,3 +38,14 @@ export async function importMaster(file: File): Promise<MigrationImportSummary> 
   });
   return data;
 }
+
+/** Replace just the role↔module membership (the «Матрица» chip editor). Needs an existing
+ * dataset — нужность/ярус/бакет are recomputed client-side from the new membership. */
+export async function saveMigrationRoles(
+  roles: RoleRow[],
+): Promise<{ roles: number; updatedAt: string }> {
+  const { data } = await apiClient.put<{ roles: number; updatedAt: string }>('/migration/roles', {
+    roles,
+  });
+  return data;
+}

@@ -49,6 +49,7 @@ export type Screen = 'board' | 'dashboard' | 'users' | 'migration' | 'tickets';
 export type BoardTab =
   | 'table'
   | 'intake'
+  | 'matrix'
   | 'timeline'
   | 'parity'
   | 'alerts'
