@@ -238,6 +238,10 @@ interface BoardState {
     groups: Group[];
     collapsedGroupIds: string[];
     retirePrefix?: string;
+    /** Кастом-колонки для доски (заводятся, если ещё нет); значения — в colValues. */
+    customCols?: CustomCol[];
+    /** Значения ячеек кастом-колонок, ключ `taskId::colId` (перезаписываются — они производные). */
+    colValues?: Record<string, unknown>;
   }) => number;
   login: () => void;
   setLoginEmail: (v: string) => void;
@@ -562,7 +566,7 @@ export const useBoard = create<BoardState>()(
       setPrefsVersion: (v) => set({ prefsVersion: v }),
       setBoardVersion: (v) => set({ boardVersion: v }),
       setTicketsNewCount: (n) => set({ ticketsNewCount: n }),
-      importMigrationBoard: ({ board, groups, collapsedGroupIds, retirePrefix }) => {
+      importMigrationBoard: ({ board, groups, collapsedGroupIds, retirePrefix, customCols, colValues }) => {
         let added = 0;
         set((s) => {
           const boards = s.boards.some((b) => b.id === board.id)
@@ -669,10 +673,31 @@ export const useBoard = create<BoardState>()(
             if (!(gid in collapsed)) collapsed[gid] = true;
           }
 
+          // Кастом-колонки доски (эпики: «Модули»): заводим новые id, вставляя их после
+          // «Примечания» в порядке колонок; значения ячеек — производные, перезаписываем.
+          const newCols = (customCols ?? []).filter(
+            (c) => !s.customCols.some((x) => x.id === c.id),
+          );
+          const nextCustomCols = newCols.length ? [...s.customCols, ...newCols] : s.customCols;
+          let nextColOrder = s.colOrder;
+          if (newCols.length) {
+            const resolved = resolveColOrder(s.colOrder, s.customCols.map((c) => c.id));
+            const newIds = newCols.map((c) => c.id);
+            const at = resolved.indexOf('note');
+            nextColOrder =
+              at >= 0
+                ? [...resolved.slice(0, at + 1), ...newIds, ...resolved.slice(at + 1)]
+                : [...resolved, ...newIds];
+          }
+          const nextColValues = colValues ? { ...s.colValues, ...colValues } : s.colValues;
+
           return {
             boards,
             groups: [...others, ...mergedNew, ...keepForeign],
             collapsed,
+            customCols: nextCustomCols,
+            colOrder: nextColOrder,
+            colValues: nextColValues,
             activeBoardId: board.id,
             screen: 'board',
             boardTab: 'table',

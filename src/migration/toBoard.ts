@@ -2,7 +2,7 @@
 // становятся обычными задачами — драг, статусы, владельцы, панель; привязка BAC в ticketId отдаёт
 // статусы YouTrack-синку, и доски живут сами. Чистые трансформации: store-экшен решает, что
 // добавлять (повторный прогон доливает только новое).
-import type { Board, Group, Sub, Task } from '../board/model';
+import type { Board, CustomCol, Group, Sub, Task } from '../board/model';
 import { isNoveltyPending, WAVE_INFO, type EpicRow, type MasterModule, type NoveltyRow } from './domain';
 
 export const MIGRATION_BOARD_ID = 'b_migration';
@@ -70,6 +70,10 @@ export interface MigrationBoard {
   groups: Group[];
   /** Группы, которые стоит держать свёрнутыми (готово-архив). */
   collapsedGroupIds: string[];
+  /** Кастом-колонки, которые нужно завести на доске (эпики: «Модули»). */
+  customCols?: CustomCol[];
+  /** Значения ячеек кастом-колонок: ключ `taskId::colId`. */
+  colValues?: Record<string, unknown>;
 }
 
 /**
@@ -192,6 +196,8 @@ export const epicTaskId = (key: string) => `epic_${key}`;
 
 export const EPIC_WORK_GROUP_ID = 'g_epic_work';
 export const EPIC_DONE_GROUP_ID = 'g_epic_done';
+/** Кастом-колонка «Модули» на доске эпиков — число модулей под отчётом (было в примечании). */
+export const EPIC_MODULES_COL_ID = 'col_epic_modules';
 
 function epicStatus(stage: string): Task['status'] {
   const s = stage.toLowerCase();
@@ -213,9 +219,9 @@ function childStatus(stage: string): Sub['status'] {
 }
 
 function epicTaskOf(e: EpicRow): Task {
+  // «модулей» вынесено в отдельную колонку «Модули» (EPIC_MODULES_COL_ID) — в примечании больше нет.
   const note = [
     `задач: ${e.taskCount}`,
-    `модулей: ${e.modules}`,
     e.ice ? `Σ ICE: ${e.ice}` : null,
     e.novelties ? `новинок: ${e.novelties}` : null,
     e.team ? `команда: ${e.team}` : null,
@@ -278,5 +284,14 @@ export function epicsToBoard(epics: EpicRow[]): MigrationBoard {
     },
   ] as Group[];
 
-  return { board, groups, collapsedGroupIds: [EPIC_DONE_GROUP_ID] };
+  // Отдельная колонка «Модули» с числом модулей под каждым отчётом (ключ значения — taskId::colId).
+  const customCols: CustomCol[] = [
+    { id: EPIC_MODULES_COL_ID, label: 'Модули', type: 'number' },
+  ];
+  const colValues: Record<string, unknown> = {};
+  for (const e of sorted) {
+    colValues[`${epicTaskId(e.key)}::${EPIC_MODULES_COL_ID}`] = String(e.modules);
+  }
+
+  return { board, groups, collapsedGroupIds: [EPIC_DONE_GROUP_ID], customCols, colValues };
 }

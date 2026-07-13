@@ -17,11 +17,13 @@ import {
   migrationTaskId,
   noveltiesToBoard,
   noveltyTaskId,
+  EPIC_MODULES_COL_ID,
   EPICS_BOARD_ID,
   MIGRATION_BOARD_ID,
   NOVELTIES_BOARD_ID,
 } from './toBoard';
 import type { EpicRow } from './domain';
+import { resolveColOrder } from '../board/model';
 import { useBoard } from '../board/store';
 
 const novelties = noveltiesData as NoveltyRow[];
@@ -124,7 +126,7 @@ describe('карта переезда → доска', () => {
       },
     ];
 
-    const { board, groups, collapsedGroupIds } = epicsToBoard(epics);
+    const { board, groups, collapsedGroupIds, customCols, colValues } = epicsToBoard(epics);
 
     expect(board.id).toBe(EPICS_BOARD_ID);
     // Две группы по состоянию: «В работе» + свёрнутая «Готово»; раздел остаётся полем section.
@@ -137,6 +139,11 @@ describe('карта переезда → доска', () => {
     expect(epic.subs).toHaveLength(3);
     expect(epic.subs!.map((s) => s.status)).toEqual(['plan', 'work', 'done']);
     expect(epic.note).toContain('Σ ICE: 6920');
+    // «модулей» вынесено из примечания в отдельную колонку «Модули».
+    expect(epic.note).not.toContain('модулей');
+    expect(customCols).toEqual([{ id: EPIC_MODULES_COL_ID, label: 'Модули', type: 'number' }]);
+    expect(colValues![`${epicTaskId('R425')}::${EPIC_MODULES_COL_ID}`]).toBe('3');
+    expect(colValues![`${epicTaskId('R47')}::${EPIC_MODULES_COL_ID}`]).toBe('1');
     const done = groups[1].tasks[0];
     expect(done.id).toBe(epicTaskId('R47'));
     expect(done.status).toBe('done'); // ✅ катить!
@@ -235,5 +242,37 @@ describe('карта переезда → доска', () => {
     expect(copies[0].status).toBe('done'); // правка выжила
     expect(state.activeBoardId).toBe(MIGRATION_BOARD_ID);
     expect(state.screen).toBe('board');
+  });
+
+  it('store: импорт эпиков заводит колонку «Модули» после «Примечаний» и заполняет значения', () => {
+    const epics: EpicRow[] = [
+      {
+        key: 'R700',
+        section: 'Web',
+        report: 'Отчёт',
+        modules: 7,
+        taskCount: 1,
+        progress: 0,
+        ice: 100,
+        novelties: 0,
+        stage: '🧠 аналитика',
+        team: '',
+        children: [],
+      },
+    ];
+    useBoard.getState().importMigrationBoard({ ...epicsToBoard(epics), retirePrefix: 'g_epic_' });
+
+    const s = useBoard.getState();
+    // колонка заведена один раз
+    expect(s.customCols.filter((c) => c.id === EPIC_MODULES_COL_ID)).toHaveLength(1);
+    // значение проставлено
+    expect(s.colValues[`${epicTaskId('R700')}::${EPIC_MODULES_COL_ID}`]).toBe('7');
+    // и стоит сразу после «Примечаний» (note)
+    const order = resolveColOrder(s.colOrder, s.customCols.map((c) => c.id));
+    expect(order.indexOf(EPIC_MODULES_COL_ID)).toBe(order.indexOf('note') + 1);
+
+    // повторный импорт не плодит вторую колонку
+    useBoard.getState().importMigrationBoard({ ...epicsToBoard(epics), retirePrefix: 'g_epic_' });
+    expect(useBoard.getState().customCols.filter((c) => c.id === EPIC_MODULES_COL_ID)).toHaveLength(1);
   });
 });
