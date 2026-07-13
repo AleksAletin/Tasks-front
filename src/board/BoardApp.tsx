@@ -12,6 +12,7 @@ import { TableView } from './TableView';
 import { ParityView } from './ParityView';
 import { TimelineView } from './TimelineView';
 import { AlertsView } from './AlertsView';
+import { DeltaView } from './DeltaView';
 import { CalendarView } from './CalendarView';
 import { ImportWizard } from './ImportWizard';
 import { DashboardScreen } from './DashboardScreen';
@@ -36,6 +37,7 @@ type TabKey =
   | 'timeline'
   | 'parity'
   | 'alerts'
+  | 'delta'
   | 'import'
   | 'calendar';
 
@@ -51,6 +53,11 @@ const TABS: { key: TabKey; label: string; d: string }[] = [
     key: 'alerts',
     label: 'Что горит',
     d: 'M12 2c1 4-2 5-2 8a4 4 0 0 0 8 0c0-2-1-3-1-3 3 2 4 5 4 7a7 7 0 0 1-14 0c0-4 4-6 5-9z',
+  },
+  {
+    key: 'delta',
+    label: 'Δ Изменения',
+    d: 'M12 4 3 20h18zM12 4v16',
   },
   {
     key: 'import',
@@ -272,6 +279,7 @@ export function BoardApp() {
                 <TimelineView />
               )}
               {screen === 'board' && boardTab === 'alerts' && <AlertsView />}
+              {screen === 'board' && boardTab === 'delta' && <DeltaView />}
               {screen === 'board' && boardTab === 'calendar' && (
                 <CalendarView />
               )}

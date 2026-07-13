@@ -210,6 +210,20 @@ export function startBackendSync(): () => void {
   return stopBackendSync;
 }
 
+/**
+ * Дожать отложенный (600 мс) сейв доски НЕМЕДЛЕННО. Нужен «Снапшоту сейчас»: слепок читает БД,
+ * и без форс-флаша только что сделанная правка проигрывает гонку дебаунсу и не попадает в дифф.
+ */
+export async function flushBoardNow(): Promise<void> {
+  if (boardTimer) {
+    clearTimeout(boardTimer);
+    boardTimer = null;
+    await flushBoard().catch((err) => {
+      console.error('[board] backend save failed', err);
+    });
+  }
+}
+
 /** Cancel any pending saves and stop listening. */
 export function stopBackendSync(): void {
   if (boardTimer) {

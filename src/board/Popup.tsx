@@ -62,7 +62,7 @@ export function Popup() {
       ? 280
       : popup.kind === 'phases'
         ? 340
-        : popup.kind === 'note'
+        : popup.kind === 'note' || popup.kind === 'attach'
           ? 320
           : isLabelKind
             ? 252
@@ -233,7 +233,88 @@ export function Popup() {
           onClose={closePopup}
         />
       )}
+      {popup.kind === 'attach' && task && <AttachPicker taskId={task.id} />}
     </GlassPopover>
+  );
+}
+
+// Пикер «В подзадачи эпика…» (разбор инбокса, ТЗ v2 §3): поиск по задачам активной доски,
+// клик — задача уезжает подзадачей выбранного эпика (тикет и статус едут с ней).
+function AttachPicker({ taskId }: { taskId: string }) {
+  const groups = useBoard((s) => s.groups);
+  const activeBoardId = useBoard((s) => s.activeBoardId);
+  const attachToEpic = useBoard((s) => s.attachToEpic);
+  const [query, setQuery] = useState('');
+
+  const candidates = groups
+    .filter((g) => (g.boardId ?? 'b1') === activeBoardId)
+    .flatMap((g) => g.tasks.map((t) => ({ task: t, group: g.name })))
+    .filter((c) => c.task.id !== taskId)
+    .filter(
+      (c) =>
+        !query.trim() ||
+        c.task.name.toLowerCase().includes(query.trim().toLowerCase()),
+    )
+    .slice(0, 40);
+
+  return (
+    <div style={{ minWidth: 300, display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <input
+        value={query}
+        autoFocus
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Найти эпик…"
+        style={{
+          height: 30,
+          border: '1px solid var(--scrim)',
+          borderRadius: 8,
+          padding: '0 10px',
+          fontSize: 12.5,
+          outline: 'none',
+          background: 'var(--card)',
+          color: 'var(--text)',
+        }}
+      />
+      <div style={{ maxHeight: 280, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {candidates.length === 0 && (
+          <div style={{ padding: '10px 8px', fontSize: 12.5, color: 'var(--text-faint)' }}>
+            Ничего не нашлось.
+          </div>
+        )}
+        {candidates.map(({ task: t, group }) => (
+          <div
+            key={t.id}
+            onClick={() => attachToEpic(taskId, t.id)}
+            style={{
+              padding: '7px 9px',
+              borderRadius: 7,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              minWidth: 0,
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--hover)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+          >
+            <span
+              style={{
+                fontSize: 12.5,
+                fontWeight: 600,
+                color: 'var(--text-3)',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {t.name}
+            </span>
+            <span style={{ flex: 1 }} />
+            <span style={{ fontSize: 11, color: 'var(--text-faint)', flexShrink: 0 }}>{group}</span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 

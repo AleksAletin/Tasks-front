@@ -15,6 +15,7 @@ export function ContextMenu() {
   const archiveTask = useBoard((s) => s.archiveTask);
   const deleteTasks = useBoard((s) => s.deleteTasks);
   const startAddSub = useBoard((s) => s.startAddSub);
+  const openPopup = useBoard((s) => s.openPopup);
 
   useEffect(() => {
     if (!ctxMenu) return;
@@ -150,6 +151,25 @@ export function ContextMenu() {
           >
             <path d="M5 5v8a3 3 0 0 0 3 3h11" />
             <path d="M16 12l4 4-4 4" />
+          </svg>,
+        )}
+        {item(
+          'В подзадачи эпика…',
+          'var(--text-3)',
+          'var(--hover)',
+          // Разбор инбокса «📥 Разобрать» (ТЗ v2 §3): задача уезжает подзадачей выбранного эпика.
+          () => openPopup({ kind: 'attach', taskId: id, x: ctxMenu.x, y: ctxMenu.y }),
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--text-soft)"
+            strokeWidth="2"
+          >
+            <path d="M20 17V9a2 2 0 0 0-2-2H9" />
+            <path d="M12 3 8 7l4 4" />
+            <path d="M4 21v-4a2 2 0 0 1 2-2h8" />
           </svg>,
         )}
         <div

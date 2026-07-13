@@ -50,6 +50,26 @@ describe('подзадачи: поля и экшены', () => {
     expect(subIds()).toEqual(['s1a', 's1c', 's1b']);
   });
 
+  it('attachToEpic: задача из инбокса уезжает подзадачей эпика с тикетом и статусом', () => {
+    useBoard.getState().updateTask('t4', { ticketId: 'BAC-77', status: 'work' });
+    useBoard.getState().attachToEpic('t4', 't1');
+
+    const state = useBoard.getState();
+    const all = state.groups.flatMap((g) => g.tasks);
+    expect(all.find((t) => t.id === 't4')).toBeUndefined(); // задачи больше нет
+    const t1subs = all.find((t) => t.id === 't1')!.subs!;
+    const t1sub = t1subs[t1subs.length - 1];
+    expect(t1sub.ticketId).toBe('BAC-77'); // тикет уехал с ней — синк продолжит вести
+    expect(t1sub.status).toBe('work');
+    expect(state.expanded['t1']).toBe(true); // эпик раскрыт — видно, куда легла
+  });
+
+  it('attachToEpic сам к себе — no-op', () => {
+    const before = t1().subs!.length;
+    useBoard.getState().attachToEpic('t1', 't1');
+    expect(t1().subs!.length).toBe(before);
+  });
+
   it('hydrateBoard нормализует легаси-сабы «BAC-n · title» в ticketId + имя', () => {
     const groups = seed();
     const legacy: Sub = {

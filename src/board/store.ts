@@ -51,6 +51,7 @@ export type BoardTab =
   | 'timeline'
   | 'parity'
   | 'alerts'
+  | 'delta'
   | 'import'
   | 'calendar';
 export type SettingsTab =
@@ -294,6 +295,8 @@ interface BoardState {
   updateSub: (taskId: string, subId: string, patch: Partial<Sub>) => void;
   removeSub: (taskId: string, subId: string) => void;
   moveSub: (taskId: string, subId: string, toIndex: number) => void;
+  /** Разбор инбокса: задача целиком уезжает ПОДЗАДАЧЕЙ выбранного эпика (ТЗ v2 §3). */
+  attachToEpic: (taskId: string, epicTaskId: string) => void;
   startAddSub: (taskId: string) => void;
   setSubDraft: (v: string) => void;
   cancelAddSub: () => void;
@@ -1149,6 +1152,37 @@ export const useBoard = create<BoardState>()(
             }),
           }));
           return { groups };
+        }),
+      attachToEpic: (taskId, epicTaskId) =>
+        set((s) => {
+          if (s.viewer || taskId === epicTaskId) return {};
+          const task = s.groups.flatMap((g) => g.tasks).find((t) => t.id === taskId);
+          if (!task) return {};
+          const ns: Sub = {
+            id: 's' + Date.now() + Math.floor(Math.random() * 99),
+            name: task.name,
+            owner: task.owner,
+            status: task.status,
+            due: task.due,
+            priority: task.priority,
+            note: task.note,
+            // Тикет уезжает вместе с задачей: синк продолжит вести статус, а discovery
+            // не создаст дубль (тикеты сабов считаются «уже на доске»).
+            ticketId: task.ticketId ?? null,
+          };
+          const groups = s.groups.map((g) => ({
+            ...g,
+            tasks: g.tasks
+              .filter((t) => t.id !== taskId)
+              .map((t) =>
+                t.id === epicTaskId ? { ...t, subs: [...(t.subs ?? []), ns] } : t,
+              ),
+          }));
+          return {
+            groups,
+            expanded: { ...s.expanded, [epicTaskId]: true },
+            popup: null,
+          };
         }),
       startAddSub: (taskId) =>
         set((s) =>
