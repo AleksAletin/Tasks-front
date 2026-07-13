@@ -119,6 +119,7 @@ async function hydrateWithRetry<T>(
 export function BoardApp() {
   const authed = useBoard((s) => s.authed);
   const dark = useBoard((s) => s.dark);
+  const uiZoom = useBoard((s) => s.uiZoom);
   const toggleDark = useBoard((s) => s.toggleDark);
   const screen = useBoard((s) => s.screen);
   const boardTab = useBoard((s) => s.boardTab);
@@ -257,6 +258,17 @@ export function BoardApp() {
 
   if (!authed) return <Login />;
 
+  // Глобальный масштаб интерфейса: зумим ТОЛЬКО обёртку с сайдбаром и контентом, а поповеры
+  // оставляем снаружи зума — тогда они не съезжают (getBoundingClientRect ячеек внутри зума
+  // отдаёт уже видимые координаты, а fixed-поповер снаружи встаёт ровно на них). Обёртку
+  // раздуваем на 1/zoom, чтобы после зума она заполняла экран — на плотных экранах (матрица)
+  // становится видно больше.
+  const z = uiZoom / 100;
+  const chromeStyle: React.CSSProperties =
+    uiZoom === 100
+      ? { display: 'flex', flex: 1, minWidth: 0, height: '100%' }
+      : { display: 'flex', zoom: z, width: `${100 / z}vw`, height: `${100 / z}vh` };
+
   return (
     <div
       style={{
@@ -267,16 +279,17 @@ export function BoardApp() {
         fontSize: 14,
       }}
     >
-      <Sidebar />
-      <main
-        style={{
-          flex: 1,
-          minWidth: 0,
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        <Topbar />
+      <div style={chromeStyle}>
+        <Sidebar />
+        <main
+          style={{
+            flex: 1,
+            minWidth: 0,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <Topbar />
         {!settingsScreen && screen === 'board' && <BoardHeader />}
         <div style={{ flex: 1, overflow: 'auto', position: 'relative' }}>
           {settingsScreen ? (
@@ -309,6 +322,7 @@ export function BoardApp() {
           )}
         </div>
       </main>
+      </div>
 
       {panelId && <TaskPanel />}
       {popup && <Popup />}

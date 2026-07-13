@@ -1,4 +1,5 @@
-// Top bar — search, role toggle, icon buttons, dark toggle, settings gear (brief §5.3, prototype ~114).
+// Top bar — search, role toggle, icon buttons, zoom, dark toggle, settings gear (brief §5.3).
+import { useEffect, useRef, useState } from 'react';
 import { useBoard } from './store';
 import { Tip } from './ui';
 
@@ -196,6 +197,7 @@ export function Topbar() {
           </svg>
           <span style={{ fontSize: 12, fontWeight: 700 }}>⌘K</span>
         </Tip>
+        <ZoomControl />
         <Tip text="Тёмная тема · D" style={iconBtn} onClick={toggleDark}>
           {dark ? (
             <svg
@@ -300,6 +302,122 @@ export function Topbar() {
     </header>
   );
 }
+
+// Масштаб интерфейса — кнопка с процентом открывает поповер с ползунком (50–100%). Zoom всего
+// документа применяется в BoardApp; здесь только управление. Absolute-поповер, не fixed, чтобы
+// не ловить рассинхрон координат при уже применённом zoom.
+function ZoomControl() {
+  const uiZoom = useBoard((s) => s.uiZoom);
+  const setUiZoom = useBoard((s) => s.setUiZoom);
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    window.addEventListener('mousedown', onDown);
+    return () => window.removeEventListener('mousedown', onDown);
+  }, [open]);
+
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'flex' }}>
+      <Tip
+        text="Масштаб интерфейса"
+        style={{
+          ...iconBtn,
+          width: 'auto',
+          padding: '0 9px',
+          gap: 5,
+          color: uiZoom === 100 ? 'var(--text-mut)' : ACCENT,
+          background: open ? 'var(--hover)' : 'transparent',
+        }}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.3-4.3M8 11h6M11 8v6" />
+        </svg>
+        <span style={{ fontSize: 12, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
+          {uiZoom}%
+        </span>
+      </Tip>
+      {open && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 40,
+            right: 0,
+            zIndex: 60,
+            width: 224,
+            padding: 12,
+            borderRadius: 12,
+            background: 'var(--glass-hi, var(--card))',
+            backdropFilter: 'blur(30px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(30px) saturate(180%)',
+            border: '1px solid var(--surf-2)',
+            boxShadow: '0 16px 44px var(--shadow, rgba(20,22,28,0.16))',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <span style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--text-2)' }}>Масштаб</span>
+            <span style={{ fontSize: 12.5, fontWeight: 800, color: ACCENT }}>{uiZoom}%</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button onClick={() => setUiZoom(uiZoom - 10)} style={stepBtn}>
+              −
+            </button>
+            <input
+              type="range"
+              min={50}
+              max={100}
+              step={5}
+              value={uiZoom}
+              onChange={(e) => setUiZoom(Number(e.target.value))}
+              style={{ flex: 1, accentColor: ACCENT, cursor: 'pointer' }}
+            />
+            <button onClick={() => setUiZoom(uiZoom + 10)} style={stepBtn}>
+              +
+            </button>
+          </div>
+          <button
+            onClick={() => setUiZoom(100)}
+            disabled={uiZoom === 100}
+            style={{
+              marginTop: 10,
+              width: '100%',
+              height: 28,
+              borderRadius: 8,
+              border: '1px solid var(--surf-2)',
+              background: 'var(--card)',
+              color: uiZoom === 100 ? 'var(--text-faint)' : 'var(--text-3)',
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: uiZoom === 100 ? 'default' : 'pointer',
+            }}
+          >
+            Сбросить (100%)
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const stepBtn: React.CSSProperties = {
+  width: 28,
+  height: 28,
+  flexShrink: 0,
+  borderRadius: 7,
+  border: '1px solid var(--surf-2)',
+  background: 'var(--card)',
+  color: 'var(--text-3)',
+  fontSize: 16,
+  fontWeight: 700,
+  cursor: 'pointer',
+  lineHeight: 1,
+};
 
 const iconBtn = {
   width: 34,

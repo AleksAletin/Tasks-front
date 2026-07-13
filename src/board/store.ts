@@ -148,6 +148,9 @@ interface BoardState {
   twoWay: boolean;
   guestLinks: boolean;
   dark: boolean;
+  /** Масштаб всего интерфейса в % (личная настройка, персистится): 50…100, чтобы плотные
+   * экраны/матрица влезали на экран. Применяется через document.documentElement.style.zoom. */
+  uiZoom: number;
   filterStatus: Record<string, boolean>;
   filterOwner: string | null;
   sortBy: string | null;
@@ -248,6 +251,7 @@ interface BoardState {
   addBoard: () => void;
   setViewer: (v: boolean) => void;
   toggleDark: () => void;
+  setUiZoom: (zoom: number) => void;
   setCfg: (patch: Partial<Cfg>) => void;
   setIntegration: (k: 'ytrack' | 'email', v: boolean) => void;
   setFlag: (k: 'autoSync' | 'twoWay' | 'guestLinks', v: boolean) => void;
@@ -457,6 +461,7 @@ export const useBoard = create<BoardState>()(
       twoWay: true,
       guestLinks: true,
       dark: false,
+      uiZoom: 100,
       filterStatus: {},
       filterOwner: null,
       sortBy: null,
@@ -706,6 +711,7 @@ export const useBoard = create<BoardState>()(
         }),
       setViewer: (viewer) => set({ viewer }),
       toggleDark: () => set((s) => ({ dark: !s.dark })),
+      setUiZoom: (uiZoom) => set({ uiZoom: Math.max(50, Math.min(100, Math.round(uiZoom))) }),
       setCfg: (patch) => set((s) => ({ cfg: { ...s.cfg, ...patch } })),
       setIntegration: (k, v) =>
         set((s) => ({ integrations: { ...s.integrations, [k]: v } })),
@@ -1744,6 +1750,7 @@ export const useBoard = create<BoardState>()(
         twoWay: s.twoWay,
         guestLinks: s.guestLinks,
         dark: s.dark,
+        uiZoom: s.uiZoom,
         filterStatus: s.filterStatus,
         filterOwner: s.filterOwner,
         sortBy: s.sortBy,
