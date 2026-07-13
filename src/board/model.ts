@@ -429,6 +429,8 @@ export const COL_TYPES: {
 ];
 
 // ---- table column metadata (shared by TableView, the column header menu, and the store) ----
+// «Тип» и «Источник» выпилены из таблицы по просьбе лида (поля у задач остаются —
+// панель и метки живут; resolveColOrder молча выкинет их из старых сохранённых порядков).
 export const BUILTIN_COL_KEYS = [
   'task',
   'owner',
@@ -439,8 +441,6 @@ export const BUILTIN_COL_KEYS = [
   'note',
   'updated',
   'section',
-  'type',
-  'source',
 ];
 export const BUILTIN_COL_LABEL: Record<string, string> = {
   task: 'Задача',
@@ -452,8 +452,6 @@ export const BUILTIN_COL_LABEL: Record<string, string> = {
   note: 'Примечания',
   updated: 'Обновлено',
   section: 'Раздел',
-  type: 'Тип',
-  source: 'Источник',
 };
 export const BUILTIN_COL_WIDTH: Record<string, number> = {
   task: 264,
@@ -465,8 +463,6 @@ export const BUILTIN_COL_WIDTH: Record<string, number> = {
   note: 172,
   updated: 132,
   section: 128,
-  type: 116,
-  source: 138,
 };
 // Columns that can be grouped-by (categorical — buildView supports these groupBy keys).
 export const GROUPABLE_COLS = new Set([
@@ -474,8 +470,6 @@ export const GROUPABLE_COLS = new Set([
   'owner',
   'section',
   'priority',
-  'type',
-  'source',
 ]);
 
 // Resolve the user's saved column order against the live column set (built-ins + custom ids): saved

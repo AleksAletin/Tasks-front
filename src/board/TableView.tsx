@@ -21,7 +21,7 @@ import {
 } from './model';
 import { buildView, deriveDue, type ViewGroup } from './derive';
 import { windowFor } from './timeline';
-import { Avatar, AvatarEmpty, Pill } from './ui';
+import { Avatar, AvatarEmpty } from './ui';
 
 const ACCENT = '#4263d8';
 const ROW_H = 40;
@@ -1154,8 +1154,6 @@ const Row = memo(function Row({
   const canDrag = g.isRole && !viewer;
   const st = findLabel(labels.status, t.status);
   const pr = t.priority ? findLabel(labels.priority, t.priority) : null;
-  const ty = findLabel(labels.type, t.type);
-  const so = findLabel(labels.source, t.source);
   const owner = personById(t.owner);
   // No fallback to a real person: imported/edited tasks may have an empty lastBy — show an
   // empty avatar rather than misleadingly attributing the change to «АК» (p1).
@@ -1896,34 +1894,6 @@ const Row = memo(function Row({
           >
             {t.section}
           </span>
-        </div>
-
-        <div
-          onClick={(e) => cellPopup('type', undefined, e)}
-          style={{
-            order: orderOf.type,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRight: '1px solid var(--surf-1)',
-            cursor: viewer ? 'default' : 'pointer',
-          }}
-        >
-          <Pill label={ty.label} bg={ty.bg} />
-        </div>
-
-        <div
-          onClick={(e) => cellPopup('source', undefined, e)}
-          style={{
-            order: orderOf.source,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRight: '1px solid var(--surf-1)',
-            cursor: viewer ? 'default' : 'pointer',
-          }}
-        >
-          <Pill label={so.label} bg={so.bg} />
         </div>
 
         {customCols.map((c) => (
