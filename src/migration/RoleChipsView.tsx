@@ -14,10 +14,13 @@ import {
   type NoveltyRow,
   type RoleRow,
 } from './domain';
+import { MatrixView } from './MatrixView';
 import { BUCKET_COLOR, CARD, TIER_COLOR } from './ui';
 
 const ACCENT = '#4263d8';
 const CHIP_CAP = 40; // модулей на карточку до «показать все»
+
+type ViewMode = 'chips' | 'grid';
 
 export function RoleChipsView() {
   const [roles, setRoles] = useState<RoleRow[]>([]);
@@ -25,6 +28,7 @@ export function RoleChipsView() {
   const [novelties, setNovelties] = useState<NoveltyRow[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [q, setQ] = useState('');
+  const [mode, setMode] = useState<ViewMode>('chips');
   const [save, setSave] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -111,45 +115,101 @@ export function RoleChipsView() {
   }
 
   return (
-    <div style={{ padding: '22px 26px 48px', maxWidth: 1180 }}>
+    <div style={{ padding: '22px 26px 48px', maxWidth: mode === 'grid' ? '100%' : 1180 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4, flexWrap: 'wrap' }}>
         <div style={{ fontSize: 17, fontWeight: 800 }}>Матрица · роли и модули</div>
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Поиск роли…"
-          style={{
-            fontSize: 12.5,
-            padding: '6px 11px',
-            borderRadius: 8,
-            border: '1px solid var(--surf-2)',
-            background: 'var(--bg)',
-            color: 'var(--text-2)',
-            width: 220,
-            outline: 'none',
-          }}
-        />
-        <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>{shown.length} ролей</span>
+        <ModeToggle mode={mode} onChange={setMode} />
+        {mode === 'chips' && (
+          <>
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Поиск роли…"
+              style={{
+                fontSize: 12.5,
+                padding: '6px 11px',
+                borderRadius: 8,
+                border: '1px solid var(--surf-2)',
+                background: 'var(--bg)',
+                color: 'var(--text-2)',
+                width: 220,
+                outline: 'none',
+              }}
+            />
+            <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>{shown.length} ролей</span>
+          </>
+        )}
         <div style={{ flex: 1 }} />
         <SaveBadge state={save} />
       </div>
-      <div style={{ fontSize: 12.5, color: 'var(--text-soft)', marginBottom: 16, lineHeight: 1.5 }}>
-        Роль = набор модулей. Добавляйте модули чипсами («+ модуль»), убирайте крестиком — цвет чипа
-        показывает бакет модуля, готовность роли считается сразу.
-      </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {shown.map((role) => (
-          <RoleCard
-            key={role.id}
-            role={role}
-            byId={byId}
-            allModules={modules}
-            onAdd={(mid) => addModule(role.id, mid)}
-            onRemove={(mid) => removeModule(role.id, mid)}
-          />
-        ))}
-      </div>
+      {mode === 'grid' ? (
+        // Плотная сетка Модуль×Роль (как на карте) — вид «сверху» от того же членства, что
+        // редактируется чипсами; правки в чип-режиме сразу отражаются точками.
+        <div style={{ marginTop: 12 }}>
+          <MatrixView rows={rows} roles={roles} byId={byId} />
+        </div>
+      ) : (
+        <>
+          <div style={{ fontSize: 12.5, color: 'var(--text-soft)', marginBottom: 16, lineHeight: 1.5 }}>
+            Роль = набор модулей. Добавляйте модули чипсами («+ модуль»), убирайте крестиком — цвет
+            чипа показывает бакет модуля, готовность роли считается сразу.
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {shown.map((role) => (
+              <RoleCard
+                key={role.id}
+                role={role}
+                byId={byId}
+                allModules={modules}
+                onAdd={(mid) => addModule(role.id, mid)}
+                onRemove={(mid) => removeModule(role.id, mid)}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function ModeToggle({ mode, onChange }: { mode: ViewMode; onChange: (m: ViewMode) => void }) {
+  const opts: { key: ViewMode; label: string }[] = [
+    { key: 'chips', label: 'Роли' },
+    { key: 'grid', label: 'Сетка' },
+  ];
+  return (
+    <div
+      style={{
+        display: 'inline-flex',
+        padding: 2,
+        borderRadius: 9,
+        background: 'var(--surf-1)',
+        border: '1px solid var(--surf-2)',
+      }}
+    >
+      {opts.map((o) => {
+        const active = mode === o.key;
+        return (
+          <button
+            key={o.key}
+            onClick={() => onChange(o.key)}
+            style={{
+              padding: '5px 13px',
+              borderRadius: 7,
+              border: 'none',
+              background: active ? 'var(--card)' : 'transparent',
+              color: active ? 'var(--text)' : 'var(--text-soft)',
+              fontSize: 12.5,
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: active ? '0 1px 3px var(--shadow, rgba(20,22,28,0.08))' : 'none',
+            }}
+          >
+            {o.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
